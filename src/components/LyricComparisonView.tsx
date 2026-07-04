@@ -1,4 +1,5 @@
 import type { LyricsComparisonResult } from '../types/lyrics'
+import { VerseActions } from './VerseActions'
 
 interface LyricComparisonViewProps {
   result: LyricsComparisonResult
@@ -93,8 +94,8 @@ export function LyricComparisonView({ result, onBack }: LyricComparisonViewProps
                   <p className="mb-2 text-xs font-semibold tracking-wide text-ink-muted uppercase">
                     Lyric
                   </p>
-                  <blockquote className="font-display text-xl leading-relaxed text-navy italic">
-                    &ldquo;{parallel.lyricLine}&rdquo;
+                  <blockquote className="verse-pullquote font-display text-xl leading-relaxed text-navy italic sm:text-2xl">
+                    {parallel.lyricLine}
                   </blockquote>
                   <footer className="mt-3 text-sm text-ink-muted">— {track.name}</footer>
                 </div>
@@ -112,9 +113,12 @@ export function LyricComparisonView({ result, onBack }: LyricComparisonViewProps
                           key={verse.id}
                           className="rounded-xl border border-parchment-dark/80 bg-white p-4"
                         >
-                          <p className="font-display text-sm font-semibold text-navy">
-                            {verse.reference}
-                          </p>
+                          <div className="flex items-start justify-between gap-3">
+                            <p className="font-display text-sm font-semibold text-navy">
+                              {verse.reference}
+                            </p>
+                            <VerseActions verse={verse} compact />
+                          </div>
                           <p className="mt-2 text-sm leading-relaxed text-ink">{verse.text}</p>
                         </div>
                       ))}

@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import { VitePWA } from 'vite-plugin-pwa'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import { fetchLyrics } from './api/lib/lrcLib.ts'
 import { isSpotifyConfigured, searchSpotifyTracks } from './api/lib/spotify.ts'
@@ -92,6 +93,41 @@ function devApiPlugin(env: Record<string, string>) {
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   return {
-    plugins: [react(), tailwindcss(), devApiPlugin(env)],
+    plugins: [
+      react(),
+      tailwindcss(),
+      devApiPlugin(env),
+      VitePWA({
+        registerType: 'autoUpdate',
+        includeAssets: ['favicon.svg', 'pwa-icon.svg'],
+        manifest: {
+          name: 'Scripture Search — NIV Bible App',
+          short_name: 'Scripture',
+          description: 'Search NIV verses by subject, explore stories paired with Scripture, and compare lyrics to biblical themes.',
+          theme_color: '#1a2744',
+          background_color: '#f7f2e8',
+          display: 'standalone',
+          start_url: '/',
+          icons: [
+            {
+              src: '/pwa-icon.svg',
+              sizes: '512x512',
+              type: 'image/svg+xml',
+              purpose: 'any',
+            },
+            {
+              src: '/pwa-icon.svg',
+              sizes: '512x512',
+              type: 'image/svg+xml',
+              purpose: 'maskable',
+            },
+          ],
+        },
+        workbox: {
+          globPatterns: ['**/*.{js,css,html,ico,svg,woff2}'],
+          navigateFallback: '/index.html',
+        },
+      }),
+    ],
   }
 })

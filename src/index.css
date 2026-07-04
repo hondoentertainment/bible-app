@@ -180,3 +180,50 @@ body {
 .safe-bottom {
   padding-bottom: env(safe-area-inset-bottom, 0);
 }
+
+.safe-top {
+  padding-top: env(safe-area-inset-top, 0);
+}
+
+/* ── Sticky header ── */
+.site-header {
+  transition: box-shadow 0.3s var(--ease-out-expo);
+}
+
+.site-header__compact {
+  animation: fade-in 0.25s var(--ease-out-expo) both;
+}
+
+/* ── Skip link ── */
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: 1rem;
+  z-index: 200;
+  transform: translateY(-200%);
+  border-radius: 0.5rem;
+  background: var(--color-navy);
+  color: white;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.2s var(--ease-out-expo);
+}
+.skip-link:focus {
+  transform: translateY(0);
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+}
+
+/* ── Touch ── */
+button,
+a,
+[role="button"],
+[role="tab"] {
+  touch-action: manipulation;
+}
+
+kbd {
+  font-family: var(--font-sans);
+}

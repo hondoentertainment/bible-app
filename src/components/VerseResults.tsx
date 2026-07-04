@@ -69,6 +69,14 @@ export function VerseResults({
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-8">
+      <div className="sr-only" aria-live="polite" aria-atomic="true">
+        {verses.length > 0
+          ? `${verses.length} verse${verses.length === 1 ? '' : 's'} found for ${query}`
+          : !apiUnavailable
+            ? `No verses found for ${query}`
+            : ''}
+      </div>
+
       {matchedTopics.length > 0 && (
         <section className="animate-fade-in-up" aria-label="Matched topics">
           <h2 className="mb-3 text-sm font-semibold tracking-wide text-ink-muted uppercase">

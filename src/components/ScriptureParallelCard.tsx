@@ -1,4 +1,5 @@
 import type { LoadedParallel } from '../types/media'
+import { VerseActions } from './VerseActions'
 
 interface ScriptureParallelCardProps {
   parallel: LoadedParallel
@@ -41,7 +42,10 @@ export function ScriptureParallelCard({ parallel, index, mediaTitle }: Scripture
                   key={verse.id}
                   className="rounded-xl border border-parchment-dark/80 bg-white p-4"
                 >
-                  <p className="font-display text-sm font-semibold text-navy">{verse.reference}</p>
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="font-display text-sm font-semibold text-navy">{verse.reference}</p>
+                    <VerseActions verse={verse} compact />
+                  </div>
                   <p className="mt-2 text-sm leading-relaxed text-ink">{verse.text}</p>
                 </div>
               ))}

@@ -4,6 +4,7 @@ import type { AppMode } from '../types/media'
 interface AppNavProps {
   mode: AppMode
   onModeChange: (mode: AppMode) => void
+  compact?: boolean
 }
 
 const TABS: Array<{ id: AppMode; label: string; shortLabel: string; icon: ReactNode }> = [
@@ -39,10 +40,12 @@ const TABS: Array<{ id: AppMode; label: string; shortLabel: string; icon: ReactN
   },
 ]
 
-export function AppNav({ mode, onModeChange }: AppNavProps) {
+export function AppNav({ mode, onModeChange, compact = false }: AppNavProps) {
   return (
     <nav
-      className="inline-flex max-w-full overflow-x-auto rounded-full border border-parchment-dark bg-white p-1 shadow-sm"
+      className={`inline-flex max-w-full overflow-x-auto rounded-full border border-parchment-dark bg-white shadow-sm ${
+        compact ? 'p-0.5' : 'p-1'
+      }`}
       aria-label="App sections"
     >
       {TABS.map((tab) => (
@@ -53,6 +56,7 @@ export function AppNav({ mode, onModeChange }: AppNavProps) {
           label={tab.label}
           shortLabel={tab.shortLabel}
           icon={tab.icon}
+          compact={compact}
         />
       ))}
     </nav>
@@ -65,27 +69,37 @@ function NavTab({
   label,
   shortLabel,
   icon,
+  compact = false,
 }: {
   active: boolean
   onClick: () => void
   label: string
   shortLabel: string
   icon: ReactNode
+  compact?: boolean
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
       aria-current={active ? 'page' : undefined}
-      className={`flex shrink-0 items-center gap-2 rounded-full px-3.5 py-2.5 text-sm font-semibold transition-all duration-300 sm:px-5 ${
+      className={`flex shrink-0 items-center gap-1.5 rounded-full font-semibold transition-all duration-300 touch-manipulation active:scale-95 ${
+        compact ? 'px-2.5 py-1.5 text-xs sm:px-3' : 'gap-2 px-3.5 py-2.5 text-sm sm:px-5'
+      } ${
         active
           ? 'bg-navy text-white shadow-md'
           : 'text-ink-muted hover:bg-parchment/60 hover:text-navy'
       }`}
     >
       <span className={active ? 'text-gold-light' : 'text-ink-muted/70'}>{icon}</span>
-      <span className="hidden sm:inline">{label}</span>
-      <span className="sm:hidden">{shortLabel}</span>
+      {compact ? (
+        <span className="sr-only">{label}</span>
+      ) : (
+        <>
+          <span className="hidden sm:inline">{label}</span>
+          <span className="sm:hidden">{shortLabel}</span>
+        </>
+      )}
     </button>
   )
 }
