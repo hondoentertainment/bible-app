@@ -5,6 +5,7 @@ import type { LoadedMediaComparison, MediaComparison } from '../types/media'
 import { hapticLight } from '../utils/haptics'
 import { copyMediaComparison, shareMediaComparison } from '../utils/mediaShare'
 import { useToast } from '../hooks/useToast'
+import { scrollToElementId, scrollToTop } from '../utils/scroll'
 import { addRecentStory } from '../hooks/useRecentMedia'
 import { ScriptureParallelCard } from './ScriptureParallelCard'
 
@@ -48,6 +49,10 @@ export function MediaComparisonView({ comparison, onBack, onExploreTheme }: Medi
     }
   }, [comparison])
 
+  useEffect(() => {
+    scrollToTop(true)
+  }, [comparison.id])
+
   const themes = useMemo(
     () => [...new Set(comparison.parallels.map((p) => p.theme))],
     [comparison.parallels],
@@ -63,7 +68,7 @@ export function MediaComparisonView({ comparison, onBack, onExploreTheme }: Medi
   const typeLabel = MEDIA_TYPE_LABELS[comparison.type]
 
   function scrollToParallel(id: string) {
-    document.getElementById(`parallel-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    scrollToElementId(`parallel-${id}`)
   }
 
   async function handleCopyAll() {
@@ -251,7 +256,7 @@ export function MediaComparisonView({ comparison, onBack, onExploreTheme }: Medi
               <p className="mb-2 text-xs font-semibold tracking-wide text-ink-muted uppercase">
                 Jump to parallel
               </p>
-              <div className="flex gap-2 overflow-x-auto pb-1">
+              <div className="jump-nav-scroll flex gap-2 pb-1">
                 {visibleParallels.map((parallel, i) => (
                   <button
                     key={parallel.id}

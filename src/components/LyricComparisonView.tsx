@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { CompareOptions, LyricsComparisonResult } from '../types/lyrics'
 import { DEFAULT_COMPARE_OPTIONS } from '../types/lyrics'
 import { hapticLight } from '../utils/haptics'
 import { copyComparison, shareComparison } from '../utils/lyricsShare'
 import { useToast } from '../hooks/useToast'
+import { scrollToElementId, scrollToTop } from '../utils/scroll'
 import { CompareOptionsPanel } from './CompareOptionsPanel'
 import { LyricParallelCard } from './LyricParallelCard'
 
@@ -36,8 +37,12 @@ export function LyricComparisonView({
     [parallels, activeTheme],
   )
 
+  useEffect(() => {
+    scrollToTop(true)
+  }, [track.id, track.name, track.artist])
+
   function scrollToParallel(id: string) {
-    document.getElementById(`parallel-${id}`)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    scrollToElementId(`parallel-${id}`)
   }
 
   async function handleCopyAll() {
@@ -254,7 +259,7 @@ export function LyricComparisonView({
           <p className="mb-2 text-xs font-semibold tracking-wide text-ink-muted uppercase">
             Jump to parallel
           </p>
-          <div className="flex gap-2 overflow-x-auto pb-1">
+          <div className="jump-nav-scroll flex gap-2 pb-1">
             {visibleParallels.map((parallel, i) => (
               <button
                 key={parallel.id}
@@ -271,15 +276,17 @@ export function LyricComparisonView({
 
       {lyrics && !lyricsUnavailable && (
         <details
-          className="mb-6 overflow-hidden rounded-xl border border-parchment-dark bg-white"
+          className="mb-6 rounded-xl border border-parchment-dark bg-white"
           open={lyricsOpen}
           onToggle={(e) => setLyricsOpen((e.target as HTMLDetailsElement).open)}
         >
-          <summary className="cursor-pointer px-5 py-3 text-sm font-semibold text-navy transition hover:bg-parchment/40">
+          <summary className="cursor-pointer rounded-xl px-5 py-3 text-sm font-semibold text-navy transition hover:bg-parchment/40">
             View full lyrics
           </summary>
           <div className="border-t border-parchment-dark bg-gradient-to-br from-[#1DB954]/[0.04] to-white px-5 py-4">
-            <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-ink">{lyrics}</pre>
+            <div className="lyrics-scroll">
+              <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed text-ink">{lyrics}</pre>
+            </div>
           </div>
         </details>
       )}

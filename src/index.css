@@ -22,15 +22,18 @@ html {
 body {
   margin: 0;
   min-height: 100vh;
+  min-height: 100dvh;
   font-family: var(--font-sans);
   color: var(--color-ink);
   background: var(--color-parchment);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-y: auto;
 }
 
 #root {
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 ::selection {
@@ -226,4 +229,23 @@ a,
 
 kbd {
   font-family: var(--font-sans);
+}
+
+/* ── Scroll targets & panels ── */
+.scroll-target {
+  scroll-margin-top: 6.5rem;
+}
+
+.lyrics-scroll {
+  max-height: min(50vh, 24rem);
+  overflow-y: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.jump-nav-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
 }

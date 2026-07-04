@@ -37,7 +37,7 @@ export function ScriptureParallelCard({
   return (
     <article
       id={`parallel-${parallel.id}`}
-      className="overflow-hidden rounded-2xl border border-parchment-dark bg-white shadow-sm transition-shadow duration-300 hover:shadow-md"
+      className="scroll-target overflow-hidden rounded-2xl border border-parchment-dark bg-white shadow-sm transition-shadow duration-300 hover:shadow-md"
     >
       <div className="flex items-center justify-between border-b border-parchment-dark bg-gradient-to-r from-parchment/80 via-white to-gold/10 px-5 py-3">
         <span className="text-xs font-semibold tracking-[0.15em] text-gold uppercase">
