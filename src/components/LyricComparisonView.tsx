@@ -4,8 +4,11 @@ import { DEFAULT_COMPARE_OPTIONS } from '../types/lyrics'
 import { hapticLight } from '../utils/haptics'
 import { copyComparison, shareComparison } from '../utils/lyricsShare'
 import { useToast } from '../hooks/useToast'
-import { scrollToElementId, scrollToTop } from '../utils/scroll'
+import { scrollToTop } from '../utils/scroll'
 import { CompareOptionsPanel } from './CompareOptionsPanel'
+import { ComparisonJumpNav } from './ComparisonJumpNav'
+import { ComparisonThemeFilter } from './ComparisonThemeFilter'
+import { ComparisonToolbar } from './ComparisonToolbar'
 import { LyricParallelCard } from './LyricParallelCard'
 
 interface LyricComparisonViewProps {
@@ -31,6 +34,7 @@ export function LyricComparisonView({
   const [activeTheme, setActiveTheme] = useState<string | null>(null)
 
   const lyricLines = lyrics.split(/\n/).filter((l) => l.trim()).length
+  const themes = useMemo(() => matchedTopics.map((t) => t.topicName), [matchedTopics])
 
   const visibleParallels = useMemo(
     () => (activeTheme ? parallels.filter((p) => p.theme === activeTheme) : parallels),
@@ -40,10 +44,6 @@ export function LyricComparisonView({
   useEffect(() => {
     scrollToTop(true)
   }, [track.id, track.name, track.artist])
-
-  function scrollToParallel(id: string) {
-    scrollToElementId(`parallel-${id}`)
-  }
 
   async function handleCopyAll() {
     await copyComparison(result)
@@ -63,36 +63,13 @@ export function LyricComparisonView({
 
   return (
     <div className="w-full animate-fade-in-up">
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <button type="button" onClick={onBack} className="back-link">
-          <span aria-hidden>←</span> Search another song
-        </button>
-        <div className="flex flex-wrap gap-2">
-          {onRecompare && (
-            <button
-              type="button"
-              onClick={onRecompare}
-              className="touch-manipulation rounded-lg border border-parchment-dark px-3 py-2 text-xs font-semibold text-navy transition hover:border-gold active:scale-95"
-            >
-              Re-run comparison
-            </button>
-          )}
-          <button
-            type="button"
-            onClick={handleCopyAll}
-            className="touch-manipulation rounded-lg border border-parchment-dark px-3 py-2 text-xs font-semibold text-ink-muted transition hover:border-gold hover:text-gold active:scale-95"
-          >
-            Copy all
-          </button>
-          <button
-            type="button"
-            onClick={handleShareAll}
-            className="touch-manipulation rounded-lg border border-parchment-dark px-3 py-2 text-xs font-semibold text-ink-muted transition hover:border-gold hover:text-gold active:scale-95"
-          >
-            Share
-          </button>
-        </div>
-      </div>
+      <ComparisonToolbar
+        backLabel="Search another song"
+        onBack={onBack}
+        onRecompare={onRecompare}
+        onCopy={handleCopyAll}
+        onShare={handleShareAll}
+      />
 
       <header className="mb-6 overflow-hidden rounded-2xl border border-parchment-dark bg-white shadow-sm">
         <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:p-6">
@@ -186,93 +163,15 @@ export function LyricComparisonView({
         </div>
       )}
 
-      {matchedTopics.length > 0 && (
-        <section className="mb-6" aria-label="Matched themes">
-          <div className="mb-3 flex items-center justify-between gap-2">
-            <h3 className="text-sm font-semibold tracking-wide text-ink-muted uppercase">
-              Themes in these lyrics
-            </h3>
-            {activeTheme && (
-              <button
-                type="button"
-                onClick={() => setActiveTheme(null)}
-                className="text-xs font-medium text-gold hover:underline"
-              >
-                Show all
-              </button>
-            )}
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              aria-pressed={activeTheme === null}
-              onClick={() => setActiveTheme(null)}
-              className={`touch-manipulation rounded-full border px-3.5 py-1.5 text-sm transition active:scale-95 ${
-                activeTheme === null
-                  ? 'border-navy bg-navy text-white'
-                  : 'border-parchment-dark bg-white text-ink-muted hover:border-gold'
-              }`}
-            >
-              All
-            </button>
-            {matchedTopics.map((topic) => (
-              <button
-                key={topic.topicId}
-                type="button"
-                aria-pressed={activeTheme === topic.topicName}
-                title={topic.description}
-                onClick={() =>
-                  setActiveTheme(activeTheme === topic.topicName ? null : topic.topicName)
-                }
-                className={`touch-manipulation rounded-full border px-3.5 py-1.5 text-sm transition active:scale-95 ${
-                  activeTheme === topic.topicName
-                    ? 'border-gold bg-gold text-white'
-                    : 'border-navy/10 bg-navy/5 text-navy hover:border-gold/40'
-                }`}
-              >
-                {topic.topicName}
-              </button>
-            ))}
-          </div>
-          {onExploreTheme && matchedTopics.length > 0 && (
-            <p className="mt-3 text-xs text-ink-muted">
-              Want more verses on a theme?{' '}
-              {matchedTopics.slice(0, 3).map((topic, i) => (
-                <span key={topic.topicId}>
-                  {i > 0 && ', '}
-                  <button
-                    type="button"
-                    onClick={() => onExploreTheme(topic.topicName)}
-                    className="font-semibold text-gold hover:underline"
-                  >
-                    Explore {topic.topicName}
-                  </button>
-                </span>
-              ))}
-            </p>
-          )}
-        </section>
-      )}
+      <ComparisonThemeFilter
+        themes={themes}
+        activeTheme={activeTheme}
+        onThemeChange={setActiveTheme}
+        label="Themes in these lyrics"
+        onExploreTheme={onExploreTheme}
+      />
 
-      {visibleParallels.length > 1 && (
-        <nav className="mb-6" aria-label="Jump to parallel">
-          <p className="mb-2 text-xs font-semibold tracking-wide text-ink-muted uppercase">
-            Jump to parallel
-          </p>
-          <div className="jump-nav-scroll flex gap-2 pb-1">
-            {visibleParallels.map((parallel, i) => (
-              <button
-                key={parallel.id}
-                type="button"
-                onClick={() => scrollToParallel(parallel.id)}
-                className="touch-manipulation shrink-0 rounded-full border border-parchment-dark bg-white px-3.5 py-1.5 text-sm font-medium text-navy transition hover:border-gold hover:text-gold active:scale-95"
-              >
-                {i + 1}. {parallel.theme}
-              </button>
-            ))}
-          </div>
-        </nav>
-      )}
+      <ComparisonJumpNav parallels={visibleParallels} />
 
       {lyrics && !lyricsUnavailable && (
         <details

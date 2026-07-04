@@ -298,6 +298,8 @@ export function searchTopics(query: string): Topic[] {
     let score = 0
 
     if (topic.name.toLowerCase().includes(normalized)) score += 10
+    else if (topic.name.toLowerCase().startsWith(normalized)) score += 8
+    else if (normalized.length >= 2 && topic.name.toLowerCase().split(/\s+/).some((w) => w.startsWith(normalized))) score += 7
     if (topic.id.includes(normalized)) score += 8
 
     for (const keyword of topic.keywords) {

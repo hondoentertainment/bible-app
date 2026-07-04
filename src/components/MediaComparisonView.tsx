@@ -1,12 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
+import { addRecentStory } from '../hooks/useRecentMedia'
 import { MEDIA_TYPE_LABELS } from '../data/media-comparisons'
 import { loadMediaComparison } from '../services/mediaCompare'
 import type { LoadedMediaComparison, MediaComparison } from '../types/media'
 import { hapticLight } from '../utils/haptics'
 import { copyMediaComparison, shareMediaComparison } from '../utils/mediaShare'
 import { useToast } from '../hooks/useToast'
-import { scrollToElementId, scrollToTop } from '../utils/scroll'
-import { addRecentStory } from '../hooks/useRecentMedia'
+import { scrollToTop } from '../utils/scroll'
+import { ComparisonJumpNav } from './ComparisonJumpNav'
+import { ComparisonThemeFilter } from './ComparisonThemeFilter'
+import { ComparisonToolbar } from './ComparisonToolbar'
 import { ScriptureParallelCard } from './ScriptureParallelCard'
 
 interface MediaComparisonViewProps {
@@ -67,10 +70,6 @@ export function MediaComparisonView({ comparison, onBack, onExploreTheme }: Medi
 
   const typeLabel = MEDIA_TYPE_LABELS[comparison.type]
 
-  function scrollToParallel(id: string) {
-    scrollToElementId(`parallel-${id}`)
-  }
-
   async function handleCopyAll() {
     if (!loaded) return
     await copyMediaComparison(loaded)
@@ -91,29 +90,13 @@ export function MediaComparisonView({ comparison, onBack, onExploreTheme }: Medi
 
   return (
     <div className="w-full animate-fade-in-up">
-      <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <button type="button" onClick={onBack} className="back-link">
-          <span aria-hidden>←</span> All stories
-        </button>
-        {loaded && (
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              onClick={handleCopyAll}
-              className="touch-manipulation rounded-lg border border-parchment-dark px-3 py-2 text-xs font-semibold text-ink-muted transition hover:border-gold hover:text-gold active:scale-95"
-            >
-              Copy all
-            </button>
-            <button
-              type="button"
-              onClick={handleShareAll}
-              className="touch-manipulation rounded-lg border border-parchment-dark px-3 py-2 text-xs font-semibold text-ink-muted transition hover:border-gold hover:text-gold active:scale-95"
-            >
-              Share
-            </button>
-          </div>
-        )}
-      </div>
+      <ComparisonToolbar
+        backLabel="All stories"
+        onBack={onBack}
+        onCopy={loaded ? handleCopyAll : undefined}
+        onShare={loaded ? handleShareAll : undefined}
+        showActions={Boolean(loaded)}
+      />
 
       <header className="mb-6 overflow-hidden rounded-2xl border border-parchment-dark bg-white shadow-sm">
         <div className="p-5 text-center sm:p-6 sm:text-left">
@@ -186,90 +169,15 @@ export function MediaComparisonView({ comparison, onBack, onExploreTheme }: Medi
             </aside>
           )}
 
-          {themes.length > 0 && (
-            <section className="mb-6" aria-label="Themes">
-              <div className="mb-3 flex items-center justify-between gap-2">
-                <h3 className="text-sm font-semibold tracking-wide text-ink-muted uppercase">
-                  Themes in this story
-                </h3>
-                {activeTheme && (
-                  <button
-                    type="button"
-                    onClick={() => setActiveTheme(null)}
-                    className="text-xs font-medium text-gold hover:underline"
-                  >
-                    Show all
-                  </button>
-                )}
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  aria-pressed={activeTheme === null}
-                  onClick={() => setActiveTheme(null)}
-                  className={`touch-manipulation rounded-full border px-3.5 py-1.5 text-sm transition active:scale-95 ${
-                    activeTheme === null
-                      ? 'border-navy bg-navy text-white'
-                      : 'border-parchment-dark bg-white text-ink-muted hover:border-gold'
-                  }`}
-                >
-                  All
-                </button>
-                {themes.map((theme) => (
-                  <button
-                    key={theme}
-                    type="button"
-                    aria-pressed={activeTheme === theme}
-                    onClick={() => setActiveTheme(activeTheme === theme ? null : theme)}
-                    className={`touch-manipulation rounded-full border px-3.5 py-1.5 text-sm transition active:scale-95 ${
-                      activeTheme === theme
-                        ? 'border-gold bg-gold text-white'
-                        : 'border-navy/10 bg-navy/5 text-navy hover:border-gold/40'
-                    }`}
-                  >
-                    {theme}
-                  </button>
-                ))}
-              </div>
-              {onExploreTheme && (
-                <p className="mt-3 text-xs text-ink-muted">
-                  Explore more verses:{' '}
-                  {themes.slice(0, 3).map((theme, i) => (
-                    <span key={theme}>
-                      {i > 0 && ', '}
-                      <button
-                        type="button"
-                        onClick={() => onExploreTheme(theme.split('&')[0].trim())}
-                        className="font-semibold text-gold hover:underline"
-                      >
-                        {theme}
-                      </button>
-                    </span>
-                  ))}
-                </p>
-              )}
-            </section>
-          )}
+          <ComparisonThemeFilter
+            themes={themes}
+            activeTheme={activeTheme}
+            onThemeChange={setActiveTheme}
+            label="Themes in this story"
+            onExploreTheme={onExploreTheme}
+          />
 
-          {visibleParallels.length > 1 && (
-            <nav className="mb-6" aria-label="Jump to parallel">
-              <p className="mb-2 text-xs font-semibold tracking-wide text-ink-muted uppercase">
-                Jump to parallel
-              </p>
-              <div className="jump-nav-scroll flex gap-2 pb-1">
-                {visibleParallels.map((parallel, i) => (
-                  <button
-                    key={parallel.id}
-                    type="button"
-                    onClick={() => scrollToParallel(parallel.id)}
-                    className="touch-manipulation shrink-0 rounded-full border border-parchment-dark bg-white px-3.5 py-1.5 text-sm font-medium text-navy transition hover:border-gold hover:text-gold active:scale-95"
-                  >
-                    {i + 1}. {parallel.theme}
-                  </button>
-                ))}
-              </div>
-            </nav>
-          )}
+          <ComparisonJumpNav parallels={visibleParallels} />
 
           <div className="stagger-children flex flex-col gap-6">
             {visibleParallels.map((parallel, i) => (

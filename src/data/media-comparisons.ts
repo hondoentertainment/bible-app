@@ -332,8 +332,8 @@ export const FEATURED_STORY_IDS = [
 ] as const
 
 export const STORIES_COMPARE_STEPS = [
-  { step: 1, label: 'Browse', detail: 'Explore books, songs, and films with curated parallels' },
-  { step: 2, label: 'Compare', detail: 'Read famous lines beside the NIV verses they echo' },
+  { step: 1, label: 'Search', detail: 'Find any book on Goodreads or film on Letterboxd' },
+  { step: 2, label: 'Compare', detail: 'Synopsis and summary themes matched to NIV passages' },
   { step: 3, label: 'Reflect', detail: 'Jump between themes, share, or explore subjects deeper' },
 ] as const
 
@@ -341,4 +341,31 @@ export function getFeaturedStories(): MediaComparison[] {
   return FEATURED_STORY_IDS.map((id) => getMediaComparison(id)).filter(
     (item): item is MediaComparison => item !== undefined,
   )
+}
+
+export function searchCuratedComparisons(
+  query: string,
+  type?: 'book' | 'movie' | 'song',
+): MediaComparison[] {
+  const trimmed = query.trim()
+  if (trimmed.length < 2) return []
+
+  const pool = type ? getComparisonsByType(type) : MEDIA_COMPARISONS
+
+  return pool
+    .map((item) => {
+      const label = `${item.title} ${item.creator ?? ''} ${item.summary}`
+      let score = 0
+      const q = trimmed.toLowerCase()
+      const title = item.title.toLowerCase()
+      if (title === q) score = 100
+      else if (title.startsWith(q)) score = 90
+      else if (title.includes(q)) score = 75
+      else if (item.creator?.toLowerCase().includes(q)) score = 60
+      else if (label.toLowerCase().includes(q)) score = 40
+      return { item, score }
+    })
+    .filter(({ score }) => score >= 40)
+    .sort((a, b) => b.score - a.score)
+    .map(({ item }) => item)
 }

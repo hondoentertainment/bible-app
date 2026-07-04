@@ -1,4 +1,5 @@
 import { TOPICS, searchTopics, type Topic } from '../data/topics'
+import { extractCompareLines } from './textCompare'
 import { fetchPassages } from './bibleApi'
 import type { SpotifyTrackResult } from '../types/lyrics'
 import type { LyricScriptureParallel, LyricsComparisonResult, ManualTrackInput, CompareOptions } from '../types/lyrics'
@@ -122,7 +123,7 @@ export async function compareLyricsToScripture(
     ? trackInput as SpotifyTrackResult
     : toTrackResult(trackInput as ManualTrackInput)
 
-  const lines = lyrics.split(/\n/).map((l) => l.trim()).filter(Boolean)
+  const lines = extractCompareLines(lyrics, 'song')
 
   const topicScores = TOPICS.map((topic) => {
     const fullText = lyrics.toLowerCase()

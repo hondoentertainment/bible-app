@@ -5,6 +5,8 @@ import { VitePWA } from 'vite-plugin-pwa'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import { fetchLyrics } from './api/lib/lrcLib.ts'
 import { isSpotifyConfigured, searchSpotifyTracks } from './api/lib/spotify.ts'
+import { searchBooks, fetchBookDetails } from './api/lib/openLibrary.ts'
+import { isTmdbConfigured, searchMovies, getMovieDetails } from './api/lib/tmdb.ts'
 
 function jsonResponse(res: ServerResponse, status: number, body: unknown) {
   res.statusCode = status
@@ -84,6 +86,76 @@ function devApiPlugin(env: Record<string, string>) {
           jsonResponse(res, 200, lyrics)
         } catch {
           jsonResponse(res, 502, { error: 'Lyrics lookup failed' })
+        }
+      })
+
+      server.middlewares.use('/api/books/status', async (_req, res) => {
+        jsonResponse(res, 200, { configured: true })
+      })
+
+      server.middlewares.use('/api/books/search', async (req, res) => {
+        const q = await readQueryParam(req.url ?? '', 'q')
+        if (!q) return jsonResponse(res, 400, { error: 'Query parameter q is required' })
+
+        try {
+          const books = await searchBooks(q)
+          jsonResponse(res, 200, { books, configured: true })
+        } catch {
+          jsonResponse(res, 502, { error: 'Book search failed' })
+        }
+      })
+
+      server.middlewares.use('/api/books/details', async (req, res) => {
+        const id = await readQueryParam(req.url ?? '', 'id')
+        if (!id) return jsonResponse(res, 400, { error: 'Query parameter id is required' })
+
+        try {
+          const details = await fetchBookDetails(id)
+          if (!details.description && !details.firstSentence && !details.title) {
+            return jsonResponse(res, 404, { error: 'Description not found', code: 'DESCRIPTION_NOT_FOUND' })
+          }
+          jsonResponse(res, 200, details)
+        } catch {
+          jsonResponse(res, 502, { error: 'Book details lookup failed' })
+        }
+      })
+
+      server.middlewares.use('/api/movies/status', async (_req, res) => {
+        jsonResponse(res, 200, { configured: isTmdbConfigured() })
+      })
+
+      server.middlewares.use('/api/movies/search', async (req, res) => {
+        if (!isTmdbConfigured()) {
+          return jsonResponse(res, 503, { error: 'TMDB API not configured', code: 'TMDB_NOT_CONFIGURED' })
+        }
+
+        const q = await readQueryParam(req.url ?? '', 'q')
+        if (!q) return jsonResponse(res, 400, { error: 'Query parameter q is required' })
+
+        try {
+          const movies = await searchMovies(q)
+          jsonResponse(res, 200, { movies, configured: true })
+        } catch {
+          jsonResponse(res, 502, { error: 'Movie search failed' })
+        }
+      })
+
+      server.middlewares.use('/api/movies/details', async (req, res) => {
+        if (!isTmdbConfigured()) {
+          return jsonResponse(res, 503, { error: 'TMDB API not configured', code: 'TMDB_NOT_CONFIGURED' })
+        }
+
+        const id = await readQueryParam(req.url ?? '', 'id')
+        if (!id) return jsonResponse(res, 400, { error: 'Query parameter id is required' })
+
+        try {
+          const movie = await getMovieDetails(id)
+          if (!movie) {
+            return jsonResponse(res, 404, { error: 'Movie not found', code: 'MOVIE_NOT_FOUND' })
+          }
+          jsonResponse(res, 200, { movie })
+        } catch {
+          jsonResponse(res, 502, { error: 'Movie details lookup failed' })
         }
       })
     },

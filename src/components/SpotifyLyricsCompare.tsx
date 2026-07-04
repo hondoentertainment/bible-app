@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { useDebouncedValue } from '../hooks/useDebouncedValue'
 import { CompareOptionsPanel } from './CompareOptionsPanel'
 import { FEATURED_SONGS, LYRICS_COMPARE_STEPS } from '../data/featured-songs'
 import {
@@ -17,6 +18,7 @@ import {
 } from '../services/lyricsCompare'
 import type { LyricsComparisonResult } from '../types/lyrics'
 import { LyricComparisonView } from './LyricComparisonView'
+import { ApiStatusBanner } from './ApiStatusBanner'
 
 const COMPARE_STAGES = [
   'Fetching lyrics…',
@@ -25,6 +27,8 @@ const COMPARE_STAGES = [
 ] as const
 
 type InputMode = 'spotify' | 'manual'
+
+const MIN_PARTIAL_CHARS = 2
 
 interface SpotifyLyricsCompareProps {
   onExploreTheme?: (topicName: string) => void
@@ -46,6 +50,7 @@ export function SpotifyLyricsCompare({ onExploreTheme }: SpotifyLyricsComparePro
 
   const [manualArtist, setManualArtist] = useState('')
   const [manualTrack, setManualTrack] = useState('')
+  const debouncedQuery = useDebouncedValue(query, 400)
 
   useEffect(() => {
     fetch('/api/spotify/status')
@@ -75,9 +80,13 @@ export function SpotifyLyricsCompare({ onExploreTheme }: SpotifyLyricsComparePro
     }
   }, [comparing])
 
-  const runSpotifySearch = useCallback(async () => {
-    const q = query.trim()
-    if (!q) return
+  const runSpotifySearch = useCallback(async (searchQuery: string) => {
+    const q = searchQuery.trim()
+    if (q.length < MIN_PARTIAL_CHARS) {
+      setTracks([])
+      setSearchError(null)
+      return
+    }
 
     setSearching(true)
     setSearchError(null)
@@ -87,7 +96,7 @@ export function SpotifyLyricsCompare({ onExploreTheme }: SpotifyLyricsComparePro
     try {
       const found = await searchSpotify(q)
       setTracks(found)
-      if (found.length === 0) setSearchError('No tracks found on Spotify. Try manual entry below.')
+      if (found.length === 0) setSearchError('No tracks found. Try a partial song or artist name.')
     } catch (err) {
       if (err instanceof Error && err.message === 'SPOTIFY_NOT_CONFIGURED') {
         setSpotifyReady(false)
@@ -99,7 +108,17 @@ export function SpotifyLyricsCompare({ onExploreTheme }: SpotifyLyricsComparePro
     } finally {
       setSearching(false)
     }
-  }, [query])
+  }, [])
+
+  useEffect(() => {
+    if (inputMode !== 'spotify' || spotifyReady === false) return
+    if (debouncedQuery.trim().length >= MIN_PARTIAL_CHARS) {
+      runSpotifySearch(debouncedQuery)
+    } else {
+      setTracks([])
+      setSearchError(null)
+    }
+  }, [debouncedQuery, inputMode, spotifyReady, runSpotifySearch])
 
   function saveToRecent(artist: string, title: string) {
     setRecentSongs(addRecentSong({ artist, title }))
@@ -275,13 +294,21 @@ export function SpotifyLyricsCompare({ onExploreTheme }: SpotifyLyricsComparePro
         </div>
       </div>
 
+      {inputMode === 'spotify' && spotifyReady === false && (
+        <ApiStatusBanner
+          title="Spotify search not configured"
+          detail="Add SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET to server environment variables."
+          stillWorks="Manual song entry, featured songs, and LRCLIB lyrics lookup still work."
+        />
+      )}
+
       {inputMode === 'spotify' && spotifyReady !== false && (
         <div className="mx-auto mb-6 max-w-xl">
           <form
             className="block"
             onSubmit={(e) => {
               e.preventDefault()
-              runSpotifySearch()
+              runSpotifySearch(query)
             }}
           >
             <label htmlFor="spotify-search" className="mb-2 block text-sm font-medium text-navy">
@@ -304,14 +331,14 @@ export function SpotifyLyricsCompare({ onExploreTheme }: SpotifyLyricsComparePro
                   type="search"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Song or artist — e.g. Hallelujah Cohen"
+                  placeholder="Partial song or artist — e.g. Hallelujah or Cohen"
                   className="w-full rounded-xl border border-parchment-dark bg-white py-3 pr-4 pl-10 text-base text-ink focus:border-[#1DB954] focus:ring-2 focus:ring-[#1DB954]/20 focus:outline-none"
                   autoComplete="off"
                 />
               </div>
               <button
                 type="submit"
-                disabled={searching || comparing || !query.trim()}
+                disabled={searching || comparing || query.trim().length < MIN_PARTIAL_CHARS}
                 className="touch-manipulation flex min-h-[48px] shrink-0 items-center justify-center gap-2 rounded-xl bg-[#1DB954] px-5 text-sm font-semibold text-white transition hover:bg-[#1ed760] hover:shadow-md disabled:opacity-50 active:scale-95"
               >
                 {searching ? (
@@ -325,6 +352,10 @@ export function SpotifyLyricsCompare({ onExploreTheme }: SpotifyLyricsComparePro
               </button>
             </div>
           </form>
+
+          {query.trim().length > 0 && query.trim().length < MIN_PARTIAL_CHARS && (
+            <p className="mt-3 text-xs text-ink-muted">Type at least {MIN_PARTIAL_CHARS} characters to search.</p>
+          )}
 
           {searchError && (
             <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900" role="alert">

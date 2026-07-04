@@ -12,6 +12,14 @@ function normalize(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
 }
 
+function partialWordMatch(needle: string, haystack: string): boolean {
+  return (
+    needle.length >= 2 &&
+    (haystack.includes(needle) ||
+      haystack.split(' ').some((part) => part.startsWith(needle) || needle.startsWith(part)))
+  )
+}
+
 function isLikelyMatch(
   result: { artistName?: string; trackName?: string },
   artist: string,
@@ -23,16 +31,19 @@ function isLikelyMatch(
   const resultTrack = normalize(result.trackName ?? '')
 
   const artistMatch =
+    !artistNorm ||
     resultArtist.includes(artistNorm) ||
     artistNorm.includes(resultArtist) ||
-    artistNorm.split(' ').some((part) => part.length > 2 && resultArtist.includes(part))
+    artistNorm.split(' ').some((part) => partialWordMatch(part, resultArtist))
 
   const trackMatch =
+    !trackNorm ||
     resultTrack.includes(trackNorm) ||
     trackNorm.includes(resultTrack) ||
-    trackNorm.split(' ').some((part) => part.length > 2 && resultTrack.includes(part))
+    trackNorm.split(' ').some((part) => partialWordMatch(part, resultTrack))
 
-  return artistMatch && trackMatch
+  if (artistNorm && trackNorm) return artistMatch && trackMatch
+  return artistMatch || trackMatch
 }
 
 export async function fetchLyrics(artist: string, track: string): Promise<LyricsResult | null> {
@@ -56,7 +67,7 @@ export async function fetchLyrics(artist: string, track: string): Promise<Lyrics
   }
 
   const search = await fetch(
-    `https://lrclib.net/api/search?q=${encodeURIComponent(`${artist} ${track}`)}`,
+    `https://lrclib.net/api/search?q=${encodeURIComponent(`${artist} ${track}`.trim())}`,
     { headers: LRCLIB_HEADERS },
   )
   if (!search.ok) return null
@@ -70,6 +81,12 @@ export async function fetchLyrics(artist: string, track: string): Promise<Lyrics
 
   const match =
     results.find((r) => r.plainLyrics && isLikelyMatch(r, artist, track)) ??
+    results.find(
+      (r) =>
+        r.plainLyrics &&
+        (partialWordMatch(normalize(track), normalize(r.trackName ?? '')) ||
+          partialWordMatch(normalize(artist), normalize(r.artistName ?? ''))),
+    ) ??
     results.find((r) => r.plainLyrics)
 
   if (!match?.plainLyrics) return null

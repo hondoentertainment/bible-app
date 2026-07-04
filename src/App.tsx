@@ -9,6 +9,7 @@ import { SubjectGrid } from './components/SubjectGrid'
 import { VerseResults } from './components/VerseResults'
 import { addRecentSearch, getRecentSearches } from './hooks/useRecentSearches'
 import { searchBySubject } from './services/bibleApi'
+import { readAppUrlState, writeAppUrlState } from './utils/urlState'
 import type { SearchResult } from './types'
 import type { AppMode } from './types/media'
 
@@ -49,8 +50,11 @@ function isEditableTarget(target: EventTarget | null): boolean {
 }
 
 export default function App() {
-  const [mode, setMode] = useState<AppMode>('subjects')
-  const [query, setQuery] = useState('')
+  const initialUrlRef = useRef(readAppUrlState())
+  const [mode, setMode] = useState<AppMode>(initialUrlRef.current.mode)
+  const [query, setQuery] = useState(
+    initialUrlRef.current.mode === 'subjects' ? initialUrlRef.current.q : '',
+  )
   const [activeQuery, setActiveQuery] = useState('')
   const [result, setResult] = useState<SearchResult>(emptyResult)
   const [isSearching, setIsSearching] = useState(false)
@@ -60,6 +64,7 @@ export default function App() {
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
   const [recentSearches, setRecentSearches] = useState<string[]>(() => getRecentSearches())
   const mainRef = useRef<HTMLElement>(null)
+  const didInitUrlSearch = useRef(false)
 
   const runSearch = useCallback(async (searchQuery: string) => {
     const trimmed = searchQuery.trim()
@@ -120,6 +125,18 @@ export default function App() {
   }, [headerCompact, mode, scrollToTop])
 
   useEffect(() => {
+    const { q, mode: urlMode } = initialUrlRef.current
+    if (!didInitUrlSearch.current && q && urlMode === 'subjects') {
+      didInitUrlSearch.current = true
+      runSearch(q)
+    }
+  }, [runSearch])
+
+  useEffect(() => {
+    writeAppUrlState(mode, mode === 'subjects' && activeQuery ? activeQuery : undefined)
+  }, [mode, activeQuery])
+
+  useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
     mainRef.current?.focus({ preventScroll: true })
   }, [mode, activeQuery])
@@ -161,7 +178,7 @@ export default function App() {
   const pageDescription = isSubjects
     ? 'Find Bible verses by the subjects that matter to you — love, hope, forgiveness, and more.'
     : isStories
-      ? 'Discover how famous stories, songs, and films echo timeless biblical themes — line by line.'
+      ? 'Discover curated stories or search Goodreads & Letterboxd to compare any book or film with Scripture.'
       : 'Search any song on Spotify and compare its lyrics to NIV verses on matching themes.'
 
   const compactTitle = isSubjects ? 'Subjects' : isStories ? 'Stories' : 'Lyrics'

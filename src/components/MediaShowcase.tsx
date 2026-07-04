@@ -14,6 +14,7 @@ import {
 } from '../hooks/useRecentMedia'
 import type { MediaComparison, MediaType } from '../types/media'
 import { MediaComparisonView } from './MediaComparisonView'
+import { ExternalMediaSearch } from './ExternalMediaSearch'
 
 interface MediaShowcaseProps {
   onSelect?: (comparison: MediaComparison) => void
@@ -74,7 +75,7 @@ export function MediaShowcase({ onSelect, onExploreTheme }: MediaShowcaseProps) 
           Stories &amp; Scripture
         </h2>
         <p className="mx-auto mt-2 max-w-xl text-ink-muted">
-          Famous lines from books, songs, and films — paired side-by-side with the NIV verses they echo.
+          Famous lines from books, songs, and films — or search Goodreads &amp; Letterboxd to compare any title with Scripture.
         </p>
       </div>
 
@@ -93,9 +94,16 @@ export function MediaShowcase({ onSelect, onExploreTheme }: MediaShowcaseProps) 
         ))}
       </ol>
 
+      {(filter === 'all' || filter === 'book') && (
+        <ExternalMediaSearch type="book" onExploreTheme={onExploreTheme} onSelectCurated={handleSelect} />
+      )}
+      {(filter === 'all' || filter === 'movie') && (
+        <ExternalMediaSearch type="movie" onExploreTheme={onExploreTheme} onSelectCurated={handleSelect} />
+      )}
+
       <div className="mb-6">
         <p className="mb-2 text-center text-xs font-semibold tracking-wide text-ink-muted uppercase">
-          Popular stories — tap to open
+          Curated stories — tap to open
         </p>
         <div className="flex flex-wrap justify-center gap-2">
           {featuredStories.map((item) => (
