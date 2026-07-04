@@ -17,7 +17,9 @@ import {
   searchSpotify,
 } from '../services/lyricsCompare'
 import type { LyricsComparisonResult } from '../types/lyrics'
+import { CompareStageIcon } from './CompareStageIcon'
 import { LyricComparisonView } from './LyricComparisonView'
+import { ScripturePlaceholder } from './ScripturePlaceholder'
 import { ApiStatusBanner } from './ApiStatusBanner'
 
 const COMPARE_STAGES = [
@@ -517,9 +519,7 @@ export function SpotifyLyricsCompare({ onExploreTheme }: SpotifyLyricsComparePro
                 className="h-16 w-16 shrink-0 rounded-xl object-cover shadow-sm"
               />
             ) : (
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-xl bg-[#1DB954]/10 text-2xl text-[#1DB954]">
-                ♪
-              </div>
+              <ScripturePlaceholder kind="song" size="md" className="h-16 w-16" />
             )}
             <div className="min-w-0">
               <p className="truncate font-semibold text-navy">{comparingTrack.name}</p>
@@ -534,15 +534,10 @@ export function SpotifyLyricsCompare({ onExploreTheme }: SpotifyLyricsComparePro
                   i <= compareStage ? 'text-navy opacity-100' : 'text-ink-muted/40 opacity-60'
                 }`}
               >
-                {i < compareStage ? (
-                  <svg className="h-4 w-4 shrink-0 text-[#1DB954]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                ) : i === compareStage ? (
-                  <span className="spinner shrink-0 text-gold" style={{ width: '1rem', height: '1rem' }} aria-hidden />
-                ) : (
-                  <span className="h-4 w-4 shrink-0 rounded-full border border-parchment-dark" aria-hidden />
-                )}
+                <CompareStageIcon
+                  status={i < compareStage ? 'done' : i === compareStage ? 'active' : 'pending'}
+                  accentClass={i < compareStage ? 'text-[#1DB954]' : 'text-gold'}
+                />
                 {label}
               </div>
             ))}
@@ -615,9 +610,7 @@ function TrackResult({
           className="ml-1 h-12 w-12 shrink-0 rounded-lg object-cover"
         />
       ) : (
-        <div className="ml-1 flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-parchment text-xs text-ink-muted">
-          ♪
-        </div>
+        <ScripturePlaceholder kind="song" size="md" className="ml-1 h-12 w-12" />
       )}
       <div className="min-w-0 flex-1 py-1">
         <p className="truncate font-semibold text-navy">{track.name}</p>

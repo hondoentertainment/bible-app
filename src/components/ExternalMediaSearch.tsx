@@ -21,6 +21,8 @@ import type {
 } from '../types/externalMedia'
 import { DynamicMediaComparisonView } from './DynamicMediaComparisonView'
 import { ApiStatusBanner } from './ApiStatusBanner'
+import { CompareStageIcon } from './CompareStageIcon'
+import { ScripturePlaceholder } from './ScripturePlaceholder'
 
 const COMPARE_STAGES = {
   book: ['Fetching summary…', 'Analyzing themes…', 'Matching NIV passages…'],
@@ -188,11 +190,10 @@ export function ExternalMediaSearch({ type, onExploreTheme, onSelectCurated }: E
     <div className="mb-8 rounded-2xl border border-parchment-dark bg-white p-5 shadow-sm sm:p-6">
       <div className="mb-4 flex items-center gap-3">
         <span
-          className="flex h-9 w-9 items-center justify-center rounded-full text-lg"
+          className="flex h-9 w-9 items-center justify-center rounded-full"
           style={{ backgroundColor: `${brand.color}18`, color: brand.color }}
-          aria-hidden
         >
-          {isBook ? '📚' : '🎬'}
+          <ScripturePlaceholder kind={isBook ? 'book' : 'movie'} size="xs" />
         </span>
         <div>
           <h3 className="font-display text-lg font-semibold text-navy">
@@ -384,7 +385,9 @@ export function ExternalMediaSearch({ type, onExploreTheme, onSelectCurated }: E
                   i <= compareStage ? 'text-navy' : 'text-ink-muted/50'
                 }`}
               >
-                {i < compareStage ? '✓' : i === compareStage ? <span className="spinner shrink-0 text-gold" style={{ width: '1rem', height: '1rem' }} /> : '○'}
+                <CompareStageIcon
+                  status={i < compareStage ? 'done' : i === compareStage ? 'active' : 'pending'}
+                />
                 {label}
               </div>
             ))}
@@ -409,7 +412,7 @@ function BookResultRow({
       {book.coverUrl ? (
         <img src={book.coverUrl} alt="" className="h-14 w-10 shrink-0 rounded object-cover" />
       ) : (
-        <div className="flex h-14 w-10 shrink-0 items-center justify-center rounded bg-parchment text-xs">📖</div>
+        <ScripturePlaceholder kind="book" size="sm" className="h-14 w-10" />
       )}
       <div className="min-w-0 flex-1">
         <p className="truncate font-semibold text-navy">{book.title}</p>
@@ -456,7 +459,7 @@ function MovieResultRow({
       {movie.posterUrl ? (
         <img src={movie.posterUrl} alt="" className="h-14 w-10 shrink-0 rounded object-cover" />
       ) : (
-        <div className="flex h-14 w-10 shrink-0 items-center justify-center rounded bg-parchment text-xs">🎬</div>
+        <ScripturePlaceholder kind="movie" size="sm" className="h-14 w-10" />
       )}
       <div className="min-w-0 flex-1">
         <p className="truncate font-semibold text-navy">{movie.title}</p>

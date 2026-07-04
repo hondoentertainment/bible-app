@@ -10,6 +10,7 @@ import { ComparisonJumpNav } from './ComparisonJumpNav'
 import { ComparisonThemeFilter } from './ComparisonThemeFilter'
 import { ComparisonToolbar } from './ComparisonToolbar'
 import { LyricParallelCard } from './LyricParallelCard'
+import { ScripturePlaceholder } from './ScripturePlaceholder'
 
 interface LyricComparisonViewProps {
   result: LyricsComparisonResult
@@ -80,9 +81,7 @@ export function LyricComparisonView({
               className="mx-auto h-28 w-28 shrink-0 rounded-xl object-cover shadow-md sm:mx-0"
             />
           ) : (
-            <div className="mx-auto flex h-28 w-28 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#1DB954]/15 to-gold/10 text-4xl sm:mx-0">
-              ♪
-            </div>
+            <ScripturePlaceholder kind="song" size="lg" className="mx-auto h-28 w-28 sm:mx-0" />
           )}
           <div className="flex-1 text-center sm:text-left">
             <span className="inline-block rounded-full border border-[#1DB954]/40 bg-[#1DB954]/10 px-3 py-1 text-xs font-semibold text-[#1a7a3a] uppercase">

@@ -8,6 +8,7 @@ import { ComparisonJumpNav } from './ComparisonJumpNav'
 import { ComparisonThemeFilter } from './ComparisonThemeFilter'
 import { ComparisonToolbar } from './ComparisonToolbar'
 import { ScriptureParallelCard } from './ScriptureParallelCard'
+import { ScripturePlaceholder } from './ScripturePlaceholder'
 
 interface DynamicMediaComparisonViewProps {
   result: ExternalMediaComparisonResult
@@ -81,9 +82,11 @@ export function DynamicMediaComparisonView({
               className="mx-auto h-36 w-auto max-w-[120px] shrink-0 rounded-xl object-cover shadow-md sm:mx-0"
             />
           ) : (
-            <div className="mx-auto flex h-36 w-24 shrink-0 items-center justify-center rounded-xl bg-parchment text-3xl sm:mx-0">
-              {result.type === 'book' ? '📖' : '🎬'}
-            </div>
+            <ScripturePlaceholder
+              kind={result.type === 'book' ? 'book' : 'movie'}
+              size="lg"
+              className="mx-auto h-36 w-24 sm:mx-0"
+            />
           )}
           <div className="min-w-0 flex-1 text-center sm:text-left">
             <span
