@@ -221,7 +221,74 @@ export const TOPICS: Topic[] = [
   },
 ]
 
-export const FEATURED_TOPICS = TOPICS.slice(0, 12)
+export interface TopicCategory {
+  id: string
+  name: string
+  description: string
+  topicIds: string[]
+}
+
+export const TOPIC_CATEGORIES: TopicCategory[] = [
+  {
+    id: 'foundations',
+    name: 'Foundations',
+    description: 'Core truths of the Christian faith',
+    topicIds: ['love', 'faith', 'hope', 'peace', 'joy', 'grace', 'salvation', 'prayer'],
+  },
+  {
+    id: 'character',
+    name: 'Character',
+    description: 'Virtues that shape a Christlike life',
+    topicIds: [
+      'forgiveness',
+      'wisdom',
+      'patience',
+      'obedience',
+      'humility',
+      'kindness',
+      'mercy',
+      'justice',
+      'thanksgiving',
+      'identity',
+    ],
+  },
+  {
+    id: 'struggles',
+    name: 'Struggles',
+    description: 'Scripture for hard seasons and emotions',
+    topicIds: [
+      'anxiety',
+      'strength',
+      'healing',
+      'grief',
+      'loneliness',
+      'anger',
+      'temptation',
+      'guidance',
+    ],
+  },
+  {
+    id: 'life',
+    name: 'Daily Life',
+    description: 'God\'s word for relationships and calling',
+    topicIds: ['marriage', 'parenting', 'money', 'work'],
+  },
+]
+
+export const FEATURED_TOPICS = TOPICS.slice(0, 8)
+
+export function getTopicsByCategory(categoryId: string): Topic[] {
+  if (categoryId === 'all') return TOPICS
+  const category = TOPIC_CATEGORIES.find((c) => c.id === categoryId)
+  if (!category) return TOPICS
+  return category.topicIds
+    .map((id) => TOPICS.find((t) => t.id === id))
+    .filter((t): t is Topic => t !== undefined)
+}
+
+export function getCategoryForTopic(topicId: string): TopicCategory | undefined {
+  return TOPIC_CATEGORIES.find((c) => c.topicIds.includes(topicId))
+}
 
 export function searchTopics(query: string): Topic[] {
   const normalized = query.trim().toLowerCase()

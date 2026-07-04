@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 import { SearchBar } from './components/SearchBar'
-import { TopicChips } from './components/TopicChips'
+import { SubjectGrid } from './components/SubjectGrid'
 import { VerseResults } from './components/VerseResults'
 import { searchBySubject } from './services/bibleApi'
 import type { SearchResult } from './types'
@@ -64,25 +64,41 @@ export default function App() {
             onSearch={() => runSearch(query)}
             isSearching={isSearching}
           />
+        </div>
+      </header>
 
-          <TopicChips
+      <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+        {activeQuery ? (
+          <>
+            <button
+              type="button"
+              onClick={() => {
+                setQuery('')
+                setActiveQuery('')
+                setResult(emptyResult)
+                setError(null)
+              }}
+              className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-ink-muted transition hover:text-gold"
+            >
+              <span aria-hidden>←</span> Browse all subjects
+            </button>
+            <VerseResults
+              verses={result.verses}
+              matchedTopics={result.matchedTopics}
+              query={activeQuery}
+              apiUnavailable={result.apiUnavailable ?? false}
+              error={error}
+            />
+          </>
+        ) : (
+          <SubjectGrid
             activeQuery={activeQuery}
             onSelect={(topicName) => {
               setQuery(topicName)
               runSearch(topicName)
             }}
           />
-        </div>
-      </header>
-
-      <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
-        <VerseResults
-          verses={result.verses}
-          matchedTopics={result.matchedTopics}
-          query={activeQuery}
-          apiUnavailable={result.apiUnavailable ?? false}
-          error={error}
-        />
+        )}
       </main>
 
       <footer className="border-t border-parchment-dark/70 py-6 text-center text-xs text-ink-muted">
