@@ -11,7 +11,7 @@ export async function getSpotifyToken(): Promise<string | null> {
     return cachedToken.token
   }
 
-  const credentials = Buffer.from(`${clientId}:${clientSecret}`).toString('base64')
+  const credentials = btoa(`${clientId}:${clientSecret}`)
   const response = await fetch('https://accounts.spotify.com/api/token', {
     method: 'POST',
     headers: {

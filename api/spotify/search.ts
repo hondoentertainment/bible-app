@@ -1,4 +1,4 @@
-import { isSpotifyConfigured, searchSpotifyTracks } from '../lib/spotify'
+import { isSpotifyConfigured, searchSpotifyTracks } from '../lib/spotify.js'
 
 declare const process: { env: Record<string, string | undefined> }
 

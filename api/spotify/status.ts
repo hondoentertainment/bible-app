@@ -1,4 +1,4 @@
-import { isSpotifyConfigured } from '../lib/spotify'
+import { isSpotifyConfigured } from '../lib/spotify.js'
 
 interface VercelRequest {
   method?: string
