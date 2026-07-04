@@ -2,17 +2,34 @@ import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import type { IncomingMessage, ServerResponse } from 'node:http'
+import { fetchLyrics } from './api/lib/lrcLib.ts'
+import { isSpotifyConfigured, searchSpotifyTracks } from './api/lib/spotify.ts'
 
-function bibleApiProxy(apiKey: string | undefined) {
+function jsonResponse(res: ServerResponse, status: number, body: unknown) {
+  res.statusCode = status
+  res.setHeader('Content-Type', 'application/json')
+  res.end(JSON.stringify(body))
+}
+
+async function readQueryParam(url: string, key: string): Promise<string> {
+  const q = url.includes('?') ? url.slice(url.indexOf('?') + 1) : ''
+  return new URLSearchParams(q).get(key)?.trim() ?? ''
+}
+
+function devApiPlugin(env: Record<string, string>) {
+  Object.assign(process.env, env)
+
   return {
-    name: 'bible-api-proxy',
-    configureServer(server: { middlewares: { use: (path: string, handler: (req: IncomingMessage, res: ServerResponse, next: () => void) => void) => void } }) {
+    name: 'dev-api',
+    configureServer(server: {
+      middlewares: {
+        use: (path: string, handler: (req: IncomingMessage, res: ServerResponse, next: () => void) => void) => void
+      }
+    }) {
       server.middlewares.use('/api/bible', async (req, res, next) => {
+        const apiKey = env.BIBLE_API_KEY
         if (!apiKey) {
-          res.statusCode = 503
-          res.setHeader('Content-Type', 'application/json')
-          res.end(JSON.stringify({ error: 'Missing BIBLE_API_KEY in .env' }))
-          return
+          return jsonResponse(res, 503, { error: 'Missing BIBLE_API_KEY in .env' })
         }
 
         const path = req.url ?? '/'
@@ -20,18 +37,52 @@ function bibleApiProxy(apiKey: string | undefined) {
 
         try {
           const response = await fetch(url, {
-            headers: {
-              'api-key': apiKey,
-              Accept: 'application/json',
-            },
+            headers: { 'api-key': apiKey, Accept: 'application/json' },
           })
-
           const body = await response.text()
           res.statusCode = response.status
           res.setHeader('Content-Type', 'application/json')
           res.end(body)
         } catch {
           next()
+        }
+      })
+
+      server.middlewares.use('/api/spotify/status', async (_req, res) => {
+        jsonResponse(res, 200, { configured: isSpotifyConfigured() })
+      })
+
+      server.middlewares.use('/api/spotify/search', async (req, res) => {
+        if (!isSpotifyConfigured()) {
+          return jsonResponse(res, 503, { error: 'Spotify API not configured', code: 'SPOTIFY_NOT_CONFIGURED' })
+        }
+
+        const q = await readQueryParam(req.url ?? '', 'q')
+        if (!q) return jsonResponse(res, 400, { error: 'Query parameter q is required' })
+
+        try {
+          const tracks = await searchSpotifyTracks(q)
+          jsonResponse(res, 200, { tracks, configured: true })
+        } catch {
+          jsonResponse(res, 502, { error: 'Spotify search failed' })
+        }
+      })
+
+      server.middlewares.use('/api/lyrics', async (req, res) => {
+        const artist = await readQueryParam(req.url ?? '', 'artist')
+        const track = await readQueryParam(req.url ?? '', 'track')
+        if (!artist || !track) {
+          return jsonResponse(res, 400, { error: 'artist and track parameters are required' })
+        }
+
+        try {
+          const lyrics = await fetchLyrics(artist, track)
+          if (!lyrics) {
+            return jsonResponse(res, 404, { error: 'Lyrics not found', code: 'LYRICS_NOT_FOUND' })
+          }
+          jsonResponse(res, 200, lyrics)
+        } catch {
+          jsonResponse(res, 502, { error: 'Lyrics lookup failed' })
         }
       })
     },
@@ -41,6 +92,6 @@ function bibleApiProxy(apiKey: string | undefined) {
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   return {
-    plugins: [react(), tailwindcss(), bibleApiProxy(env.BIBLE_API_KEY)],
+    plugins: [react(), tailwindcss(), devApiPlugin(env)],
   }
 })
