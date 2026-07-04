@@ -19,7 +19,7 @@ async function bibleFetch<T>(path: string): Promise<T> {
   const response = await fetch(`${API_BASE}${path}`)
 
   if (response.status === 503) {
-    throw new Error('API_KEY_MISSING')
+    throw new Error('API_UNAVAILABLE')
   }
 
   if (!response.ok) {
@@ -28,10 +28,6 @@ async function bibleFetch<T>(path: string): Promise<T> {
   }
 
   return response.json() as Promise<T>
-}
-
-export function hasApiKeyConfigured(): boolean {
-  return Boolean(import.meta.env.VITE_BIBLE_API_KEY)
 }
 
 export async function fetchPassage(passageId: string): Promise<Verse> {
@@ -100,8 +96,9 @@ export async function searchBySubject(query: string): Promise<SearchResult> {
 
   let apiVerses: Verse[] = []
   let topicVerses: Verse[] = []
+  let apiUnavailable = false
 
-  if (hasApiKeyConfigured()) {
+  try {
     const [topicResults, apiResults] = await Promise.allSettled([
       fetchPassages(topicVerseIds.slice(0, 24)),
       searchBibleText(trimmed, 15),
@@ -109,6 +106,24 @@ export async function searchBySubject(query: string): Promise<SearchResult> {
 
     if (topicResults.status === 'fulfilled') topicVerses = topicResults.value
     if (apiResults.status === 'fulfilled') apiVerses = apiResults.value
+
+    const apiFailed =
+      (topicResults.status === 'rejected' &&
+        topicResults.reason instanceof Error &&
+        topicResults.reason.message === 'API_UNAVAILABLE') ||
+      (apiResults.status === 'rejected' &&
+        apiResults.reason instanceof Error &&
+        apiResults.reason.message === 'API_UNAVAILABLE')
+
+    if (apiFailed && topicVerses.length === 0 && apiVerses.length === 0) {
+      apiUnavailable = true
+    }
+  } catch (err) {
+    if (err instanceof Error && err.message === 'API_UNAVAILABLE') {
+      apiUnavailable = true
+    } else {
+      throw err
+    }
   }
 
   const seen = new Set<string>()
@@ -132,6 +147,7 @@ export async function searchBySubject(query: string): Promise<SearchResult> {
     matchedTopics: buildTopicMatches(matchedTopics),
     query: trimmed,
     source,
+    apiUnavailable,
   }
 }
 
@@ -141,15 +157,24 @@ export async function getTopicVerses(topicId: string): Promise<SearchResult> {
     return { verses: [], matchedTopics: [], query: topicId, source: 'topics' }
   }
 
-  let verses: Verse[] = []
-  if (hasApiKeyConfigured()) {
-    verses = await fetchPassages(topic.verseIds)
-  }
-
-  return {
-    verses,
-    matchedTopics: buildTopicMatches([topic]),
-    query: topic.name,
-    source: 'topics',
+  try {
+    const verses = await fetchPassages(topic.verseIds)
+    return {
+      verses,
+      matchedTopics: buildTopicMatches([topic]),
+      query: topic.name,
+      source: 'topics',
+    }
+  } catch (err) {
+    if (err instanceof Error && err.message === 'API_UNAVAILABLE') {
+      return {
+        verses: [],
+        matchedTopics: buildTopicMatches([topic]),
+        query: topic.name,
+        source: 'topics',
+        apiUnavailable: true,
+      }
+    }
+    throw err
   }
 }

@@ -15,10 +15,10 @@ interface VercelResponse {
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  const apiKey = process.env.VITE_BIBLE_API_KEY ?? process.env.BIBLE_API_KEY
+  const apiKey = process.env.BIBLE_API_KEY
 
   if (!apiKey) {
-    return res.status(503).json({ error: 'Missing Bible API key' })
+    return res.status(503).json({ error: 'Bible API key not configured on server' })
   }
 
   const pathParam = req.query.path

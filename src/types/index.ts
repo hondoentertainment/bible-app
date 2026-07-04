@@ -17,6 +17,7 @@ export interface SearchResult {
   matchedTopics: TopicMatch[]
   query: string
   source: 'topics' | 'api' | 'both'
+  apiUnavailable?: boolean
 }
 
 export interface BibleSearchResponse {

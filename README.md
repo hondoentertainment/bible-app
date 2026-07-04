@@ -19,7 +19,7 @@ Search the **New International Version (NIV)** by subject. Enter topics like *lo
 
 2. **Get a free API key** from [scripture.api.bible/signup](https://scripture.api.bible/signup)
 
-3. **Configure environment**
+3. **Configure environment** (server-side key only — never sent to the browser)
 
    ```bash
    copy .env.example .env
@@ -28,7 +28,7 @@ Search the **New International Version (NIV)** by subject. Enter topics like *lo
    Edit `.env` and set your key:
 
    ```
-   VITE_BIBLE_API_KEY=your_api_key_here
+   BIBLE_API_KEY=your_api_key_here
    ```
 
 4. **Start the dev server**
@@ -46,7 +46,7 @@ Search the **New International Version (NIV)** by subject. Enter topics like *lo
 3. A parallel **NIV full-text search** runs through API.Bible
 4. Results are merged and deduplicated
 
-Without an API key, you'll still see matched topics and passage references, but verse text requires the key.
+Without a server API key, you'll still see matched topics and passage references, but verse text requires the key.
 
 ## Scripts
 

@@ -11,7 +11,7 @@ function bibleApiProxy(apiKey: string | undefined) {
         if (!apiKey) {
           res.statusCode = 503
           res.setHeader('Content-Type', 'application/json')
-          res.end(JSON.stringify({ error: 'Missing VITE_BIBLE_API_KEY in .env' }))
+          res.end(JSON.stringify({ error: 'Missing BIBLE_API_KEY in .env' }))
           return
         }
 
@@ -41,6 +41,6 @@ function bibleApiProxy(apiKey: string | undefined) {
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   return {
-    plugins: [react(), tailwindcss(), bibleApiProxy(env.VITE_BIBLE_API_KEY)],
+    plugins: [react(), tailwindcss(), bibleApiProxy(env.BIBLE_API_KEY)],
   }
 })

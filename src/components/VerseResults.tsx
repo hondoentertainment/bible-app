@@ -5,11 +5,11 @@ interface VerseResultsProps {
   verses: Verse[]
   matchedTopics: TopicMatch[]
   query: string
-  apiKeyMissing: boolean
+  apiUnavailable: boolean
   error?: string | null
 }
 
-export function VerseResults({ verses, matchedTopics, query, apiKeyMissing, error }: VerseResultsProps) {
+export function VerseResults({ verses, matchedTopics, query, apiUnavailable, error }: VerseResultsProps) {
   if (error) {
     return (
       <div className="mx-auto max-w-2xl rounded-2xl border border-red-200 bg-red-50 p-6 text-center text-red-800">
@@ -48,21 +48,11 @@ export function VerseResults({ verses, matchedTopics, query, apiKeyMissing, erro
         </section>
       )}
 
-      {apiKeyMissing && (
+      {apiUnavailable && (
         <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-amber-950">
-          <p className="font-semibold">Add your API.Bible key to load NIV text</p>
+          <p className="font-semibold">Verse text temporarily unavailable</p>
           <p className="mt-2 text-sm leading-relaxed">
-            Copy <code className="rounded bg-white px-1.5 py-0.5">.env.example</code> to{' '}
-            <code className="rounded bg-white px-1.5 py-0.5">.env</code>, add a free key from{' '}
-            <a
-              href="https://scripture.api.bible/signup"
-              target="_blank"
-              rel="noreferrer"
-              className="font-semibold underline"
-            >
-              scripture.api.bible
-            </a>
-            , then restart the dev server.
+            The Bible API is not configured on the server. Passage references for your search are shown below.
           </p>
           {matchedTopics.length > 0 && (
             <div className="mt-4">
@@ -93,7 +83,7 @@ export function VerseResults({ verses, matchedTopics, query, apiKeyMissing, erro
           </div>
         </section>
       ) : (
-        !apiKeyMissing && (
+        !apiUnavailable && (
           <div className="rounded-2xl border border-parchment-dark bg-white p-8 text-center text-ink-muted">
             <p>No verses found for &ldquo;{query}&rdquo;. Try another subject like hope, prayer, or strength.</p>
           </div>

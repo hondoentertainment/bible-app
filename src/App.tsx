@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react'
 import { SearchBar } from './components/SearchBar'
 import { TopicChips } from './components/TopicChips'
 import { VerseResults } from './components/VerseResults'
-import { hasApiKeyConfigured, searchBySubject } from './services/bibleApi'
+import { searchBySubject } from './services/bibleApi'
 import type { SearchResult } from './types'
 
 const emptyResult: SearchResult = {
@@ -37,13 +37,8 @@ export default function App() {
       setResult(searchResult)
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Search failed'
-      if (message === 'API_KEY_MISSING') {
-        const searchResult = await searchBySubject(trimmed)
-        setResult(searchResult)
-      } else {
-        setError(message)
-        setResult(emptyResult)
-      }
+      setError(message)
+      setResult(emptyResult)
     } finally {
       setIsSearching(false)
     }
@@ -85,7 +80,7 @@ export default function App() {
           verses={result.verses}
           matchedTopics={result.matchedTopics}
           query={activeQuery}
-          apiKeyMissing={!hasApiKeyConfigured()}
+          apiUnavailable={result.apiUnavailable ?? false}
           error={error}
         />
       </main>
