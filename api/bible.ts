@@ -4,7 +4,6 @@ interface VercelRequest {
   method?: string
   url?: string
   query: Record<string, string | string[] | undefined>
-  headers: Record<string, string | string[] | undefined>
 }
 
 interface VercelResponse {
@@ -22,11 +21,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   const pathParam = req.query.path
-  const segments = Array.isArray(pathParam) ? pathParam : pathParam ? [pathParam] : []
-  const apiPath = `/${segments.join('/')}`
+  const apiPath = typeof pathParam === 'string' ? `/${pathParam}` : '/'
 
   const queryIndex = req.url?.indexOf('?') ?? -1
-  const query = queryIndex >= 0 ? req.url!.slice(queryIndex) : ''
+  const rawQuery = queryIndex >= 0 ? req.url!.slice(queryIndex + 1) : ''
+  const params = new URLSearchParams(rawQuery)
+  params.delete('path')
+  const query = params.toString() ? `?${params.toString()}` : ''
 
   try {
     const response = await fetch(`https://api.scripture.api.bible/v1${apiPath}${query}`, {
