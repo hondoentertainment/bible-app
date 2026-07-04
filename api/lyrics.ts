@@ -1,4 +1,4 @@
-import { fetchLyrics } from '../lib/lrcLib.js'
+import { fetchLyrics } from './lib/lrcLib.js'
 
 interface VercelRequest {
   method?: string

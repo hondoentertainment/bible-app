@@ -118,8 +118,14 @@ export function SpotifyLyricsCompare({ onExploreTheme }: SpotifyLyricsComparePro
       const comparison = await compareFn()
       setResult(comparison)
       saveToRecent(track.artist, track.name)
-    } catch {
-      setSearchError('Could not compare this track. Try again or use manual entry.')
+    } catch (err) {
+      if (err instanceof Error && err.message === 'LYRICS_NOT_FOUND') {
+        setSearchError('Lyrics not found for this song. Check spelling or try a different version.')
+      } else if (err instanceof Error && err.message === 'Lyrics lookup failed') {
+        setSearchError('Lyrics lookup failed on the server. Please try again in a moment.')
+      } else {
+        setSearchError('Could not compare this track. Try again or use manual entry.')
+      }
     } finally {
       setComparing(false)
       setComparingTrack(null)
