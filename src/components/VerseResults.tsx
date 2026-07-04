@@ -7,14 +7,54 @@ interface VerseResultsProps {
   query: string
   apiUnavailable: boolean
   error?: string | null
+  isSearching?: boolean
 }
 
-export function VerseResults({ verses, matchedTopics, query, apiUnavailable, error }: VerseResultsProps) {
+function VerseSkeleton() {
+  return (
+    <div className="rounded-2xl border border-parchment-dark bg-white p-6 shadow-sm">
+      <div className="mb-4 flex justify-between gap-4">
+        <div className="skeleton h-6 w-36" />
+        <div className="skeleton h-8 w-16 rounded-lg" />
+      </div>
+      <div className="space-y-2">
+        <div className="skeleton h-4 w-full" />
+        <div className="skeleton h-4 w-full" />
+        <div className="skeleton h-4 w-3/4" />
+      </div>
+    </div>
+  )
+}
+
+export function VerseResults({
+  verses,
+  matchedTopics,
+  query,
+  apiUnavailable,
+  error,
+  isSearching,
+}: VerseResultsProps) {
+  if (isSearching) {
+    return (
+      <div className="mx-auto flex w-full max-w-3xl flex-col gap-4" aria-busy="true" aria-label="Loading results">
+        <div className="skeleton mx-auto h-7 w-48" />
+        <VerseSkeleton />
+        <VerseSkeleton />
+        <VerseSkeleton />
+      </div>
+    )
+  }
+
   if (error) {
     return (
-      <div className="mx-auto max-w-2xl rounded-2xl border border-red-200 bg-red-50 p-6 text-center text-red-800">
-        <p className="font-semibold">Something went wrong</p>
-        <p className="mt-2 text-sm">{error}</p>
+      <div className="mx-auto max-w-2xl animate-fade-in-up rounded-2xl border border-red-200 bg-red-50 p-8 text-center">
+        <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-red-100">
+          <svg className="h-5 w-5 text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <p className="font-semibold text-red-800">Something went wrong</p>
+        <p className="mt-2 text-sm text-red-700">{error}</p>
       </div>
     )
   }
@@ -30,7 +70,7 @@ export function VerseResults({ verses, matchedTopics, query, apiUnavailable, err
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-col gap-8">
       {matchedTopics.length > 0 && (
-        <section aria-label="Matched topics">
+        <section className="animate-fade-in-up" aria-label="Matched topics">
           <h2 className="mb-3 text-sm font-semibold tracking-wide text-ink-muted uppercase">
             Topics matching &ldquo;{query}&rdquo;
           </h2>
@@ -38,7 +78,7 @@ export function VerseResults({ verses, matchedTopics, query, apiUnavailable, err
             {matchedTopics.map((topic) => (
               <span
                 key={topic.topicId}
-                className="rounded-full bg-navy/5 px-3 py-1.5 text-sm text-navy"
+                className="rounded-full border border-navy/10 bg-navy/5 px-3.5 py-1.5 text-sm text-navy transition-colors hover:border-gold/30 hover:bg-gold/5"
                 title={topic.description}
               >
                 {topic.topicName}
@@ -49,7 +89,7 @@ export function VerseResults({ verses, matchedTopics, query, apiUnavailable, err
       )}
 
       {apiUnavailable && (
-        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-amber-950">
+        <div className="animate-fade-in-up rounded-2xl border border-amber-200 bg-amber-50 p-5 text-amber-950">
           <p className="font-semibold">Verse text temporarily unavailable</p>
           <p className="mt-2 text-sm leading-relaxed">
             The Bible API is not configured on the server. Passage references for your search are shown below.
@@ -73,10 +113,10 @@ export function VerseResults({ verses, matchedTopics, query, apiUnavailable, err
 
       {verses.length > 0 ? (
         <section aria-label="Search results">
-          <h2 className="mb-4 font-display text-2xl font-semibold text-navy">
+          <h2 className="mb-5 font-display text-2xl font-semibold text-navy">
             {verses.length} verse{verses.length === 1 ? '' : 's'} found
           </h2>
-          <div className="flex flex-col gap-4">
+          <div className="stagger-children flex flex-col gap-4">
             {verses.map((verse) => (
               <VerseCard key={verse.id} verse={verse} />
             ))}
@@ -84,8 +124,18 @@ export function VerseResults({ verses, matchedTopics, query, apiUnavailable, err
         </section>
       ) : (
         !apiUnavailable && (
-          <div className="rounded-2xl border border-parchment-dark bg-white p-8 text-center text-ink-muted">
-            <p>No verses found for &ldquo;{query}&rdquo;. Try another subject like hope, prayer, or strength.</p>
+          <div className="animate-fade-in-up rounded-2xl border border-dashed border-parchment-dark bg-white/60 p-10 text-center">
+            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-parchment">
+              <svg className="h-6 w-6 text-ink-muted" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z" />
+              </svg>
+            </div>
+            <p className="text-ink-muted">
+              No verses found for &ldquo;{query}&rdquo;.
+            </p>
+            <p className="mt-2 text-sm text-ink-muted/80">
+              Try another subject like hope, prayer, or strength.
+            </p>
           </div>
         )
       )}

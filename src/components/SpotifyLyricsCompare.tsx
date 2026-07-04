@@ -119,7 +119,7 @@ export function SpotifyLyricsCompare() {
   }
 
   return (
-    <section className="w-full" aria-label="Compare Spotify lyrics to Scripture">
+    <section className="w-full animate-fade-in-up" aria-label="Compare Spotify lyrics to Scripture">
       <div className="mb-8 text-center">
         <h2 className="font-display text-2xl font-semibold text-navy sm:text-3xl">
           Spotify Lyrics &amp; Scripture
@@ -140,15 +140,22 @@ export function SpotifyLyricsCompare() {
                 onChange={(e) => setQuery(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && runSpotifySearch()}
                 placeholder="Song or artist name…"
-                className="min-w-0 flex-1 rounded-xl border border-parchment-dark bg-white px-4 py-3 text-ink focus:border-[#1DB954] focus:ring-2 focus:ring-[#1DB954]/20 focus:outline-none"
+                className="min-w-0 flex-1 rounded-xl border border-parchment-dark bg-white px-4 py-3 text-base text-ink focus:border-[#1DB954] focus:ring-2 focus:ring-[#1DB954]/20 focus:outline-none"
               />
               <button
                 type="button"
                 onClick={runSpotifySearch}
                 disabled={searching || !query.trim()}
-                className="shrink-0 rounded-xl bg-[#1DB954] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#1ed760] disabled:opacity-50"
+                className="flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-xl bg-[#1DB954] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#1ed760] hover:shadow-md disabled:opacity-50"
               >
-                {searching ? '…' : 'Search'}
+                {searching ? (
+                  <>
+                    <span className="spinner text-white" aria-hidden />
+                    <span className="sr-only">Searching</span>
+                  </>
+                ) : (
+                  'Search'
+                )}
               </button>
             </div>
           </label>
@@ -194,30 +201,37 @@ export function SpotifyLyricsCompare() {
             value={manualArtist}
             onChange={(e) => setManualArtist(e.target.value)}
             placeholder="Artist"
-            className="flex-1 rounded-lg border border-parchment-dark px-3 py-2.5 text-sm focus:border-gold focus:outline-none"
+            className="flex-1 rounded-lg border border-parchment-dark px-3 py-2.5 text-base focus:border-gold focus:outline-none"
           />
           <input
             type="text"
             value={manualTrack}
             onChange={(e) => setManualTrack(e.target.value)}
             placeholder="Song title"
-            className="flex-1 rounded-lg border border-parchment-dark px-3 py-2.5 text-sm focus:border-gold focus:outline-none"
+            className="flex-1 rounded-lg border border-parchment-dark px-3 py-2.5 text-base focus:border-gold focus:outline-none"
           />
           <button
             type="button"
             onClick={handleManualCompare}
             disabled={comparing || !manualArtist.trim() || !manualTrack.trim()}
-            className="rounded-lg bg-navy px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-navy-light disabled:opacity-50"
+            className="min-h-[44px] rounded-lg bg-navy px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-navy-light hover:shadow-md disabled:opacity-50"
           >
-            {comparing ? 'Analyzing…' : 'Compare'}
+            {comparing ? (
+              <span className="flex items-center justify-center gap-2">
+                <span className="spinner text-white" aria-hidden />
+                Analyzing…
+              </span>
+            ) : (
+              'Compare'
+            )}
           </button>
         </div>
       </div>
 
-      {comparing && (
-        <div className="mt-8 flex flex-col items-center gap-3 py-8 text-ink-muted">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-gold border-t-transparent" />
-          <p>Fetching lyrics and matching Scripture…</p>
+      {comparing && tracks.length === 0 && (
+        <div className="mt-8 flex flex-col items-center gap-4 py-8 text-ink-muted" aria-busy="true">
+          <div className="spinner text-gold" style={{ width: '2rem', height: '2rem', borderWidth: '3px' }} />
+          <p className="text-sm">Fetching lyrics and matching Scripture…</p>
         </div>
       )}
     </section>
@@ -238,7 +252,7 @@ function TrackResult({
       type="button"
       onClick={onSelect}
       disabled={disabled}
-      className="flex w-full items-center gap-3 rounded-xl border border-parchment-dark bg-white p-3 text-left transition hover:border-[#1DB954]/50 hover:shadow-sm disabled:opacity-50"
+      className="flex w-full min-h-[56px] items-center gap-3 rounded-xl border border-parchment-dark bg-white p-3 text-left transition-all duration-200 hover:-translate-y-0.5 hover:border-[#1DB954]/50 hover:shadow-md disabled:opacity-50"
     >
       {track.albumArtUrl ? (
         <img

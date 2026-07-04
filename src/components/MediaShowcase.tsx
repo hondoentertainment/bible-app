@@ -36,7 +36,7 @@ export function MediaShowcase({ onSelect }: MediaShowcaseProps) {
   }
 
   return (
-    <section className="w-full" aria-label="Stories and Scripture">
+    <section className="w-full animate-fade-in-up" aria-label="Stories and Scripture">
       <div className="mb-8 text-center">
         <h2 className="font-display text-2xl font-semibold text-navy sm:text-3xl">
           Stories &amp; Scripture
@@ -73,7 +73,7 @@ export function MediaShowcase({ onSelect }: MediaShowcaseProps) {
         ))}
       </div>
 
-      <ul className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="stagger-children grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((item) => (
           <li key={item.id}>
             <MediaCard item={item} onSelect={() => handleSelect(item)} />
@@ -98,7 +98,7 @@ function MediaCard({
     <button
       type="button"
       onClick={onSelect}
-      className="group flex h-full flex-col rounded-2xl border border-parchment-dark bg-white p-5 text-left transition hover:-translate-y-0.5 hover:border-gold/50 hover:shadow-md"
+      className="group flex h-full flex-col rounded-2xl border border-parchment-dark bg-white p-5 text-left transition-all duration-300 hover:-translate-y-1 hover:border-gold/50 hover:shadow-lg"
     >
       <div className="mb-3 flex items-center justify-between gap-2">
         <span className="rounded-full border border-gold/30 bg-gold/10 px-2.5 py-0.5 text-xs font-semibold text-gold uppercase">

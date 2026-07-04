@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { AppNav } from './components/AppNav'
 import { MediaShowcase } from './components/MediaShowcase'
 import { SearchBar } from './components/SearchBar'
@@ -57,6 +57,17 @@ export default function App() {
     setError(null)
   }
 
+  function clearSearch() {
+    setQuery('')
+    setActiveQuery('')
+    setResult(emptyResult)
+    setError(null)
+  }
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }, [mode, activeQuery])
+
   const isSubjects = mode === 'subjects'
   const isStories = mode === 'stories'
 
@@ -73,15 +84,31 @@ export default function App() {
       : 'Search any song on Spotify and compare its lyrics to NIV verses on matching themes.'
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_#fff9ee_0%,_#f7f2e8_45%,_#ebe3d4_100%)]">
-      <header className="border-b border-parchment-dark/70 bg-white/70 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-5xl flex-col items-center gap-6 px-4 py-10 text-center sm:px-6">
-          <div>
-            <p className="text-sm font-semibold tracking-[0.2em] text-gold uppercase">Holy Scripture</p>
-            <h1 className="mt-2 font-display text-4xl font-bold text-navy sm:text-5xl">
+    <div className="app-shell relative min-h-screen">
+      <header className="relative z-10 border-b border-parchment-dark/70 bg-white/75 backdrop-blur-md">
+        <div className="mx-auto flex max-w-5xl flex-col items-center gap-5 px-4 py-8 text-center sm:gap-6 sm:px-6 sm:py-10">
+          <div className="animate-fade-in-up">
+            <div className="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-full border border-gold/30 bg-gold/5">
+              <svg
+                className="h-5 w-5 text-gold"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                aria-hidden
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                />
+              </svg>
+            </div>
+            <p className="section-eyebrow">Holy Scripture</p>
+            <h1 className="mt-2 font-display text-4xl font-bold tracking-tight text-navy sm:text-5xl">
               {pageTitle}
             </h1>
-            <p className="mx-auto mt-3 max-w-xl text-ink-muted">
+            <p className="mx-auto mt-3 max-w-xl text-base leading-relaxed text-ink-muted sm:text-lg">
               {pageDescription}
             </p>
           </div>
@@ -99,20 +126,14 @@ export default function App() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+      <main
+        key={mode}
+        className="relative z-10 mx-auto max-w-6xl animate-fade-in px-4 py-10 sm:px-6"
+      >
         {isSubjects ? (
           activeQuery ? (
-            <>
-              <button
-                type="button"
-                onClick={() => {
-                  setQuery('')
-                  setActiveQuery('')
-                  setResult(emptyResult)
-                  setError(null)
-                }}
-                className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-ink-muted transition hover:text-gold"
-              >
+            <div className="animate-fade-in-up">
+              <button type="button" onClick={clearSearch} className="back-link mb-6">
                 <span aria-hidden>←</span> Browse all subjects
               </button>
               <VerseResults
@@ -121,8 +142,9 @@ export default function App() {
                 query={activeQuery}
                 apiUnavailable={result.apiUnavailable ?? false}
                 error={error}
+                isSearching={isSearching}
               />
-            </>
+            </div>
           ) : (
             <SubjectGrid
               activeQuery={activeQuery}
@@ -139,9 +161,11 @@ export default function App() {
         )}
       </main>
 
-      <footer className="border-t border-parchment-dark/70 py-6 text-center text-xs text-ink-muted">
-        Scripture quotations from the Holy Bible, New International Version&reg;. Copyright &copy; Biblica, Inc.
-        Used by permission via API.Bible.
+      <footer className="relative z-10 border-t border-parchment-dark/70 py-8 text-center safe-bottom">
+        <p className="mx-auto max-w-lg px-4 text-xs leading-relaxed text-ink-muted">
+          Scripture quotations from the Holy Bible, New International Version&reg;. Copyright &copy; Biblica, Inc.
+          Used by permission via API.Bible.
+        </p>
       </footer>
     </div>
   )

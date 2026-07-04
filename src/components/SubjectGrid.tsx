@@ -54,10 +54,10 @@ function TopicCard({
       type="button"
       onClick={() => onSelect(topic.name)}
       aria-pressed={isActive}
-      className={`group flex flex-col rounded-xl border p-4 text-left transition-all duration-200 ${
+      className={`group flex flex-col rounded-xl border p-4 text-left transition-all duration-300 ${
         isActive
           ? 'border-gold bg-gold/10 shadow-md ring-2 ring-gold/30'
-          : `border-parchment-dark/80 bg-white hover:-translate-y-0.5 hover:border-gold/50 hover:shadow-md ${accent}`
+          : `border-parchment-dark/80 bg-white hover:-translate-y-1 hover:border-gold/50 hover:shadow-lg ${accent}`
       }`}
     >
       <div className="flex items-start justify-between gap-2">
@@ -108,13 +108,13 @@ export function SubjectGrid({ onSelect, activeQuery }: SubjectGridProps) {
   const accent = CATEGORY_ACCENTS[category] ?? CATEGORY_ACCENTS.all
 
   return (
-    <section className="w-full" aria-label="Browse subjects">
-      <div className="mb-6 text-center">
+    <section className="w-full animate-fade-in-up" aria-label="Browse subjects">
+      <div className="mb-8 text-center">
         <h2 className="font-display text-2xl font-semibold text-navy sm:text-3xl">
           Browse by Subject
         </h2>
         <p className="mx-auto mt-2 max-w-lg text-ink-muted">
-          {TOPICS.length} life topics with curated NIV passages — pick one to begin.
+          <span className="font-semibold text-navy">{TOPICS.length}</span> life topics with curated NIV passages — pick one to begin.
         </p>
       </div>
 
@@ -150,7 +150,7 @@ export function SubjectGrid({ onSelect, activeQuery }: SubjectGridProps) {
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
             placeholder="Filter subjects…"
-            className="w-full rounded-lg border border-parchment-dark bg-white py-2 pr-3 pl-9 text-sm text-ink placeholder:text-ink-muted/60 focus:border-gold focus:ring-2 focus:ring-gold/20 focus:outline-none"
+            className="w-full rounded-lg border border-parchment-dark bg-white py-2.5 pr-3 pl-9 text-base text-ink placeholder:text-ink-muted/60 focus:border-gold focus:ring-2 focus:ring-gold/20 focus:outline-none"
           />
           <svg
             className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-ink-muted"
@@ -176,7 +176,7 @@ export function SubjectGrid({ onSelect, activeQuery }: SubjectGridProps) {
       )}
 
       {visibleTopics.length > 0 ? (
-        <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <ul className="stagger-children grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {visibleTopics.map((topic) => (
             <li key={topic.id}>
               <TopicCard
@@ -189,7 +189,7 @@ export function SubjectGrid({ onSelect, activeQuery }: SubjectGridProps) {
           ))}
         </ul>
       ) : (
-        <p className="rounded-xl border border-dashed border-parchment-dark bg-white/50 py-12 text-center text-ink-muted">
+        <p className="rounded-xl border border-dashed border-parchment-dark bg-white/50 py-16 text-center text-ink-muted">
           No subjects match &ldquo;{filter}&rdquo;. Try a different word.
         </p>
       )}
@@ -207,7 +207,7 @@ export function SubjectGrid({ onSelect, activeQuery }: SubjectGridProps) {
                   key={topic.id}
                   type="button"
                   onClick={() => onSelect(topic.name)}
-                  className={`rounded-full border px-4 py-1.5 text-sm font-medium transition ${
+                  className={`min-h-[44px] rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200 ${
                     isActive
                       ? 'border-gold bg-gold text-white'
                       : 'border-parchment-dark bg-white text-ink-muted hover:border-gold hover:text-navy'

@@ -40,12 +40,8 @@ export function MediaComparisonView({ comparison, onBack }: MediaComparisonViewP
   const typeLabel = MEDIA_TYPE_LABELS[comparison.type]
 
   return (
-    <div className="w-full">
-      <button
-        type="button"
-        onClick={onBack}
-        className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-ink-muted transition hover:text-gold"
-      >
+    <div className="w-full animate-fade-in-up">
+      <button type="button" onClick={onBack} className="back-link mb-6">
         <span aria-hidden>←</span> All stories
       </button>
 
@@ -65,9 +61,9 @@ export function MediaComparisonView({ comparison, onBack }: MediaComparisonViewP
       </header>
 
       {loading && (
-        <div className="flex flex-col items-center gap-3 py-16 text-ink-muted">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-gold border-t-transparent" />
-          <p>Loading NIV passages…</p>
+        <div className="flex flex-col items-center gap-4 py-20 text-ink-muted" aria-busy="true">
+          <div className="spinner text-gold" style={{ width: '2rem', height: '2rem', borderWidth: '3px' }} />
+          <p className="text-sm">Loading NIV passages…</p>
         </div>
       )}
 
@@ -92,7 +88,7 @@ export function MediaComparisonView({ comparison, onBack }: MediaComparisonViewP
             </aside>
           )}
 
-          <div className="flex flex-col gap-6">
+          <div className="stagger-children flex flex-col gap-6">
             {loaded.parallels.map((parallel, i) => (
               <ScriptureParallelCard
                 key={parallel.id}

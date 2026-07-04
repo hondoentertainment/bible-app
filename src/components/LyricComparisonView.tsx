@@ -9,12 +9,8 @@ export function LyricComparisonView({ result, onBack }: LyricComparisonViewProps
   const { track, parallels, matchedTopics, lyricsUnavailable, apiUnavailable } = result
 
   return (
-    <div className="w-full">
-      <button
-        type="button"
-        onClick={onBack}
-        className="mb-6 inline-flex items-center gap-1.5 text-sm font-medium text-ink-muted transition hover:text-gold"
-      >
+    <div className="w-full animate-fade-in-up">
+      <button type="button" onClick={onBack} className="back-link mb-6">
         <span aria-hidden>←</span> Search another song
       </button>
 
@@ -80,13 +76,13 @@ export function LyricComparisonView({ result, onBack }: LyricComparisonViewProps
       )}
 
       {parallels.length > 0 ? (
-        <div className="flex flex-col gap-6">
+        <div className="stagger-children flex flex-col gap-6">
           {parallels.map((parallel, i) => (
             <article
               key={parallel.id}
-              className="overflow-hidden rounded-2xl border border-parchment-dark bg-white shadow-sm"
+              className="overflow-hidden rounded-2xl border border-parchment-dark bg-white shadow-sm transition-shadow duration-300 hover:shadow-md"
             >
-              <div className="border-b border-parchment-dark bg-parchment/60 px-5 py-3">
+              <div className="border-b border-parchment-dark bg-gradient-to-r from-parchment/80 to-parchment/40 px-5 py-3">
                 <span className="text-xs font-semibold tracking-[0.15em] text-gold uppercase">
                   Parallel {i + 1} · {parallel.theme}
                 </span>

@@ -8,8 +8,8 @@ interface ScriptureParallelCardProps {
 
 export function ScriptureParallelCard({ parallel, index, mediaTitle }: ScriptureParallelCardProps) {
   return (
-    <article className="overflow-hidden rounded-2xl border border-parchment-dark bg-white shadow-sm">
-      <div className="border-b border-parchment-dark bg-parchment/60 px-5 py-3">
+    <article className="overflow-hidden rounded-2xl border border-parchment-dark bg-white shadow-sm transition-shadow duration-300 hover:shadow-md">
+      <div className="border-b border-parchment-dark bg-gradient-to-r from-parchment/80 to-parchment/40 px-5 py-3">
         <span className="text-xs font-semibold tracking-[0.15em] text-gold uppercase">
           Parallel {index + 1} · {parallel.theme}
         </span>
@@ -20,8 +20,8 @@ export function ScriptureParallelCard({ parallel, index, mediaTitle }: Scripture
           <p className="mb-2 text-xs font-semibold tracking-wide text-ink-muted uppercase">
             From {mediaTitle}
           </p>
-          <blockquote className="font-display text-xl leading-relaxed text-navy italic">
-            &ldquo;{parallel.mediaLine.text}&rdquo;
+          <blockquote className="verse-pullquote font-display text-xl leading-relaxed text-navy italic sm:text-2xl">
+            {parallel.mediaLine.text}
           </blockquote>
           {parallel.mediaLine.attribution && (
             <footer className="mt-3 text-sm text-ink-muted">— {parallel.mediaLine.attribution}</footer>
