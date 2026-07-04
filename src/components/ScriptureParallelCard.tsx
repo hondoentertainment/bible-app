@@ -1,26 +1,61 @@
-import type { LoadedParallel } from '../types/media'
+import type { LoadedParallel, MediaType } from '../types/media'
 import { VerseActions } from './VerseActions'
 
 interface ScriptureParallelCardProps {
   parallel: LoadedParallel
   index: number
   mediaTitle: string
+  mediaType: MediaType
 }
 
-export function ScriptureParallelCard({ parallel, index, mediaTitle }: ScriptureParallelCardProps) {
+const TYPE_STYLES: Record<MediaType, { bg: string; label: string; icon: string }> = {
+  book: {
+    bg: 'from-navy/[0.06] to-white',
+    label: 'text-navy',
+    icon: 'bg-navy/10 text-navy',
+  },
+  movie: {
+    bg: 'from-indigo-900/[0.06] to-white',
+    label: 'text-indigo-900',
+    icon: 'bg-indigo-900/10 text-indigo-900',
+  },
+  song: {
+    bg: 'from-[#1DB954]/[0.06] to-white',
+    label: 'text-[#1a7a3a]',
+    icon: 'bg-[#1DB954]/15 text-[#1DB954]',
+  },
+}
+
+export function ScriptureParallelCard({
+  parallel,
+  index,
+  mediaTitle,
+  mediaType,
+}: ScriptureParallelCardProps) {
+  const styles = TYPE_STYLES[mediaType]
+
   return (
-    <article className="overflow-hidden rounded-2xl border border-parchment-dark bg-white shadow-sm transition-shadow duration-300 hover:shadow-md">
-      <div className="border-b border-parchment-dark bg-gradient-to-r from-parchment/80 to-parchment/40 px-5 py-3">
+    <article
+      id={`parallel-${parallel.id}`}
+      className="overflow-hidden rounded-2xl border border-parchment-dark bg-white shadow-sm transition-shadow duration-300 hover:shadow-md"
+    >
+      <div className="flex items-center justify-between border-b border-parchment-dark bg-gradient-to-r from-parchment/80 via-white to-gold/10 px-5 py-3">
         <span className="text-xs font-semibold tracking-[0.15em] text-gold uppercase">
           Parallel {index + 1} · {parallel.theme}
         </span>
+        <span className="hidden text-xs text-ink-muted sm:inline">Story ↔ Scripture</span>
       </div>
 
       <div className="grid gap-0 lg:grid-cols-2">
-        <div className="border-b border-parchment-dark p-6 lg:border-r lg:border-b-0">
-          <p className="mb-2 text-xs font-semibold tracking-wide text-ink-muted uppercase">
-            From {mediaTitle}
-          </p>
+        <div className={`border-b border-parchment-dark bg-gradient-to-br p-6 lg:border-r lg:border-b-0 ${styles.bg}`}>
+          <div className="mb-3 flex items-center gap-2">
+            <span className={`flex h-7 w-7 items-center justify-center rounded-full ${styles.icon}`}>
+              <MediaTypeIcon type={mediaType} />
+            </span>
+            <p className={`text-xs font-semibold tracking-wide uppercase ${styles.label}`}>
+              From {mediaTitle}
+            </p>
+          </div>
           <blockquote className="verse-pullquote font-display text-xl leading-relaxed text-navy italic sm:text-2xl">
             {parallel.mediaLine.text}
           </blockquote>
@@ -29,10 +64,15 @@ export function ScriptureParallelCard({ parallel, index, mediaTitle }: Scripture
           )}
         </div>
 
-        <div className="bg-gradient-to-br from-white to-parchment/30 p-6">
-          <p className="mb-3 text-xs font-semibold tracking-wide text-ink-muted uppercase">
-            Scripture speaks
-          </p>
+        <div className="bg-gradient-to-br from-white to-gold/[0.06] p-6">
+          <div className="mb-3 flex items-center gap-2">
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gold/15 text-gold">
+              <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+            </span>
+            <p className="text-xs font-semibold tracking-wide text-gold uppercase">Scripture speaks</p>
+          </div>
           <p className="mb-4 text-sm leading-relaxed text-ink">{parallel.connection}</p>
 
           {parallel.verses.length > 0 ? (
@@ -62,6 +102,28 @@ export function ScriptureParallelCard({ parallel, index, mediaTitle }: Scripture
         </div>
       </div>
     </article>
+  )
+}
+
+function MediaTypeIcon({ type }: { type: MediaType }) {
+  if (type === 'book') {
+    return (
+      <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+      </svg>
+    )
+  }
+  if (type === 'movie') {
+    return (
+      <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+      </svg>
+    )
+  }
+  return (
+    <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+    </svg>
   )
 }
 

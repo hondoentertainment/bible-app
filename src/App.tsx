@@ -296,9 +296,21 @@ export default function App() {
             />
           )
         ) : isStories ? (
-          <MediaShowcase />
+          <MediaShowcase
+            onExploreTheme={(topicName) => {
+              setMode('subjects')
+              setQuery(topicName)
+              runSearch(topicName)
+            }}
+          />
         ) : (
-          <SpotifyLyricsCompare />
+          <SpotifyLyricsCompare
+            onExploreTheme={(topicName) => {
+              setMode('subjects')
+              setQuery(topicName)
+              runSearch(topicName)
+            }}
+          />
         )}
       </main>
 

@@ -36,3 +36,15 @@ export interface ManualTrackInput {
   albumArtUrl?: string | null
   spotifyUrl?: string
 }
+
+export interface CompareOptions {
+  maxParallels?: number
+  versesPerParallel?: number
+  maxTopics?: number
+}
+
+export const DEFAULT_COMPARE_OPTIONS: Required<CompareOptions> = {
+  maxParallels: 5,
+  versesPerParallel: 3,
+  maxTopics: 5,
+}

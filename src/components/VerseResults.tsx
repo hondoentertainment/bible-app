@@ -1,4 +1,7 @@
 import type { TopicMatch, Verse } from '../types'
+import { hapticLight } from '../utils/haptics'
+import { copyVersesResult, shareVersesResult } from '../utils/verseShare'
+import { useToast } from '../hooks/useToast'
 import { VerseCard } from './VerseCard'
 
 interface VerseResultsProps {
@@ -34,6 +37,24 @@ export function VerseResults({
   error,
   isSearching,
 }: VerseResultsProps) {
+  const { showToast } = useToast()
+
+  async function handleCopyAll() {
+    await copyVersesResult(query, verses)
+    hapticLight()
+    showToast(`${verses.length} verses copied`)
+  }
+
+  async function handleShareAll() {
+    try {
+      const outcome = await shareVersesResult(query, verses)
+      hapticLight()
+      showToast(outcome === 'shared' ? 'Results shared' : 'Results copied')
+    } catch {
+      // User dismissed share sheet
+    }
+  }
+
   if (isSearching) {
     return (
       <div className="mx-auto flex w-full max-w-3xl flex-col gap-4" aria-busy="true" aria-label="Loading results">
@@ -121,9 +142,27 @@ export function VerseResults({
 
       {verses.length > 0 ? (
         <section aria-label="Search results">
-          <h2 className="mb-5 font-display text-2xl font-semibold text-navy">
-            {verses.length} verse{verses.length === 1 ? '' : 's'} found
-          </h2>
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+            <h2 className="font-display text-2xl font-semibold text-navy">
+              {verses.length} verse{verses.length === 1 ? '' : 's'} found
+            </h2>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={handleCopyAll}
+                className="touch-manipulation rounded-lg border border-parchment-dark px-3 py-2 text-xs font-semibold text-ink-muted transition hover:border-gold hover:text-gold active:scale-95"
+              >
+                Copy all
+              </button>
+              <button
+                type="button"
+                onClick={handleShareAll}
+                className="touch-manipulation rounded-lg border border-parchment-dark px-3 py-2 text-xs font-semibold text-ink-muted transition hover:border-gold hover:text-gold active:scale-95"
+              >
+                Share
+              </button>
+            </div>
+          </div>
           <div className="stagger-children flex flex-col gap-4">
             {verses.map((verse) => (
               <VerseCard key={verse.id} verse={verse} />

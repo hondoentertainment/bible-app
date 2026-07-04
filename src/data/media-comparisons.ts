@@ -321,3 +321,24 @@ export const MEDIA_TYPE_LABELS: Record<MediaType, string> = {
   song: 'Song',
   movie: 'Movie',
 }
+
+export const FEATURED_STORY_IDS = [
+  'shawshank',
+  'les-miserables',
+  'hallelujah',
+  'narnia',
+  'amazing-grace',
+  'star-wars',
+] as const
+
+export const STORIES_COMPARE_STEPS = [
+  { step: 1, label: 'Browse', detail: 'Explore books, songs, and films with curated parallels' },
+  { step: 2, label: 'Compare', detail: 'Read famous lines beside the NIV verses they echo' },
+  { step: 3, label: 'Reflect', detail: 'Jump between themes, share, or explore subjects deeper' },
+] as const
+
+export function getFeaturedStories(): MediaComparison[] {
+  return FEATURED_STORY_IDS.map((id) => getMediaComparison(id)).filter(
+    (item): item is MediaComparison => item !== undefined,
+  )
+}

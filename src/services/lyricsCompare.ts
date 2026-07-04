@@ -1,7 +1,8 @@
 import { TOPICS, searchTopics, type Topic } from '../data/topics'
 import { fetchPassages } from './bibleApi'
 import type { SpotifyTrackResult } from '../types/lyrics'
-import type { LyricScriptureParallel, LyricsComparisonResult, ManualTrackInput } from '../types/lyrics'
+import type { LyricScriptureParallel, LyricsComparisonResult, ManualTrackInput, CompareOptions } from '../types/lyrics'
+import { DEFAULT_COMPARE_OPTIONS } from '../types/lyrics'
 import type { TopicMatch } from '../types'
 
 export interface SpotifySearchResponse {
@@ -110,7 +111,13 @@ function toTrackResult(input: ManualTrackInput): SpotifyTrackResult {
 export async function compareLyricsToScripture(
   trackInput: SpotifyTrackResult | ManualTrackInput,
   lyrics: string,
+  options: CompareOptions = {},
 ): Promise<LyricsComparisonResult> {
+  const { maxParallels, versesPerParallel, maxTopics } = {
+    ...DEFAULT_COMPARE_OPTIONS,
+    ...options,
+  }
+
   const track = 'id' in trackInput && 'spotifyUrl' in trackInput
     ? trackInput as SpotifyTrackResult
     : toTrackResult(trackInput as ManualTrackInput)
@@ -128,16 +135,18 @@ export async function compareLyricsToScripture(
   })
     .filter((t) => t.score > 0)
     .sort((a, b) => b.score - a.score)
-    .slice(0, 5)
+    .slice(0, maxTopics)
 
   const matchedTopics = topicScores.length > 0
     ? topicScores.map((t) => t.topic)
-    : searchTopics(track.name).slice(0, 3)
+    : searchTopics(track.name).slice(0, Math.min(3, maxTopics))
 
   const parallels: LyricScriptureParallel[] = []
   const usedLines = new Set<string>()
 
   for (const topic of matchedTopics) {
+    if (parallels.length >= maxParallels) break
+
     const lyricLine = findBestLineForTopic(lines, topic)
     if (!lyricLine || usedLines.has(lyricLine)) continue
     usedLines.add(lyricLine)
@@ -148,7 +157,7 @@ export async function compareLyricsToScripture(
       theme: topic.name,
       topicId: topic.id,
       connection: `${topic.description}. This lyric touches on "${topic.name.toLowerCase()}" — a theme woven throughout Scripture.`,
-      verseIds: topic.verseIds.slice(0, 3),
+      verseIds: topic.verseIds.slice(0, versesPerParallel),
       verses: [],
     })
   }
@@ -162,18 +171,19 @@ export async function compareLyricsToScripture(
       theme: fallbackTopic.name,
       topicId: fallbackTopic.id,
       connection: `Explore how this song relates to ${fallbackTopic.name.toLowerCase()} in Scripture.`,
-      verseIds: fallbackTopic.verseIds.slice(0, 3),
+      verseIds: fallbackTopic.verseIds.slice(0, versesPerParallel),
       verses: [],
     })
   }
 
-  const allVerseIds = [...new Set(parallels.flatMap((p) => p.verseIds))]
+  const limitedParallels = parallels.slice(0, maxParallels)
+  const allVerseIds = [...new Set(limitedParallels.flatMap((p) => p.verseIds))]
   let apiUnavailable = false
 
   try {
     const verses = await fetchPassages(allVerseIds)
     const verseById = Object.fromEntries(verses.map((v) => [v.id, v]))
-    for (const parallel of parallels) {
+    for (const parallel of limitedParallels) {
       parallel.verses = parallel.verseIds
         .map((id) => verseById[id])
         .filter((v): v is NonNullable<typeof v> => v !== undefined)
@@ -189,13 +199,16 @@ export async function compareLyricsToScripture(
   return {
     track,
     lyrics,
-    parallels,
+    parallels: limitedParallels,
     matchedTopics: buildTopicMatches(matchedTopics),
     apiUnavailable,
   }
 }
 
-export async function compareTrackFromSpotify(track: SpotifyTrackResult): Promise<LyricsComparisonResult> {
+export async function compareTrackFromSpotify(
+  track: SpotifyTrackResult,
+  options: CompareOptions = {},
+): Promise<LyricsComparisonResult> {
   let lyrics: string
   try {
     lyrics = await fetchTrackLyrics(track.artist, track.name)
@@ -212,5 +225,5 @@ export async function compareTrackFromSpotify(track: SpotifyTrackResult): Promis
     throw err
   }
 
-  return compareLyricsToScripture(track, lyrics)
+  return compareLyricsToScripture(track, lyrics, options)
 }
