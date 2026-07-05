@@ -46,5 +46,5 @@ export interface CompareOptions {
 export const DEFAULT_COMPARE_OPTIONS: Required<CompareOptions> = {
   maxParallels: 5,
   versesPerParallel: 3,
-  maxTopics: 5,
+  maxTopics: 8,
 }

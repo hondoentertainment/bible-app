@@ -1,3 +1,5 @@
+import { HorizontalChipRow } from './HorizontalChipRow'
+
 interface ComparisonThemeFilterProps {
   themes: string[]
   activeTheme: string | null
@@ -18,18 +20,20 @@ export function ComparisonThemeFilter({
   return (
     <section className="mb-6" aria-label={label}>
       <div className="mb-3 flex items-center justify-between gap-2">
-        <h3 className="text-sm font-semibold tracking-wide text-ink-muted uppercase">{label}</h3>
+        <h3 className="text-sm font-semibold tracking-wide text-ink-muted uppercase">
+          {label} <span className="font-normal normal-case text-ink-muted/80">({themes.length})</span>
+        </h3>
         {activeTheme && (
           <button
             type="button"
             onClick={() => onThemeChange(null)}
-            className="text-xs font-medium text-gold hover:underline"
+            className="shrink-0 text-xs font-medium text-gold hover:underline"
           >
             Show all
           </button>
         )}
       </div>
-      <div className="flex flex-wrap gap-2">
+      <HorizontalChipRow ariaLabel={label} className="pb-1">
         <button
           type="button"
           aria-pressed={activeTheme === null}
@@ -57,23 +61,21 @@ export function ComparisonThemeFilter({
             {theme}
           </button>
         ))}
-      </div>
+      </HorizontalChipRow>
       {onExploreTheme && (
-        <p className="mt-3 text-xs text-ink-muted">
-          Explore more verses:{' '}
-          {themes.slice(0, 3).map((theme, i) => (
-            <span key={theme}>
-              {i > 0 && ', '}
-              <button
-                type="button"
-                onClick={() => onExploreTheme(theme.split('&')[0].trim())}
-                className="font-semibold text-gold hover:underline"
-              >
-                {theme}
-              </button>
-            </span>
+        <HorizontalChipRow className="mt-3 pb-0.5" ariaLabel="Explore themes">
+          <span className="self-center pr-1 text-xs text-ink-muted">Explore:</span>
+          {themes.map((theme) => (
+            <button
+              key={`explore-${theme}`}
+              type="button"
+              onClick={() => onExploreTheme(theme.split('&')[0].trim())}
+              className="touch-manipulation rounded-full border border-gold/30 bg-gold/5 px-3 py-1 text-xs font-semibold text-gold hover:bg-gold/15"
+            >
+              {theme} →
+            </button>
           ))}
-        </p>
+        </HorizontalChipRow>
       )}
     </section>
   )

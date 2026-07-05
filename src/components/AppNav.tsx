@@ -53,7 +53,7 @@ const TABS: Array<{ id: AppMode; label: string; shortLabel: string; icon: ReactN
 export function AppNav({ mode, onModeChange, compact = false }: AppNavProps) {
   return (
     <nav
-      className={`inline-flex max-w-full overflow-x-auto rounded-full border border-parchment-dark bg-white shadow-sm ${
+      className={`chip-scroll-row inline-flex max-w-full rounded-full border border-parchment-dark bg-white shadow-sm ${
         compact ? 'p-0.5' : 'p-1'
       }`}
       aria-label="App sections"

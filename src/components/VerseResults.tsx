@@ -5,6 +5,7 @@ import { hapticLight } from '../utils/haptics'
 import { copyVersesResult, shareVersesResult } from '../utils/verseShare'
 import { useToast } from '../hooks/useToast'
 import { VerseCard } from './VerseCard'
+import { HorizontalChipRow } from './HorizontalChipRow'
 
 interface VerseResultsProps {
   verses: Verse[]
@@ -119,7 +120,7 @@ export function VerseResults({
           <h2 className="mb-3 text-sm font-semibold tracking-wide text-ink-muted uppercase">
             Topics matching &ldquo;{query}&rdquo;
           </h2>
-          <div className="flex flex-wrap gap-2">
+          <HorizontalChipRow className="pb-0.5" ariaLabel="Matched topics">
             {matchedTopics.map((topic) => (
               <span
                 key={topic.topicId}
@@ -129,7 +130,7 @@ export function VerseResults({
                 {topic.topicName}
               </span>
             ))}
-          </div>
+          </HorizontalChipRow>
         </section>
       )}
 
@@ -184,11 +185,12 @@ export function VerseResults({
             <FilterChip label="All" active={testamentFilter === 'all'} onClick={() => setTestamentFilter('all')} />
             <FilterChip label="Old Testament" active={testamentFilter === 'ot'} onClick={() => setTestamentFilter('ot')} />
             <FilterChip label="New Testament" active={testamentFilter === 'nt'} onClick={() => setTestamentFilter('nt')} />
-            <span className="mx-1 w-px bg-parchment-dark" aria-hidden />
+          </div>
+          <HorizontalChipRow className="mb-4 pb-0.5" ariaLabel="Filter by source">
             <FilterChip label="All sources" active={sourceFilter === 'all'} onClick={() => setSourceFilter('all')} />
             <FilterChip label="Curated" active={sourceFilter === 'topics'} onClick={() => setSourceFilter('topics')} />
             <FilterChip label="Full-text" active={sourceFilter === 'api'} onClick={() => setSourceFilter('api')} />
-          </div>
+          </HorizontalChipRow>
 
           <div className="stagger-children flex flex-col gap-4">
             {filteredVerses.map((verse) => (
@@ -226,7 +228,7 @@ function FilterChip({ label, active, onClick }: { label: string; active: boolean
       type="button"
       aria-pressed={active}
       onClick={onClick}
-      className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
+      className={`shrink-0 rounded-full border px-3 py-1 text-xs font-medium transition ${
         active ? 'border-navy bg-navy text-white' : 'border-parchment-dark text-ink-muted hover:border-gold'
       }`}
     >

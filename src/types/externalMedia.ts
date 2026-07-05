@@ -29,7 +29,7 @@ export interface ExternalMediaCompareOptions {
 export const DEFAULT_EXTERNAL_COMPARE_OPTIONS: ExternalMediaCompareOptions = {
   maxParallels: 5,
   versesPerParallel: 2,
-  maxTopics: 8,
+  maxTopics: 12,
 }
 
 export interface QuoteComparisonResult {

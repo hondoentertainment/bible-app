@@ -7,7 +7,7 @@ Search the **NIV**, compare culture with Scripture, and build daily habits — s
 ## Features
 
 ### Subjects
-- **36 curated topics** with keyword matching (love, faith, hope, grief, and more)
+- **48 curated topics** with keyword matching (love, faith, hope, grief, and more)
 - **Full-text NIV search** via [API.Bible](https://scripture.api.bible)
 - **Direct reference lookup** — e.g. `John 3:16`, `Romans 8:28`
 - **Filters** — Old/New Testament, curated vs. full-text results
