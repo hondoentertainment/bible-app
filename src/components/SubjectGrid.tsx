@@ -57,13 +57,13 @@ function TopicCard({
           : 'border-parchment-dark/60 hover:-translate-y-0.5 hover:border-gold/40 hover:shadow-md'
       }`}
     >
-      <div className="mb-4 flex items-start justify-between gap-3">
+      <div className="mb-3 flex items-start justify-between gap-3">
         <TopicIcon topicId={topic.id} />
         <span className="shrink-0 text-xs font-medium text-ink-muted">{passageLabel}</span>
       </div>
 
       <h3
-        className={`font-display text-xl font-semibold leading-tight text-navy ${
+        className={`line-clamp-2 min-h-[2.5em] font-display text-xl font-semibold leading-tight text-navy ${
           isActive ? 'text-gold' : 'group-hover:text-gold'
         }`}
       >
@@ -73,7 +73,7 @@ function TopicCard({
         {topic.description}
       </p>
       <span
-        className={`mt-5 text-[0.65rem] font-semibold tracking-[0.18em] uppercase ${
+        className={`mt-4 text-[0.65rem] font-semibold tracking-[0.18em] uppercase ${
           isActive ? 'text-gold' : 'text-ink-muted/70 group-hover:text-gold'
         }`}
       >

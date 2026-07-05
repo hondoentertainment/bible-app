@@ -294,7 +294,7 @@ kbd {
 }
 
 .browse-subjects .subject-card {
-  min-height: 13.5rem;
+  height: 15rem;
 }
 
 /* ── Reading settings: font scale ── */
