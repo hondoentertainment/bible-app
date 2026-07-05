@@ -14,6 +14,7 @@ import { maybeShowDailyNotification } from './hooks/useDailyNotification'
 import { addRecentSearch, getRecentSearches } from './hooks/useRecentSearches'
 import type { SavedComparison } from './hooks/useFavorites'
 import { searchBySubject } from './services/bibleApi'
+import { scrollToTop } from './utils/scroll'
 import { readAppUrlState, writeAppUrlState } from './utils/urlState'
 import type { SearchResult } from './types'
 import type { AppMode } from './types/media'
@@ -112,7 +113,7 @@ export default function App() {
       return
     }
 
-    window.scrollTo({ top: 0, behavior: 'auto' })
+    scrollToTop()
     setIsSearching(true)
     setActiveQuery(trimmed)
     setError(null)
@@ -143,7 +144,7 @@ export default function App() {
     setLyricsTrack('')
     setQuoteText('')
     setQuoteTitle('')
-    window.scrollTo({ top: 0, behavior: 'auto' })
+    scrollToTop()
     writeAppUrlState({ mode: next, q: '', storyId: '', artist: '', track: '', quoteTitle: '', quoteText: '' })
   }
 
@@ -157,7 +158,7 @@ export default function App() {
     setMode('stories')
     setStoryId(id)
     writeAppUrlState({ mode: 'stories', q: '', storyId: id, artist: '', track: '', quoteTitle: '', quoteText: '' })
-    window.scrollTo({ top: 0, behavior: 'auto' })
+    scrollToTop()
   }
 
   function openSong(artist: string, track: string) {
@@ -165,7 +166,7 @@ export default function App() {
     setLyricsArtist(artist)
     setLyricsTrack(track)
     writeAppUrlState({ mode: 'lyrics', q: '', storyId: '', artist, track, quoteTitle: '', quoteText: '' })
-    window.scrollTo({ top: 0, behavior: 'auto' })
+    scrollToTop()
   }
 
   function handleOpenComparison(comparison: SavedComparison) {
@@ -181,7 +182,7 @@ export default function App() {
         quoteTitle: '',
         quoteText: '',
       })
-      window.scrollTo({ top: 0, behavior: 'auto' })
+      scrollToTop()
       return
     }
 
@@ -198,7 +199,7 @@ export default function App() {
         quoteTitle: '',
         quoteText: '',
       })
-      window.scrollTo({ top: 0, behavior: 'auto' })
+      scrollToTop()
       return
     }
 
@@ -215,7 +216,7 @@ export default function App() {
         quoteTitle: comparison.title,
         quoteText: comparison.quoteText,
       })
-      window.scrollTo({ top: 0, behavior: 'auto' })
+      scrollToTop()
     }
   }
 
@@ -224,11 +225,7 @@ export default function App() {
     setActiveQuery('')
     setResult(emptyResult)
     setError(null)
-    window.scrollTo({ top: 0, behavior: 'auto' })
-  }, [])
-
-  const scrollToTop = useCallback(() => {
-    window.scrollTo({ top: 0, behavior: 'auto' })
+    scrollToTop()
   }, [])
 
   const focusSearch = useCallback(() => {
@@ -240,7 +237,7 @@ export default function App() {
       setMobileSearchOpen(true)
       scrollToTop()
     }
-  }, [mode, scrollToTop])
+  }, [mode])
 
   const bumpFavorites = useCallback(() => {
     setFavoritesVersion((v) => v + 1)
@@ -368,7 +365,7 @@ export default function App() {
         <div className="mx-auto flex max-w-6xl items-center gap-2 px-4 py-2.5 sm:gap-4 sm:px-6">
           <button
             type="button"
-            onClick={scrollToTop}
+            onClick={() => scrollToTop({ smooth: true })}
             className="touch-manipulation flex shrink-0 items-center gap-2 rounded-lg px-1 py-1 text-navy transition hover:text-gold active:scale-95"
             aria-label="Scroll to top"
             tabIndex={headerCompact ? 0 : -1}
@@ -438,6 +435,10 @@ export default function App() {
                 error={error}
                 isSearching={isSearching}
                 onFavoriteChange={bumpFavorites}
+                onSuggestionSelect={(term) => {
+                  setQuery(term)
+                  runSearch(term)
+                }}
               />
             </div>
           ) : (
@@ -492,7 +493,7 @@ export default function App() {
         </p>
       </footer>
 
-      <ScrollToTop visible={showFab} onClick={scrollToTop} />
+      <ScrollToTop visible={showFab} onClick={() => scrollToTop({ smooth: true })} />
       <ReadingSettingsPanel />
     </div>
   )

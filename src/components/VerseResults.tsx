@@ -15,7 +15,10 @@ interface VerseResultsProps {
   error?: string | null
   isSearching?: boolean
   onFavoriteChange?: () => void
+  onSuggestionSelect?: (term: string) => void
 }
+
+const RECOVERY_SUGGESTIONS = ['hope', 'prayer', 'strength', 'peace', 'forgiveness']
 
 function VerseSkeleton() {
   return (
@@ -41,6 +44,7 @@ export function VerseResults({
   error,
   isSearching,
   onFavoriteChange,
+  onSuggestionSelect,
 }: VerseResultsProps) {
   const { showToast } = useToast()
   const [testamentFilter, setTestamentFilter] = useState<'all' | 'ot' | 'nt'>('all')
@@ -212,9 +216,23 @@ export function VerseResults({
             <p className="text-ink-muted">
               No verses found for &ldquo;{query}&rdquo;.
             </p>
-            <p className="mt-2 text-sm text-ink-muted/80">
-              Try another subject like hope, prayer, or strength.
-            </p>
+            <p className="mt-2 text-sm text-ink-muted/80">Try one of these subjects:</p>
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
+              {RECOVERY_SUGGESTIONS.filter((s) => s !== query.trim().toLowerCase()).map((term) => (
+                <button
+                  key={term}
+                  type="button"
+                  onClick={() => {
+                    hapticLight()
+                    onSuggestionSelect?.(term)
+                  }}
+                  disabled={!onSuggestionSelect}
+                  className="touch-manipulation rounded-full border border-parchment-dark bg-white px-4 py-1.5 text-sm font-medium capitalize text-navy transition hover:border-gold hover:text-gold active:scale-95 disabled:cursor-default disabled:opacity-60"
+                >
+                  {term}
+                </button>
+              ))}
+            </div>
           </div>
         )
       )}
