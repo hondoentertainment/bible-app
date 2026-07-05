@@ -23,6 +23,47 @@ function uniqueIds(ids: string[]): string[] {
   return [...new Set(ids)]
 }
 
+/** API.Bible book codes that differ from common abbreviations. */
+const BOOK_CODE_FIXES: Record<string, string> = {
+  PHI: 'PHP',
+  PHL: 'PHP',
+  MAR: 'MRK',
+  NAH: 'NAM',
+  EZE: 'EZK',
+  SON: 'SNG',
+  SOL: 'SNG',
+  JUDG: 'JDG',
+}
+
+/**
+ * Normalizes a stored passage id into the exact form API.Bible expects:
+ * fixes non-standard book codes and expands shorthand verse ranges
+ * (e.g. `1CO.13.4-7` → `1CO.13.4-1CO.13.7`).
+ */
+export function normalizePassageId(id: string): string {
+  const [rawBook, chapter, ...rest] = id.trim().split('.')
+  const book = BOOK_CODE_FIXES[rawBook] ?? rawBook
+
+  if (chapter === undefined) return book
+  if (rest.length === 0) return `${book}.${chapter}`
+
+  const versePart = rest.join('.')
+  const hyphenIndex = versePart.indexOf('-')
+  if (hyphenIndex === -1) {
+    return `${book}.${chapter}.${versePart}`
+  }
+
+  const startVerse = versePart.slice(0, hyphenIndex)
+  const endToken = versePart.slice(hyphenIndex + 1)
+
+  // Already a fully-qualified range end (e.g. "PHP.4.7"): normalize it recursively.
+  if (endToken.includes('.')) {
+    return `${book}.${chapter}.${startVerse}-${normalizePassageId(endToken)}`
+  }
+
+  return `${book}.${chapter}.${startVerse}-${book}.${chapter}.${endToken}`
+}
+
 async function bibleFetch<T>(path: string): Promise<T> {
   const response = await fetch(`${API_BASE}${path}`)
 
@@ -39,19 +80,20 @@ async function bibleFetch<T>(path: string): Promise<T> {
 }
 
 async function fetchPassageFromBible(bibleId: string, passageId: string): Promise<Verse> {
-  const key = cacheKey(bibleId, passageId)
+  const normalizedId = normalizePassageId(passageId)
+  const key = cacheKey(bibleId, normalizedId)
   const cached = verseCache.get(key)
   if (cached) return cached
 
   const data = await bibleFetch<{
     data?: { id?: string; reference?: string; content?: string; text?: string }
   }>(
-    `/bibles/${bibleId}/passages/${encodeURIComponent(passageId)}?content-type=text&include-notes=false&include-titles=false&include-chapter-numbers=false&include-verse-numbers=true`,
+    `/bibles/${bibleId}/passages/${encodeURIComponent(normalizedId)}?content-type=text&include-notes=false&include-titles=false&include-chapter-numbers=false&include-verse-numbers=true`,
   )
 
   const verse: Verse = {
-    id: data.data?.id ?? passageId,
-    reference: data.data?.reference ?? passageId,
+    id: data.data?.id ?? normalizedId,
+    reference: data.data?.reference ?? normalizedId,
     text: stripHtml(data.data?.content ?? data.data?.text ?? ''),
   }
 
