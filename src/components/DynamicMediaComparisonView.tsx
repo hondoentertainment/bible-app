@@ -25,7 +25,7 @@ export function DynamicMediaComparisonView({
   const [activeTheme, setActiveTheme] = useState<string | null>(null)
 
   useEffect(() => {
-    scrollToTop(true)
+    scrollToTop()
   }, [result.title, result.type])
 
   const themes = useMemo(

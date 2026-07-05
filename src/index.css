@@ -16,7 +16,8 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
+  scroll-padding-top: 4.5rem;
 }
 
 body {
@@ -28,7 +29,6 @@ body {
   background: var(--color-parchment);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-y: auto;
 }
 
 #root {
@@ -115,6 +115,9 @@ body {
   .stagger-children > * {
     animation: none;
   }
+  .site-header--fixed {
+    transition: none;
+  }
 }
 
 /* ── Shared UI patterns ── */
@@ -189,12 +192,35 @@ body {
 }
 
 /* ── Sticky header ── */
-.site-header {
-  transition: box-shadow 0.3s var(--ease-out-expo);
+.site-header--fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-parchment-dark) 70%, transparent);
+  background: color-mix(in srgb, white 85%, transparent);
+  backdrop-filter: blur(12px);
+  transform: translateY(0);
+  transition:
+    transform 0.2s var(--ease-out-expo),
+    box-shadow 0.2s var(--ease-out-expo);
 }
 
-.site-header__compact {
-  animation: fade-in 0.25s var(--ease-out-expo) both;
+.site-header--fixed.is-hidden {
+  transform: translateY(-100%);
+  pointer-events: none;
+}
+
+.site-header--fixed.is-visible {
+  box-shadow: 0 4px 24px color-mix(in srgb, var(--color-navy) 8%, transparent);
+}
+
+.site-header__hero {
+  position: relative;
+  z-index: 10;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-parchment-dark) 70%, transparent);
+  background: color-mix(in srgb, white 85%, transparent);
 }
 
 /* ── Skip link ── */
@@ -233,7 +259,7 @@ kbd {
 
 /* ── Scroll targets & panels ── */
 .scroll-target {
-  scroll-margin-top: 6.5rem;
+  scroll-margin-top: 5rem;
 }
 
 .lyrics-scroll {

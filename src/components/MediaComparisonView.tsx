@@ -53,7 +53,7 @@ export function MediaComparisonView({ comparison, onBack, onExploreTheme }: Medi
   }, [comparison])
 
   useEffect(() => {
-    scrollToTop(true)
+    scrollToTop()
   }, [comparison.id])
 
   const themes = useMemo(

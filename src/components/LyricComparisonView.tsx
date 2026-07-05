@@ -43,7 +43,7 @@ export function LyricComparisonView({
   )
 
   useEffect(() => {
-    scrollToTop(true)
+    scrollToTop()
   }, [track.id, track.name, track.artist])
 
   async function handleCopyAll() {

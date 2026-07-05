@@ -1,16 +1,13 @@
 function getStickyHeaderOffset(): number {
-  const header = document.querySelector('.site-header')
+  const header = document.querySelector('.site-header--fixed.is-visible')
   if (header instanceof HTMLElement) {
-    return header.offsetHeight + 16
+    return header.offsetHeight + 12
   }
-  return 96
+  return 72
 }
 
-export function scrollToTop(instant = false) {
-  window.scrollTo({
-    top: 0,
-    behavior: instant ? 'auto' : 'smooth',
-  })
+export function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'auto' })
 }
 
 export function scrollToElementId(id: string) {
@@ -18,5 +15,5 @@ export function scrollToElementId(id: string) {
   if (!el) return
 
   const top = el.getBoundingClientRect().top + window.scrollY - getStickyHeaderOffset()
-  window.scrollTo({ top, behavior: 'smooth' })
+  window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' })
 }
