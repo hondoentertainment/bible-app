@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { Verse } from '../types'
+import { isVerseFavorite, toggleFavoriteVerse } from '../hooks/useFavorites'
 import { hapticLight } from '../utils/haptics'
 import { copyVerseText, shareVerseText } from '../utils/verseShare'
 import { useToast } from '../hooks/useToast'
@@ -7,12 +8,14 @@ import { useToast } from '../hooks/useToast'
 interface VerseActionsProps {
   verse: Verse
   compact?: boolean
+  onFavoriteChange?: () => void
 }
 
-export function VerseActions({ verse, compact = false }: VerseActionsProps) {
+export function VerseActions({ verse, compact = false, onFavoriteChange }: VerseActionsProps) {
   const { showToast } = useToast()
   const [copied, setCopied] = useState(false)
   const [shared, setShared] = useState(false)
+  const [saved, setSaved] = useState(() => isVerseFavorite(verse.id))
 
   async function handleCopy() {
     await copyVerseText(verse)
@@ -34,12 +37,35 @@ export function VerseActions({ verse, compact = false }: VerseActionsProps) {
     }
   }
 
+  function handleFavorite() {
+    const { saved: isSaved } = toggleFavoriteVerse(verse)
+    setSaved(isSaved)
+    hapticLight()
+    showToast(isSaved ? `${verse.reference} saved` : `${verse.reference} removed from favorites`)
+    onFavoriteChange?.()
+  }
+
   const btnClass = compact
     ? 'touch-manipulation flex min-h-[36px] items-center gap-1 rounded-md border px-2 py-1 text-[11px] font-semibold transition-all duration-200 active:scale-95'
     : 'touch-manipulation flex min-h-[44px] items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-semibold transition-all duration-200 active:scale-95'
 
   return (
     <div className="flex shrink-0 items-center gap-1.5">
+      <button
+        type="button"
+        onClick={handleFavorite}
+        className={`${btnClass} ${
+          saved
+            ? 'border-gold/50 bg-gold/10 text-gold'
+            : 'border-parchment-dark text-ink-muted hover:border-gold hover:text-gold'
+        }`}
+        aria-label={saved ? `Remove ${verse.reference} from favorites` : `Save ${verse.reference}`}
+        aria-pressed={saved}
+      >
+        <HeartIcon filled={saved} />
+        {compact ? null : saved ? 'Saved' : 'Save'}
+      </button>
+
       <button
         type="button"
         onClick={handleCopy}
@@ -86,6 +112,25 @@ export function VerseActions({ verse, compact = false }: VerseActionsProps) {
         )}
       </button>
     </div>
+  )
+}
+
+function HeartIcon({ filled }: { filled: boolean }) {
+  return (
+    <svg
+      className="h-3.5 w-3.5"
+      viewBox="0 0 24 24"
+      fill={filled ? 'currentColor' : 'none'}
+      stroke="currentColor"
+      strokeWidth="2"
+      aria-hidden
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+      />
+    </svg>
   )
 }
 

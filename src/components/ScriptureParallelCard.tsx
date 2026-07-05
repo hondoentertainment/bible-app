@@ -1,5 +1,6 @@
 import type { LoadedParallel, MediaType } from '../types/media'
 import { VerseActions } from './VerseActions'
+import { PassageExpander } from './PassageExpander'
 
 interface ScriptureParallelCardProps {
   parallel: LoadedParallel
@@ -87,6 +88,7 @@ export function ScriptureParallelCard({
                     <VerseActions verse={verse} compact />
                   </div>
                   <p className="mt-2 text-sm leading-relaxed text-ink">{verse.text}</p>
+                  <PassageExpander verseId={verse.id} reference={verse.reference} compact />
                 </div>
               ))}
             </div>

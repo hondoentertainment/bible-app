@@ -3,6 +3,9 @@ interface ComparisonToolbarProps {
   onBack: () => void
   onCopy?: () => void
   onShare?: () => void
+  onCopyLink?: () => void
+  onFavorite?: () => void
+  isFavorite?: boolean
   onRecompare?: () => void
   showActions?: boolean
 }
@@ -12,6 +15,9 @@ export function ComparisonToolbar({
   onBack,
   onCopy,
   onShare,
+  onCopyLink,
+  onFavorite,
+  isFavorite = false,
   onRecompare,
   showActions = true,
 }: ComparisonToolbarProps) {
@@ -20,8 +26,31 @@ export function ComparisonToolbar({
       <button type="button" onClick={onBack} className="back-link">
         <span aria-hidden>←</span> {backLabel}
       </button>
-      {showActions && (onCopy || onShare || onRecompare) && (
+      {showActions && (onCopy || onShare || onRecompare || onCopyLink || onFavorite) && (
         <div className="flex flex-wrap gap-2">
+          {onFavorite && (
+            <button
+              type="button"
+              onClick={onFavorite}
+              aria-pressed={isFavorite}
+              className={`touch-manipulation rounded-lg border px-3 py-2 text-xs font-semibold transition active:scale-95 ${
+                isFavorite
+                  ? 'border-gold/50 bg-gold/10 text-gold'
+                  : 'border-parchment-dark text-ink-muted hover:border-gold hover:text-gold'
+              }`}
+            >
+              {isFavorite ? 'Saved' : 'Save'}
+            </button>
+          )}
+          {onCopyLink && (
+            <button
+              type="button"
+              onClick={onCopyLink}
+              className="touch-manipulation rounded-lg border border-parchment-dark px-3 py-2 text-xs font-semibold text-ink-muted transition hover:border-gold hover:text-gold active:scale-95"
+            >
+              Copy link
+            </button>
+          )}
           {onRecompare && (
             <button
               type="button"

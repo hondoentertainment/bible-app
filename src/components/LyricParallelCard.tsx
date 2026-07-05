@@ -1,6 +1,7 @@
 import type { LyricScriptureParallel } from '../types/lyrics'
 import type { SpotifyTrackResult } from '../types/lyrics'
 import { VerseActions } from './VerseActions'
+import { PassageExpander } from './PassageExpander'
 
 interface LyricParallelCardProps {
   parallel: LyricScriptureParallel
@@ -62,6 +63,7 @@ export function LyricParallelCard({ parallel, index, track }: LyricParallelCardP
                     <VerseActions verse={verse} compact />
                   </div>
                   <p className="mt-2 text-sm leading-relaxed text-ink">{verse.text}</p>
+                  <PassageExpander verseId={verse.id} reference={verse.reference} compact />
                 </div>
               ))}
             </div>

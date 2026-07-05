@@ -11,6 +11,7 @@ interface VerseResultsProps {
   apiUnavailable: boolean
   error?: string | null
   isSearching?: boolean
+  onFavoriteChange?: () => void
 }
 
 function VerseSkeleton() {
@@ -36,6 +37,7 @@ export function VerseResults({
   apiUnavailable,
   error,
   isSearching,
+  onFavoriteChange,
 }: VerseResultsProps) {
   const { showToast } = useToast()
 
@@ -165,7 +167,7 @@ export function VerseResults({
           </div>
           <div className="stagger-children flex flex-col gap-4">
             {verses.map((verse) => (
-              <VerseCard key={verse.id} verse={verse} />
+              <VerseCard key={verse.id} verse={verse} onFavoriteChange={onFavoriteChange} />
             ))}
           </div>
         </section>

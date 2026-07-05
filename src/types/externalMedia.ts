@@ -32,6 +32,14 @@ export const DEFAULT_EXTERNAL_COMPARE_OPTIONS: ExternalMediaCompareOptions = {
   maxTopics: 8,
 }
 
+export interface QuoteComparisonResult {
+  title: string
+  quoteText: string
+  parallels: LoadedParallel[]
+  matchedTopics: TopicMatch[]
+  apiUnavailable?: boolean
+}
+
 export interface ExternalMediaComparisonResult {
   type: 'book' | 'movie'
   title: string

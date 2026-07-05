@@ -5,6 +5,14 @@ import { hapticLight } from '../utils/haptics'
 import { copyComparison, shareComparison } from '../utils/lyricsShare'
 import { useToast } from '../hooks/useToast'
 import { scrollToTop } from '../utils/scroll'
+import { copyShareUrl } from '../utils/shareUrl'
+import type { AppUrlState } from '../utils/urlState'
+import {
+  isComparisonFavorite,
+  lyricsComparisonKey,
+  toggleFavoriteComparison,
+  type SavedComparison,
+} from '../hooks/useFavorites'
 import { CompareOptionsPanel } from './CompareOptionsPanel'
 import { ComparisonJumpNav } from './ComparisonJumpNav'
 import { ComparisonThemeFilter } from './ComparisonThemeFilter'
@@ -19,6 +27,7 @@ interface LyricComparisonViewProps {
   onBack: () => void
   onExploreTheme?: (topicName: string) => void
   onRecompare?: () => void
+  onLyricsUrlChange?: (artist: string | null, track: string | null) => void
 }
 
 export function LyricComparisonView({
@@ -28,11 +37,15 @@ export function LyricComparisonView({
   onBack,
   onExploreTheme,
   onRecompare,
+  onLyricsUrlChange,
 }: LyricComparisonViewProps) {
   const { showToast } = useToast()
   const { track, lyrics, parallels, matchedTopics, lyricsUnavailable, apiUnavailable } = result
   const [lyricsOpen, setLyricsOpen] = useState(false)
   const [activeTheme, setActiveTheme] = useState<string | null>(null)
+  const [favSaved, setFavSaved] = useState(false)
+
+  const favKey = lyricsComparisonKey(track.artist, track.name)
 
   const lyricLines = lyrics.split(/\n/).filter((l) => l.trim()).length
   const themes = useMemo(() => matchedTopics.map((t) => t.topicName), [matchedTopics])
@@ -44,7 +57,9 @@ export function LyricComparisonView({
 
   useEffect(() => {
     scrollToTop()
-  }, [track.id, track.name, track.artist])
+    onLyricsUrlChange?.(track.artist, track.name)
+    setFavSaved(isComparisonFavorite(favKey))
+  }, [track.id, track.name, track.artist, favKey, onLyricsUrlChange])
 
   async function handleCopyAll() {
     await copyComparison(result)
@@ -62,14 +77,53 @@ export function LyricComparisonView({
     }
   }
 
+  async function handleCopyLink() {
+    const state: AppUrlState = {
+      mode: 'lyrics',
+      q: '',
+      storyId: '',
+      artist: track.artist,
+      track: track.name,
+      quoteTitle: '',
+      quoteText: '',
+    }
+    await copyShareUrl(state)
+    hapticLight()
+    showToast('Link copied to clipboard')
+  }
+
+  function handleFavorite() {
+    const saved: SavedComparison = {
+      key: favKey,
+      kind: 'lyrics',
+      title: track.name,
+      subtitle: track.artist,
+      artist: track.artist,
+      track: track.name,
+      savedAt: Date.now(),
+    }
+    const { saved: isSaved } = toggleFavoriteComparison(saved)
+    setFavSaved(isSaved)
+    hapticLight()
+    showToast(isSaved ? 'Comparison saved to favorites' : 'Removed from favorites')
+  }
+
+  function handleBack() {
+    onLyricsUrlChange?.(null, null)
+    onBack()
+  }
+
   return (
     <div className="w-full animate-fade-in-up">
       <ComparisonToolbar
         backLabel="Search another song"
-        onBack={onBack}
+        onBack={handleBack}
         onRecompare={onRecompare}
         onCopy={handleCopyAll}
         onShare={handleShareAll}
+        onCopyLink={handleCopyLink}
+        onFavorite={handleFavorite}
+        isFavorite={favSaved}
       />
 
       <header className="mb-6 overflow-hidden rounded-2xl border border-parchment-dark bg-white shadow-sm">

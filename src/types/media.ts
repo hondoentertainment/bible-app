@@ -32,4 +32,4 @@ export interface LoadedMediaComparison extends MediaComparison {
   apiUnavailable?: boolean
 }
 
-export type AppMode = 'subjects' | 'stories' | 'lyrics'
+export type AppMode = 'subjects' | 'stories' | 'lyrics' | 'quote'

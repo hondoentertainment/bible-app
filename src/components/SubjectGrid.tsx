@@ -7,9 +7,16 @@ import {
   type Topic,
 } from '../data/topics'
 
+import { VerseOfDay } from './VerseOfDay'
+import { FavoritesPanel } from './FavoritesPanel'
+import type { SavedComparison } from '../hooks/useFavorites'
+
 interface SubjectGridProps {
   onSelect: (topicName: string) => void
   activeQuery?: string
+  onExploreTheme: (topicName: string) => void
+  onOpenComparison: (comparison: SavedComparison) => void
+  favoritesVersion?: number
 }
 
 const CATEGORY_ACCENTS: Record<string, string> = {
@@ -88,7 +95,13 @@ function TopicCard({
   )
 }
 
-export function SubjectGrid({ onSelect, activeQuery }: SubjectGridProps) {
+export function SubjectGrid({
+  onSelect,
+  activeQuery,
+  onExploreTheme,
+  onOpenComparison,
+  favoritesVersion = 0,
+}: SubjectGridProps) {
   const [category, setCategory] = useState('all')
   const [filter, setFilter] = useState('')
 
@@ -109,6 +122,13 @@ export function SubjectGrid({ onSelect, activeQuery }: SubjectGridProps) {
 
   return (
     <section className="w-full animate-fade-in-up" aria-label="Browse subjects">
+      <VerseOfDay onExploreTheme={onExploreTheme} />
+
+      <FavoritesPanel
+        key={favoritesVersion}
+        onOpenComparison={onOpenComparison}
+      />
+
       <div className="mb-8 text-center">
         <h2 className="font-display text-2xl font-semibold text-navy sm:text-3xl">
           Browse by Subject

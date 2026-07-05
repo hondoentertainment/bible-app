@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { AppNav } from './components/AppNav'
 import { MediaShowcase } from './components/MediaShowcase'
+import { QuoteCompareView } from './components/QuoteCompareView'
 import { ScrollToTop } from './components/ScrollToTop'
 import { SearchBar } from './components/SearchBar'
 import { SkipLink } from './components/SkipLink'
@@ -8,6 +9,7 @@ import { SpotifyLyricsCompare } from './components/SpotifyLyricsCompare'
 import { SubjectGrid } from './components/SubjectGrid'
 import { VerseResults } from './components/VerseResults'
 import { addRecentSearch, getRecentSearches } from './hooks/useRecentSearches'
+import type { SavedComparison } from './hooks/useFavorites'
 import { searchBySubject } from './services/bibleApi'
 import { readAppUrlState, writeAppUrlState } from './utils/urlState'
 import type { SearchResult } from './types'
@@ -51,23 +53,52 @@ function isEditableTarget(target: EventTarget | null): boolean {
 
 export default function App() {
   const initialUrlRef = useRef(readAppUrlState())
-  const initialSubjectsQuery =
-    initialUrlRef.current.mode === 'subjects' ? initialUrlRef.current.q : ''
+  const initial = initialUrlRef.current
 
-  const [mode, setMode] = useState<AppMode>(initialUrlRef.current.mode)
-  const [query, setQuery] = useState(initialSubjectsQuery)
-  const [activeQuery, setActiveQuery] = useState(initialSubjectsQuery)
+  const [mode, setMode] = useState<AppMode>(initial.mode)
+  const [query, setQuery] = useState(initial.mode === 'subjects' ? initial.q : '')
+  const [activeQuery, setActiveQuery] = useState(initial.mode === 'subjects' ? initial.q : '')
   const [result, setResult] = useState<SearchResult>(emptyResult)
-  const [isSearching, setIsSearching] = useState(Boolean(initialSubjectsQuery))
+  const [isSearching, setIsSearching] = useState(Boolean(initial.mode === 'subjects' && initial.q))
   const [error, setError] = useState<string | null>(null)
   const [headerCompact, setHeaderCompact] = useState(false)
   const [showFab, setShowFab] = useState(false)
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
   const [recentSearches, setRecentSearches] = useState<string[]>(() => getRecentSearches())
+  const [favoritesVersion, setFavoritesVersion] = useState(0)
+  const [storyId, setStoryId] = useState(initial.storyId)
+  const [lyricsArtist, setLyricsArtist] = useState(initial.artist)
+  const [lyricsTrack, setLyricsTrack] = useState(initial.track)
+  const [quoteText, setQuoteText] = useState(initial.quoteText)
+  const [quoteTitle, setQuoteTitle] = useState(initial.quoteTitle)
+
   const mainRef = useRef<HTMLElement>(null)
   const didInitUrlSearch = useRef(false)
   const headerCompactRef = useRef(false)
   const showFabRef = useRef(false)
+
+  const syncUrl = useCallback(
+    (overrides: Partial<{
+      mode: AppMode
+      q: string
+      storyId: string
+      artist: string
+      track: string
+      quoteTitle: string
+      quoteText: string
+    }> = {}) => {
+      writeAppUrlState({
+        mode: overrides.mode ?? mode,
+        q: overrides.q ?? (mode === 'subjects' ? activeQuery : ''),
+        storyId: overrides.storyId ?? storyId,
+        artist: overrides.artist ?? lyricsArtist,
+        track: overrides.track ?? lyricsTrack,
+        quoteTitle: overrides.quoteTitle ?? quoteTitle,
+        quoteText: overrides.quoteText ?? quoteText,
+      })
+    },
+    [mode, activeQuery, storyId, lyricsArtist, lyricsTrack, quoteTitle, quoteText],
+  )
 
   const runSearch = useCallback(async (searchQuery: string) => {
     const trimmed = searchQuery.trim()
@@ -104,13 +135,70 @@ export default function App() {
     setResult(emptyResult)
     setError(null)
     setMobileSearchOpen(false)
+    setStoryId('')
+    setLyricsArtist('')
+    setLyricsTrack('')
+    setQuoteText('')
+    setQuoteTitle('')
     window.scrollTo({ top: 0, behavior: 'auto' })
+    writeAppUrlState({ mode: next, q: '', storyId: '', artist: '', track: '', quoteTitle: '', quoteText: '' })
   }
 
   function exploreSubject(topicName: string) {
     handleModeChange('subjects')
     setQuery(topicName)
     runSearch(topicName)
+  }
+
+  function handleOpenComparison(comparison: SavedComparison) {
+    if (comparison.kind === 'story' && comparison.storyId) {
+      setMode('stories')
+      setStoryId(comparison.storyId)
+      writeAppUrlState({
+        mode: 'stories',
+        q: '',
+        storyId: comparison.storyId,
+        artist: '',
+        track: '',
+        quoteTitle: '',
+        quoteText: '',
+      })
+      window.scrollTo({ top: 0, behavior: 'auto' })
+      return
+    }
+
+    if (comparison.kind === 'lyrics' && comparison.artist && comparison.track) {
+      setMode('lyrics')
+      setLyricsArtist(comparison.artist)
+      setLyricsTrack(comparison.track)
+      writeAppUrlState({
+        mode: 'lyrics',
+        q: '',
+        storyId: '',
+        artist: comparison.artist,
+        track: comparison.track,
+        quoteTitle: '',
+        quoteText: '',
+      })
+      window.scrollTo({ top: 0, behavior: 'auto' })
+      return
+    }
+
+    if (comparison.kind === 'quote' && comparison.quoteText) {
+      setMode('quote')
+      setQuoteText(comparison.quoteText)
+      setQuoteTitle(comparison.title)
+      writeAppUrlState({
+        mode: 'quote',
+        q: '',
+        storyId: '',
+        artist: '',
+        track: '',
+        quoteTitle: comparison.title,
+        quoteText: comparison.quoteText,
+      })
+      window.scrollTo({ top: 0, behavior: 'auto' })
+    }
   }
 
   const handleClearSearch = useCallback(() => {
@@ -136,17 +224,20 @@ export default function App() {
     }
   }, [mode, scrollToTop])
 
-  useEffect(() => {
-    const { q, mode: urlMode } = initialUrlRef.current
-    if (!didInitUrlSearch.current && q && urlMode === 'subjects') {
-      didInitUrlSearch.current = true
-      runSearch(q)
-    }
-  }, [runSearch])
+  const bumpFavorites = useCallback(() => {
+    setFavoritesVersion((v) => v + 1)
+  }, [])
 
   useEffect(() => {
-    writeAppUrlState(mode, mode === 'subjects' && activeQuery ? activeQuery : undefined)
-  }, [mode, activeQuery])
+    if (!didInitUrlSearch.current && initial.q && initial.mode === 'subjects') {
+      didInitUrlSearch.current = true
+      runSearch(initial.q)
+    }
+  }, [runSearch, initial.q, initial.mode])
+
+  useEffect(() => {
+    syncUrl()
+  }, [syncUrl])
 
   useEffect(() => {
     if (!headerCompact) setMobileSearchOpen(false)
@@ -189,20 +280,25 @@ export default function App() {
 
   const isSubjects = mode === 'subjects'
   const isStories = mode === 'stories'
+  const isQuote = mode === 'quote'
 
   const pageTitle = isSubjects
     ? 'NIV Subject Search'
     : isStories
       ? 'Stories & Scripture'
-      : 'Spotify Lyrics & Scripture'
+      : isQuote
+        ? 'Quote & Scripture'
+        : 'Spotify Lyrics & Scripture'
 
   const pageDescription = isSubjects
     ? 'Find Bible verses by the subjects that matter to you — love, hope, forgiveness, and more.'
     : isStories
       ? 'Discover curated stories or search Goodreads & Letterboxd to compare any book or film with Scripture.'
-      : 'Search any song on Spotify and compare its lyrics to NIV verses on matching themes.'
+      : isQuote
+        ? 'Paste any quote, poem, or speech and discover matching NIV passages.'
+        : 'Search any song on Spotify and compare its lyrics to NIV verses on matching themes.'
 
-  const compactTitle = isSubjects ? 'Subjects' : isStories ? 'Stories' : 'Lyrics'
+  const compactTitle = isSubjects ? 'Subjects' : isStories ? 'Stories' : isQuote ? 'Quote' : 'Lyrics'
 
   const searchBarProps = {
     value: query,
@@ -244,7 +340,7 @@ export default function App() {
       <header
         className={`site-header--fixed safe-top ${headerCompact ? 'is-visible' : 'is-hidden'}`}
         aria-hidden={!headerCompact}
-        inert={!headerCompact}
+        inert={headerCompact ? undefined : true}
       >
         <div className="mx-auto flex max-w-6xl items-center gap-2 px-4 py-2.5 sm:gap-4 sm:px-6">
           <button
@@ -318,6 +414,7 @@ export default function App() {
                 apiUnavailable={result.apiUnavailable ?? false}
                 error={error}
                 isSearching={isSearching}
+                onFavoriteChange={bumpFavorites}
               />
             </div>
           ) : (
@@ -327,12 +424,37 @@ export default function App() {
                 setQuery(topicName)
                 runSearch(topicName)
               }}
+              onExploreTheme={exploreSubject}
+              onOpenComparison={handleOpenComparison}
+              favoritesVersion={favoritesVersion}
             />
           )
         ) : isStories ? (
-          <MediaShowcase onExploreTheme={exploreSubject} />
+          <MediaShowcase
+            onExploreTheme={exploreSubject}
+            initialStoryId={storyId}
+            onStoryUrlChange={(id) => setStoryId(id ?? '')}
+          />
+        ) : isQuote ? (
+          <QuoteCompareView
+            onExploreTheme={exploreSubject}
+            initialQuote={quoteText}
+            initialTitle={quoteTitle}
+            onUrlChange={(text, title) => {
+              setQuoteText(text)
+              setQuoteTitle(title)
+            }}
+          />
         ) : (
-          <SpotifyLyricsCompare onExploreTheme={exploreSubject} />
+          <SpotifyLyricsCompare
+            onExploreTheme={exploreSubject}
+            initialArtist={lyricsArtist}
+            initialTrack={lyricsTrack}
+            onLyricsUrlChange={(artist, track) => {
+              setLyricsArtist(artist ?? '')
+              setLyricsTrack(track ?? '')
+            }}
+          />
         )}
       </main>
 

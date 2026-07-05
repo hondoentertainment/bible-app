@@ -6,6 +6,7 @@ import type {
   ExternalMediaCompareOptions,
   ExternalMediaComparisonResult,
   MovieSearchResult,
+  QuoteComparisonResult,
 } from '../types/externalMedia'
 import { DEFAULT_EXTERNAL_COMPARE_OPTIONS } from '../types/externalMedia'
 import type { TopicMatch } from '../types'
@@ -130,6 +131,30 @@ async function compareTextToScripture(
   return {
     parallels: loadedParallels,
     matchedTopics: buildTopicMatches(matchedTopics),
+    apiUnavailable,
+  }
+}
+
+export async function compareQuoteToScripture(
+  quoteText: string,
+  title: string,
+  options: ExternalMediaCompareOptions = {},
+): Promise<QuoteComparisonResult> {
+  const trimmed = quoteText.trim()
+  const displayTitle = title.trim() || 'Your quote'
+
+  const { parallels, matchedTopics, apiUnavailable } = await compareTextToScripture(
+    trimmed,
+    displayTitle,
+    'generic',
+    options,
+  )
+
+  return {
+    title: displayTitle,
+    quoteText: trimmed,
+    parallels,
+    matchedTopics,
     apiUnavailable,
   }
 }

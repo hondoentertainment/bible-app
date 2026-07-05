@@ -1,5 +1,6 @@
 import { NIV_BIBLE_ID, searchTopics, type Topic } from '../data/topics'
 import type { BibleSearchResponse, SearchResult, TopicMatch, Verse } from '../types'
+import { getChapterPassageId } from '../utils/passageContext'
 
 const API_BASE = '/api/bible'
 const verseCache = new Map<string, Verse>()
@@ -149,6 +150,11 @@ export async function searchBySubject(query: string): Promise<SearchResult> {
     source,
     apiUnavailable,
   }
+}
+
+export async function fetchChapterContext(verseId: string): Promise<Verse> {
+  const chapterId = getChapterPassageId(verseId)
+  return fetchPassage(chapterId)
 }
 
 export async function getTopicVerses(topicId: string): Promise<SearchResult> {

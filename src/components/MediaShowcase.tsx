@@ -19,6 +19,8 @@ import { ExternalMediaSearch } from './ExternalMediaSearch'
 interface MediaShowcaseProps {
   onSelect?: (comparison: MediaComparison) => void
   onExploreTheme?: (topicName: string) => void
+  initialStoryId?: string
+  onStoryUrlChange?: (storyId: string | null) => void
 }
 
 const TYPE_FILTERS: Array<{ id: MediaType | 'all'; label: string }> = [
@@ -28,10 +30,18 @@ const TYPE_FILTERS: Array<{ id: MediaType | 'all'; label: string }> = [
   { id: 'movie', label: 'Movies' },
 ]
 
-export function MediaShowcase({ onSelect, onExploreTheme }: MediaShowcaseProps) {
+export function MediaShowcase({
+  onSelect,
+  onExploreTheme,
+  initialStoryId,
+  onStoryUrlChange,
+}: MediaShowcaseProps) {
   const [filter, setFilter] = useState<MediaType | 'all'>('all')
   const [search, setSearch] = useState('')
-  const [selected, setSelected] = useState<MediaComparison | null>(null)
+  const [selected, setSelected] = useState<MediaComparison | null>(() => {
+    if (initialStoryId) return getMediaComparison(initialStoryId) ?? null
+    return null
+  })
   const [recentIds, setRecentIds] = useState<string[]>(() => getRecentStories())
 
   const items = useMemo(() => {
@@ -56,14 +66,21 @@ export function MediaShowcase({ onSelect, onExploreTheme }: MediaShowcaseProps) 
     setSelected(comparison)
     setRecentIds(addRecentStory(comparison.id))
     onSelect?.(comparison)
+    onStoryUrlChange?.(comparison.id)
+  }
+
+  function handleBack() {
+    setSelected(null)
+    onStoryUrlChange?.(null)
   }
 
   if (selected) {
     return (
       <MediaComparisonView
         comparison={selected}
-        onBack={() => setSelected(null)}
+        onBack={handleBack}
         onExploreTheme={onExploreTheme}
+        onStoryUrlChange={onStoryUrlChange}
       />
     )
   }

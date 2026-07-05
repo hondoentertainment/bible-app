@@ -7,6 +7,14 @@ import { hapticLight } from '../utils/haptics'
 import { copyMediaComparison, shareMediaComparison } from '../utils/mediaShare'
 import { useToast } from '../hooks/useToast'
 import { scrollToTop } from '../utils/scroll'
+import { copyShareUrl } from '../utils/shareUrl'
+import type { AppUrlState } from '../utils/urlState'
+import {
+  isComparisonFavorite,
+  storyComparisonKey,
+  toggleFavoriteComparison,
+  type SavedComparison,
+} from '../hooks/useFavorites'
 import { ComparisonJumpNav } from './ComparisonJumpNav'
 import { ComparisonThemeFilter } from './ComparisonThemeFilter'
 import { ComparisonToolbar } from './ComparisonToolbar'
@@ -16,14 +24,18 @@ interface MediaComparisonViewProps {
   comparison: MediaComparison
   onBack: () => void
   onExploreTheme?: (topicName: string) => void
+  onStoryUrlChange?: (storyId: string | null) => void
 }
 
-export function MediaComparisonView({ comparison, onBack, onExploreTheme }: MediaComparisonViewProps) {
+export function MediaComparisonView({ comparison, onBack, onExploreTheme, onStoryUrlChange }: MediaComparisonViewProps) {
   const { showToast } = useToast()
   const [loaded, setLoaded] = useState<LoadedMediaComparison | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [activeTheme, setActiveTheme] = useState<string | null>(null)
+  const [favSaved, setFavSaved] = useState(false)
+
+  const favKey = storyComparisonKey(comparison.id)
 
   useEffect(() => {
     let cancelled = false
@@ -54,7 +66,9 @@ export function MediaComparisonView({ comparison, onBack, onExploreTheme }: Medi
 
   useEffect(() => {
     scrollToTop()
-  }, [comparison.id])
+    onStoryUrlChange?.(comparison.id)
+    setFavSaved(isComparisonFavorite(favKey))
+  }, [comparison.id, favKey, onStoryUrlChange])
 
   const themes = useMemo(
     () => [...new Set(comparison.parallels.map((p) => p.theme))],
@@ -88,13 +102,51 @@ export function MediaComparisonView({ comparison, onBack, onExploreTheme }: Medi
     }
   }
 
+  async function handleCopyLink() {
+    const state: AppUrlState = {
+      mode: 'stories',
+      q: '',
+      storyId: comparison.id,
+      artist: '',
+      track: '',
+      quoteTitle: '',
+      quoteText: '',
+    }
+    await copyShareUrl(state)
+    hapticLight()
+    showToast('Link copied to clipboard')
+  }
+
+  function handleFavorite() {
+    const saved: SavedComparison = {
+      key: favKey,
+      kind: 'story',
+      title: comparison.title,
+      subtitle: comparison.creator,
+      storyId: comparison.id,
+      savedAt: Date.now(),
+    }
+    const { saved: isSaved } = toggleFavoriteComparison(saved)
+    setFavSaved(isSaved)
+    hapticLight()
+    showToast(isSaved ? 'Comparison saved to favorites' : 'Removed from favorites')
+  }
+
+  function handleBack() {
+    onStoryUrlChange?.(null)
+    onBack()
+  }
+
   return (
     <div className="w-full animate-fade-in-up">
       <ComparisonToolbar
         backLabel="All stories"
-        onBack={onBack}
+        onBack={handleBack}
         onCopy={loaded ? handleCopyAll : undefined}
         onShare={loaded ? handleShareAll : undefined}
+        onCopyLink={handleCopyLink}
+        onFavorite={handleFavorite}
+        isFavorite={favSaved}
         showActions={Boolean(loaded)}
       />
 

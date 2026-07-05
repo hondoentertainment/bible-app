@@ -34,9 +34,17 @@ const MIN_PARTIAL_CHARS = 2
 
 interface SpotifyLyricsCompareProps {
   onExploreTheme?: (topicName: string) => void
+  initialArtist?: string
+  initialTrack?: string
+  onLyricsUrlChange?: (artist: string | null, track: string | null) => void
 }
 
-export function SpotifyLyricsCompare({ onExploreTheme }: SpotifyLyricsCompareProps) {
+export function SpotifyLyricsCompare({
+  onExploreTheme,
+  initialArtist = '',
+  initialTrack = '',
+  onLyricsUrlChange,
+}: SpotifyLyricsCompareProps) {
   const [spotifyReady, setSpotifyReady] = useState<boolean | null>(null)
   const [inputMode, setInputMode] = useState<InputMode>('spotify')
   const [compareOptions, setCompareOptions] = useState<CompareOptions>(DEFAULT_COMPARE_OPTIONS)
@@ -53,6 +61,13 @@ export function SpotifyLyricsCompare({ onExploreTheme }: SpotifyLyricsComparePro
   const [manualArtist, setManualArtist] = useState('')
   const [manualTrack, setManualTrack] = useState('')
   const debouncedQuery = useDebouncedValue(query, 400)
+  const didInitLyrics = useState(() => ({ done: false }))[0]
+
+  useEffect(() => {
+    if (didInitLyrics.done || !initialArtist.trim() || !initialTrack.trim()) return
+    didInitLyrics.done = true
+    compareManualSong(initialArtist, initialTrack)
+  }, [initialArtist, initialTrack, didInitLyrics])
 
   useEffect(() => {
     fetch('/api/spotify/status')
@@ -139,6 +154,7 @@ export function SpotifyLyricsCompare({ onExploreTheme }: SpotifyLyricsComparePro
       const comparison = await compareFn()
       setResult(comparison)
       saveToRecent(track.artist, track.name)
+      onLyricsUrlChange?.(track.artist, track.name)
     } catch (err) {
       if (err instanceof Error && err.message === 'LYRICS_NOT_FOUND') {
         setSearchError('Lyrics not found for this song. Check spelling or try a different version.')
@@ -239,9 +255,13 @@ export function SpotifyLyricsCompare({ onExploreTheme }: SpotifyLyricsComparePro
         result={result}
         compareOptions={compareOptions}
         onCompareOptionsChange={setCompareOptions}
-        onBack={() => setResult(null)}
+        onBack={() => {
+          setResult(null)
+          onLyricsUrlChange?.(null, null)
+        }}
         onExploreTheme={onExploreTheme}
         onRecompare={() => compareManualSong(result.track.artist, result.track.name)}
+        onLyricsUrlChange={onLyricsUrlChange}
       />
     )
   }
