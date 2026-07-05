@@ -1,61 +1,76 @@
-# NIV Subject Search — Bible App
+# Scripture Search — Bible App
 
-Search the **New International Version (NIV)** by subject. Enter topics like *love*, *peace*, *forgiveness*, or *anxiety* to discover relevant verses curated from 30+ life themes, plus full-text NIV search.
+Search the **NIV**, compare culture with Scripture, and build daily habits — subjects, stories, songs, and quotes in one PWA.
+
+**Production:** https://bible-app-bice-ten.vercel.app
 
 ## Features
 
-- **Subject search** — 30 curated topics with keyword matching (love, faith, hope, grief, parenting, and more)
-- **NIV verse text** — Full passages loaded through [API.Bible](https://scripture.api.bible)
-- **Quick topics** — One-click chips for popular subjects
-- **Copy verses** — Copy any result with reference included
+### Subjects
+- **36 curated topics** with keyword matching (love, faith, hope, grief, and more)
+- **Full-text NIV search** via [API.Bible](https://scripture.api.bible)
+- **Direct reference lookup** — e.g. `John 3:16`, `Romans 8:28`
+- **Filters** — Old/New Testament, curated vs. full-text results
+- **ESV side-by-side** (optional, in reading settings)
+- **Verse of the day**, **7-day reading plans**, **saved favorites**
+- **Cross-references**, **full-chapter context**, **listen** (text-to-speech)
+
+### Stories & Scripture
+- Curated book, song, and film comparisons with NIV parallels
+- Search **Goodreads** (Open Library) and **Letterboxd** (TMDB) for any title
+- **Discussion prompts**, **theme trails**, **share as image**
+
+### Spotify Lyrics
+- Search Spotify (or manual entry) and compare lyrics to NIV themes via LRCLIB
+
+### Quote
+- Paste any quote, poem, or speech — matched to Scripture themes
+
+### App-wide
+- **Shareable deep links** (`?mode=stories&story=shawshank`, `?mode=lyrics&artist=…&track=…`, etc.)
+- **PWA** with offline Bible passage cache for favorites
+- **Daily verse notifications** (opt-in, reading settings)
+- **Dark mode** and **font size** controls
 
 ## Setup
 
-1. **Install dependencies**
+```bash
+npm install
+copy .env.example .env   # Windows
+npm run dev
+```
 
-   ```bash
-   npm install
-   ```
+### Environment variables (server-side only)
 
-2. **Get a free API key** from [scripture.api.bible/signup](https://scripture.api.bible/signup)
+| Variable | Required | Purpose |
+|----------|----------|---------|
+| `BIBLE_API_KEY` | Yes (for verse text) | [API.Bible signup](https://scripture.api.bible/signup) |
+| `SPOTIFY_CLIENT_ID` | No | Spotify track search |
+| `SPOTIFY_CLIENT_SECRET` | No | Spotify track search |
+| `TMDB_API_KEY` | No | Movie search & synopses |
 
-3. **Configure environment** (server-side key only — never sent to the browser)
+Books use **Open Library** (no key). Lyrics use **LRCLIB** (no key).
 
-   ```bash
-   copy .env.example .env
-   ```
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for Vercel production setup and custom domains.
 
-   Edit `.env` and set your key:
+## Share URL examples
 
-   ```
-   BIBLE_API_KEY=your_api_key_here
-   ```
-
-4. **Start the dev server**
-
-   ```bash
-   npm run dev
-   ```
-
-5. Open the URL shown in the terminal (usually `http://localhost:5173`)
-
-## How search works
-
-1. Your query is matched against **30 topical indexes** (keywords + subject names)
-2. Matching topics return their curated verse references
-3. A parallel **NIV full-text search** runs through API.Bible
-4. Results are merged and deduplicated
-
-Without a server API key, you'll still see matched topics and passage references, but verse text requires the key.
+| URL | Opens |
+|-----|--------|
+| `/?q=love` | Subject search |
+| `/?mode=stories&story=shawshank` | Curated story |
+| `/?mode=lyrics&artist=Leonard%20Cohen&track=Hallelujah` | Song comparison |
+| `/?mode=quote&quoteTitle=…&quote=…` | Quote comparison (base64 text) |
 
 ## Scripts
 
-| Command        | Description              |
-|----------------|--------------------------|
-| `npm run dev`  | Start development server |
-| `npm run build`| Production build         |
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Development server |
+| `npm run build` | Production build |
+| `npm run test` | Unit tests |
 | `npm run preview` | Preview production build |
 
 ## License note
 
-NIV text is copyrighted by **Biblica, Inc.** and is accessed through API.Bible under their terms. This app does not bundle NIV text locally.
+NIV and ESV text are copyrighted and accessed through API.Bible under their terms. This app does not bundle Bible text locally.

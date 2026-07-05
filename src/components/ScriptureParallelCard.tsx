@@ -1,6 +1,9 @@
 import type { LoadedParallel, MediaType } from '../types/media'
 import { VerseActions } from './VerseActions'
 import { PassageExpander } from './PassageExpander'
+import { CrossReferences } from './CrossReferences'
+import { VerseAudioButton } from './VerseAudioButton'
+import { ShareImageButton } from './ShareImageButton'
 
 interface ScriptureParallelCardProps {
   parallel: LoadedParallel
@@ -76,6 +79,17 @@ export function ScriptureParallelCard({
           </div>
           <p className="mb-4 text-sm leading-relaxed text-ink">{parallel.connection}</p>
 
+          {parallel.reflectionQuestions && parallel.reflectionQuestions.length > 0 && (
+            <div className="mb-4 rounded-xl border border-gold/20 bg-gold/[0.06] p-4">
+              <p className="mb-2 text-xs font-semibold uppercase text-gold">Discuss</p>
+              <ul className="list-inside list-disc space-y-1 text-sm text-ink">
+                {parallel.reflectionQuestions.map((q) => (
+                  <li key={q}>{q}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           {parallel.verses.length > 0 ? (
             <div className="flex flex-col gap-3">
               {parallel.verses.map((verse) => (
@@ -85,10 +99,25 @@ export function ScriptureParallelCard({
                 >
                   <div className="flex items-start justify-between gap-3">
                     <p className="font-display text-sm font-semibold text-navy">{verse.reference}</p>
-                    <VerseActions verse={verse} compact />
+                    <div className="flex flex-wrap items-center gap-1">
+                      <VerseAudioButton text={verse.text} reference={verse.reference} compact />
+                      <ShareImageButton
+                        compact
+                        title={mediaTitle}
+                        quote={parallel.mediaLine.text}
+                        theme={parallel.theme}
+                        verseReference={verse.reference}
+                        verseText={verse.text}
+                      />
+                      <VerseActions verse={verse} compact />
+                    </div>
                   </div>
                   <p className="mt-2 text-sm leading-relaxed text-ink">{verse.text}</p>
+                  {verse.secondaryText && (
+                    <p className="mt-2 text-xs leading-relaxed text-ink-muted italic">{verse.secondaryText}</p>
+                  )}
                   <PassageExpander verseId={verse.id} reference={verse.reference} compact />
+                  <CrossReferences verseId={verse.id} compact />
                 </div>
               ))}
             </div>

@@ -2,6 +2,9 @@ export interface Verse {
   id: string
   reference: string
   text: string
+  secondaryText?: string
+  secondaryReference?: string
+  source?: 'topics' | 'api' | 'reference'
 }
 
 export interface TopicMatch {

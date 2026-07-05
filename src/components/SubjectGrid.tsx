@@ -11,11 +11,16 @@ import { VerseOfDay } from './VerseOfDay'
 import { FavoritesPanel } from './FavoritesPanel'
 import type { SavedComparison } from '../hooks/useFavorites'
 
+import { RecommendationsPanel } from './RecommendationsPanel'
+import { ReadingPlanSection } from './ReadingPlanSection'
+
 interface SubjectGridProps {
   onSelect: (topicName: string) => void
   activeQuery?: string
   onExploreTheme: (topicName: string) => void
   onOpenComparison: (comparison: SavedComparison) => void
+  onOpenStory: (storyId: string) => void
+  onOpenSong: (artist: string, track: string) => void
   favoritesVersion?: number
 }
 
@@ -100,6 +105,8 @@ export function SubjectGrid({
   activeQuery,
   onExploreTheme,
   onOpenComparison,
+  onOpenStory,
+  onOpenSong,
   favoritesVersion = 0,
 }: SubjectGridProps) {
   const [category, setCategory] = useState('all')
@@ -128,6 +135,14 @@ export function SubjectGrid({
         key={favoritesVersion}
         onOpenComparison={onOpenComparison}
       />
+
+      <RecommendationsPanel
+        onExploreSubject={onExploreTheme}
+        onOpenStory={onOpenStory}
+        onOpenSong={onOpenSong}
+      />
+
+      <ReadingPlanSection onExploreSubject={onExploreTheme} />
 
       <div className="mb-8 text-center">
         <h2 className="font-display text-2xl font-semibold text-navy sm:text-3xl">

@@ -209,6 +209,15 @@ export default defineConfig(({ mode }) => {
                 expiration: { maxEntries: 8, maxAgeSeconds: 60 * 60 },
               },
             },
+            {
+              urlPattern: ({ url }) => url.pathname.startsWith('/api/bible'),
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'bible-api-cache',
+                expiration: { maxEntries: 120, maxAgeSeconds: 60 * 60 * 24 * 7 },
+                cacheableResponse: { statuses: [0, 200] },
+              },
+            },
           ],
         },
       }),

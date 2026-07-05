@@ -21,6 +21,8 @@ interface MediaShowcaseProps {
   onExploreTheme?: (topicName: string) => void
   initialStoryId?: string
   onStoryUrlChange?: (storyId: string | null) => void
+  onOpenStory?: (storyId: string) => void
+  onOpenSong?: (artist: string, track: string) => void
 }
 
 const TYPE_FILTERS: Array<{ id: MediaType | 'all'; label: string }> = [
@@ -35,6 +37,8 @@ export function MediaShowcase({
   onExploreTheme,
   initialStoryId,
   onStoryUrlChange,
+  onOpenStory,
+  onOpenSong,
 }: MediaShowcaseProps) {
   const [filter, setFilter] = useState<MediaType | 'all'>('all')
   const [search, setSearch] = useState('')
@@ -81,6 +85,8 @@ export function MediaShowcase({
         onBack={handleBack}
         onExploreTheme={onExploreTheme}
         onStoryUrlChange={onStoryUrlChange}
+        onOpenStory={onOpenStory}
+        onOpenSong={onOpenSong}
       />
     )
   }

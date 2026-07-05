@@ -1,4 +1,6 @@
+import { useMemo, useState } from 'react'
 import type { TopicMatch, Verse } from '../types'
+import { isNewTestament, isOldTestament } from '../utils/passageLookup'
 import { hapticLight } from '../utils/haptics'
 import { copyVersesResult, shareVersesResult } from '../utils/verseShare'
 import { useToast } from '../hooks/useToast'
@@ -40,6 +42,18 @@ export function VerseResults({
   onFavoriteChange,
 }: VerseResultsProps) {
   const { showToast } = useToast()
+  const [testamentFilter, setTestamentFilter] = useState<'all' | 'ot' | 'nt'>('all')
+  const [sourceFilter, setSourceFilter] = useState<'all' | 'topics' | 'api'>('all')
+
+  const filteredVerses = useMemo(() => {
+    return verses.filter((v) => {
+      if (testamentFilter === 'ot' && !isOldTestament(v.id)) return false
+      if (testamentFilter === 'nt' && !isNewTestament(v.id)) return false
+      if (sourceFilter === 'topics' && v.source !== 'topics') return false
+      if (sourceFilter === 'api' && v.source !== 'api' && v.source !== 'reference') return false
+      return true
+    })
+  }, [verses, testamentFilter, sourceFilter])
 
   async function handleCopyAll() {
     await copyVersesResult(query, verses)
@@ -146,7 +160,7 @@ export function VerseResults({
         <section aria-label="Search results">
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
             <h2 className="font-display text-2xl font-semibold text-navy">
-              {verses.length} verse{verses.length === 1 ? '' : 's'} found
+              {filteredVerses.length} verse{filteredVerses.length === 1 ? '' : 's'} found
             </h2>
             <div className="flex gap-2">
               <button
@@ -165,11 +179,25 @@ export function VerseResults({
               </button>
             </div>
           </div>
+
+          <div className="mb-4 flex flex-wrap gap-2">
+            <FilterChip label="All" active={testamentFilter === 'all'} onClick={() => setTestamentFilter('all')} />
+            <FilterChip label="Old Testament" active={testamentFilter === 'ot'} onClick={() => setTestamentFilter('ot')} />
+            <FilterChip label="New Testament" active={testamentFilter === 'nt'} onClick={() => setTestamentFilter('nt')} />
+            <span className="mx-1 w-px bg-parchment-dark" aria-hidden />
+            <FilterChip label="All sources" active={sourceFilter === 'all'} onClick={() => setSourceFilter('all')} />
+            <FilterChip label="Curated" active={sourceFilter === 'topics'} onClick={() => setSourceFilter('topics')} />
+            <FilterChip label="Full-text" active={sourceFilter === 'api'} onClick={() => setSourceFilter('api')} />
+          </div>
+
           <div className="stagger-children flex flex-col gap-4">
-            {verses.map((verse) => (
+            {filteredVerses.map((verse) => (
               <VerseCard key={verse.id} verse={verse} onFavoriteChange={onFavoriteChange} />
             ))}
           </div>
+          {filteredVerses.length === 0 && (
+            <p className="text-center text-ink-muted">No verses match the current filters.</p>
+          )}
         </section>
       ) : (
         !apiUnavailable && (
@@ -189,6 +217,21 @@ export function VerseResults({
         )
       )}
     </div>
+  )
+}
+
+function FilterChip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      onClick={onClick}
+      className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
+        active ? 'border-navy bg-navy text-white' : 'border-parchment-dark text-ink-muted hover:border-gold'
+      }`}
+    >
+      {label}
+    </button>
   )
 }
 

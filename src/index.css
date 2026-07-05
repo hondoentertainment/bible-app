@@ -275,3 +275,59 @@ kbd {
   overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
 }
+
+/* ── Reading settings: font scale ── */
+html[data-font-scale='0.9'] { font-size: 14.4px; }
+html[data-font-scale='1.1'] { font-size: 17.6px; }
+html[data-font-scale='1.2'] { font-size: 19.2px; }
+
+/* ── Dark theme ── */
+html[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+html[data-theme='dark'] body {
+  color: #e8e4dc;
+  background: #121820;
+}
+
+html[data-theme='dark'] .app-shell {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, color-mix(in srgb, var(--color-gold) 12%, transparent), transparent),
+    radial-gradient(ellipse at top, #1a2230 0%, #121820 45%, #0d1118 100%);
+}
+
+html[data-theme='dark'] .site-header__hero,
+html[data-theme='dark'] article,
+html[data-theme='dark'] .rounded-xl,
+html[data-theme='dark'] .rounded-2xl,
+html[data-theme='dark'] input,
+html[data-theme='dark'] textarea {
+  --tw-bg-opacity: 1;
+}
+
+html[data-theme='dark'] .bg-white {
+  background-color: #1e2836 !important;
+}
+
+html[data-theme='dark'] .text-navy {
+  color: #e8e4dc !important;
+}
+
+html[data-theme='dark'] .text-ink {
+  color: #d8d4cc !important;
+}
+
+html[data-theme='dark'] .text-ink-muted {
+  color: #9aa3ae !important;
+}
+
+html[data-theme='dark'] .border-parchment-dark {
+  border-color: #2a3544 !important;
+}
+
+html[data-theme='dark'] .bg-parchment,
+html[data-theme='dark'] .bg-parchment\/30,
+html[data-theme='dark'] .bg-parchment\/40 {
+  background-color: #252f3d !important;
+}

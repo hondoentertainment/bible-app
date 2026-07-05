@@ -41,6 +41,10 @@ export const MEDIA_COMPARISONS: MediaComparison[] = [
         verseIds: ['JHN.15.13', 'ROM.5.8', 'PHP.2.3-4'],
         connection:
           'Valjean\'s final self-giving for those he loves echoes Christ\'s love — laying down one\'s life for friends and counting others greater than oneself.',
+        reflectionQuestions: [
+          'Where have you seen sacrificial love in your own life?',
+          'How does Scripture redefine love beyond sentiment?',
+        ],
       },
     ],
   },
@@ -304,6 +308,93 @@ export const MEDIA_COMPARISONS: MediaComparison[] = [
       },
     ],
     cautions: ['Humanistic framing without explicit gospel; still valuable for moral and social reflection.'],
+  },
+  {
+    id: 'invictus-poem',
+    title: 'Invictus',
+    type: 'book',
+    creator: 'William Ernest Henley (1875)',
+    summary:
+      'A defiant poem about the unconquerable human spirit in the face of suffering — often read alongside questions of sovereignty and grace.',
+    parallels: [
+      {
+        id: 'invictus-strength',
+        theme: 'Strength',
+        mediaLine: {
+          text: 'I am the master of my fate, I am the captain of my soul.',
+          attribution: 'Final lines',
+        },
+        verseIds: ['PHI.4.13', 'ISA.40.31', '2CO.12.9-10'],
+        connection:
+          'Henley\'s self-reliance contrasts with Paul\'s boast in Christ — strength perfected in weakness, not self-mastery alone.',
+        reflectionQuestions: [
+          'Where is human resilience admirable, and where does it fall short without God?',
+          'How does Isaiah 40 redefine the "captain" of the soul?',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'lotr-fellowship',
+    title: 'The Lord of the Rings',
+    type: 'book',
+    creator: 'J.R.R. Tolkien',
+    summary:
+      'A fellowship carries an impossible burden to destroy evil — themes of friendship, sacrifice, and hope against darkness.',
+    parallels: [
+      {
+        id: 'lotr-fellowship',
+        theme: 'Friendship',
+        mediaLine: {
+          text: 'I can\'t carry it for you, but I can carry you.',
+          attribution: 'Sam to Frodo on Mount Doom (film)',
+        },
+        verseIds: ['ECC.4.9-10', 'PRO.17.17', 'JHN.15.13'],
+        connection:
+          'Sam\'s loyalty pictures the friend who sticks closer than a brother — bearing burdens together as the body of Christ.',
+        reflectionQuestions: [
+          'Who has carried you in a season of weakness?',
+          'How can you "carry" someone else this week?',
+        ],
+      },
+      {
+        id: 'lotr-hope',
+        theme: 'Hope',
+        mediaLine: {
+          text: 'There is some good in this world, Mr. Frodo, and it\'s worth fighting for.',
+          attribution: 'Samwise Gamgee',
+        },
+        verseIds: ['ROM.15.13', 'LAM.3.21-23', 'HEB.6.19'],
+        connection:
+          'Sam\'s stubborn hope in darkness mirrors the anchor of the soul — confident expectation when circumstances say otherwise.',
+      },
+    ],
+    cautions: ['Fantasy fiction; film quotes used where widely known.'],
+  },
+  {
+    id: 'i-have-a-dream',
+    title: 'I Have a Dream',
+    type: 'book',
+    creator: 'Martin Luther King Jr. (1963)',
+    summary:
+      'A landmark speech invoking prophetic justice, freedom, and the moral arc of the universe.',
+    parallels: [
+      {
+        id: 'dream-justice',
+        theme: 'Justice',
+        mediaLine: {
+          text: 'We will not be satisfied until justice rolls down like waters, and righteousness like a mighty stream.',
+          attribution: 'March on Washington',
+        },
+        verseIds: ['AMO.5.24', 'MIC.6.8', 'ISA.1.17'],
+        connection:
+          'King directly quotes Amos — Scripture\'s call for justice becomes the heartbeat of civil-rights hope.',
+        reflectionQuestions: [
+          'What does "doing justice" look like in your community today?',
+          'How does Micah 6:8 connect worship and justice?',
+        ],
+      },
+    ],
   },
 ]
 

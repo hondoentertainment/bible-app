@@ -11,6 +11,7 @@ export interface ScriptureParallel {
   mediaLine: MediaLine
   verseIds: string[]
   connection: string
+  reflectionQuestions?: string[]
 }
 
 export interface MediaComparison {

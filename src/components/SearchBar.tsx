@@ -118,7 +118,7 @@ export function SearchBar({
             onChange={(event) => onChange(event.target.value)}
             onFocus={() => setFocused(true)}
             onBlur={() => window.setTimeout(() => setFocused(false), 150)}
-            placeholder="Search a subject — love, peace, forgiveness…"
+            placeholder="Search a subject or reference — love, John 3:16…"
             className="w-full rounded-2xl border border-parchment-dark bg-white py-4 pr-32 pl-12 text-base text-ink shadow-sm outline-none transition-all duration-200 placeholder:text-ink-muted/50 focus:border-gold focus:shadow-[0_0_0_4px_color-mix(in_srgb,var(--color-gold)_15%,transparent)] sm:text-lg"
             autoComplete="off"
             enterKeyHint="search"
@@ -172,7 +172,7 @@ export function SearchBar({
       )}
 
       <p className="mt-2 text-center text-xs text-ink-muted/70">
-        Press <kbd className="rounded border border-parchment-dark bg-white px-1.5 py-0.5 font-sans text-[10px]">/</kbd> to focus · Enter to search
+        Press <kbd className="rounded border border-parchment-dark bg-white px-1.5 py-0.5 font-sans text-[10px]">/</kbd> to focus · Try &ldquo;John 3:16&rdquo; or a subject
       </p>
     </div>
   )

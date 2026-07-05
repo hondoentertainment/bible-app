@@ -8,6 +8,9 @@ import { SkipLink } from './components/SkipLink'
 import { SpotifyLyricsCompare } from './components/SpotifyLyricsCompare'
 import { SubjectGrid } from './components/SubjectGrid'
 import { VerseResults } from './components/VerseResults'
+import { ReadingSettingsPanel } from './components/ReadingSettingsPanel'
+import { initReadingSettings } from './hooks/useReadingSettings'
+import { maybeShowDailyNotification } from './hooks/useDailyNotification'
 import { addRecentSearch, getRecentSearches } from './hooks/useRecentSearches'
 import type { SavedComparison } from './hooks/useFavorites'
 import { searchBySubject } from './services/bibleApi'
@@ -150,6 +153,21 @@ export default function App() {
     runSearch(topicName)
   }
 
+  function openStory(id: string) {
+    setMode('stories')
+    setStoryId(id)
+    writeAppUrlState({ mode: 'stories', q: '', storyId: id, artist: '', track: '', quoteTitle: '', quoteText: '' })
+    window.scrollTo({ top: 0, behavior: 'auto' })
+  }
+
+  function openSong(artist: string, track: string) {
+    setMode('lyrics')
+    setLyricsArtist(artist)
+    setLyricsTrack(track)
+    writeAppUrlState({ mode: 'lyrics', q: '', storyId: '', artist, track, quoteTitle: '', quoteText: '' })
+    window.scrollTo({ top: 0, behavior: 'auto' })
+  }
+
   function handleOpenComparison(comparison: SavedComparison) {
     if (comparison.kind === 'story' && comparison.storyId) {
       setMode('stories')
@@ -226,6 +244,11 @@ export default function App() {
 
   const bumpFavorites = useCallback(() => {
     setFavoritesVersion((v) => v + 1)
+  }, [])
+
+  useEffect(() => {
+    initReadingSettings()
+    maybeShowDailyNotification()
   }, [])
 
   useEffect(() => {
@@ -426,6 +449,8 @@ export default function App() {
               }}
               onExploreTheme={exploreSubject}
               onOpenComparison={handleOpenComparison}
+              onOpenStory={openStory}
+              onOpenSong={openSong}
               favoritesVersion={favoritesVersion}
             />
           )
@@ -434,6 +459,8 @@ export default function App() {
             onExploreTheme={exploreSubject}
             initialStoryId={storyId}
             onStoryUrlChange={(id) => setStoryId(id ?? '')}
+            onOpenStory={openStory}
+            onOpenSong={openSong}
           />
         ) : isQuote ? (
           <QuoteCompareView
@@ -466,6 +493,7 @@ export default function App() {
       </footer>
 
       <ScrollToTop visible={showFab} onClick={scrollToTop} />
+      <ReadingSettingsPanel />
     </div>
   )
 }

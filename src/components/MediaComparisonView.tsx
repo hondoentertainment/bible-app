@@ -19,15 +19,25 @@ import { ComparisonJumpNav } from './ComparisonJumpNav'
 import { ComparisonThemeFilter } from './ComparisonThemeFilter'
 import { ComparisonToolbar } from './ComparisonToolbar'
 import { ScriptureParallelCard } from './ScriptureParallelCard'
+import { ThemeTrail } from './ThemeTrail'
 
 interface MediaComparisonViewProps {
   comparison: MediaComparison
   onBack: () => void
   onExploreTheme?: (topicName: string) => void
   onStoryUrlChange?: (storyId: string | null) => void
+  onOpenStory?: (storyId: string) => void
+  onOpenSong?: (artist: string, track: string) => void
 }
 
-export function MediaComparisonView({ comparison, onBack, onExploreTheme, onStoryUrlChange }: MediaComparisonViewProps) {
+export function MediaComparisonView({
+  comparison,
+  onBack,
+  onExploreTheme,
+  onStoryUrlChange,
+  onOpenStory,
+  onOpenSong,
+}: MediaComparisonViewProps) {
   const { showToast } = useToast()
   const [loaded, setLoaded] = useState<LoadedMediaComparison | null>(null)
   const [loading, setLoading] = useState(true)
@@ -245,6 +255,15 @@ export function MediaComparisonView({ comparison, onBack, onExploreTheme, onStor
 
           {visibleParallels.length === 0 && activeTheme && (
             <p className="text-center text-ink-muted">No parallels for &ldquo;{activeTheme}&rdquo;.</p>
+          )}
+
+          {onExploreTheme && onOpenStory && onOpenSong && (
+            <ThemeTrail
+              theme={activeTheme ?? themes[0] ?? comparison.parallels[0]?.theme ?? 'Faith'}
+              onExploreSubject={onExploreTheme}
+              onOpenStory={onOpenStory}
+              onOpenSong={onOpenSong}
+            />
           )}
         </>
       )}
