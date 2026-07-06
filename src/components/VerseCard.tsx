@@ -45,8 +45,10 @@ export function VerseCard({ verse, onFavoriteChange }: VerseCardProps) {
           </div>
         )}
 
-        <PassageExpander verseId={verse.id} reference={verse.reference} />
-        <CrossReferences verseId={verse.id} />
+        <div className="mt-5 border-t border-parchment-dark/60 pt-4">
+          <PassageExpander verseId={verse.id} reference={verse.reference} />
+          <CrossReferences verseId={verse.id} />
+        </div>
 
         <p className="mt-5 flex items-center gap-2 text-xs tracking-wide text-ink-muted uppercase">
           <span className="h-px flex-1 bg-parchment-dark" aria-hidden />

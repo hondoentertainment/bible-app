@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import {
+  READING_SETTINGS_EVENT,
   getReadingSettings,
   updateReadingSettings,
   type ColorTheme,
@@ -53,6 +54,12 @@ export function ReadingSettingsPanel() {
     setSettings(next)
   }
 
+  useEffect(() => {
+    const sync = () => setSettings(getReadingSettings())
+    window.addEventListener(READING_SETTINGS_EVENT, sync)
+    return () => window.removeEventListener(READING_SETTINGS_EVENT, sync)
+  }, [])
+
   async function toggleDaily() {
     if (dailyOn) {
       disableDailyNotifications()
@@ -72,7 +79,7 @@ export function ReadingSettingsPanel() {
   }
 
   return (
-    <div ref={containerRef} className="fixed right-4 bottom-4 z-50 safe-bottom">
+    <div ref={containerRef} className="fixed right-4 bottom-20 z-50 safe-bottom md:bottom-4">
       <button
         ref={toggleRef}
         type="button"
@@ -119,7 +126,7 @@ export function ReadingSettingsPanel() {
           <fieldset className="mb-4">
             <legend className="mb-2 text-xs font-semibold uppercase text-ink-muted">Theme</legend>
             <div className="flex gap-2">
-              {(['light', 'dark'] as ColorTheme[]).map((theme) => (
+              {(['light', 'dark', 'system'] as ColorTheme[]).map((theme) => (
                 <button
                   key={theme}
                   type="button"

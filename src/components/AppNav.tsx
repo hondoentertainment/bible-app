@@ -7,7 +7,7 @@ interface AppNavProps {
   compact?: boolean
 }
 
-const TABS: Array<{ id: AppMode; label: string; shortLabel: string; icon: ReactNode }> = [
+export const APP_TABS: Array<{ id: AppMode; label: string; shortLabel: string; icon: ReactNode }> = [
   {
     id: 'subjects',
     label: 'Subjects',
@@ -58,7 +58,7 @@ export function AppNav({ mode, onModeChange, compact = false }: AppNavProps) {
       }`}
       aria-label="App sections"
     >
-      {TABS.map((tab) => (
+      {APP_TABS.map((tab) => (
         <NavTab
           key={tab.id}
           active={mode === tab.id}

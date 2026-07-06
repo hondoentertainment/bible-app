@@ -352,3 +352,8 @@ html[data-theme='dark'] .bg-parchment\/30,
 html[data-theme='dark'] .bg-parchment\/40 {
   background-color: #252f3d !important;
 }
+
+html[data-theme='dark'] .bottom-nav {
+  background-color: rgba(23, 31, 43, 0.95) !important;
+  border-color: #2a3544 !important;
+}

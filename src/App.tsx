@@ -1,9 +1,12 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { AppNav } from './components/AppNav'
+import { BottomNav } from './components/BottomNav'
 import { ScrollToTop } from './components/ScrollToTop'
 import { SearchBar } from './components/SearchBar'
 import { SkipLink } from './components/SkipLink'
 import { SubjectGrid } from './components/SubjectGrid'
+import { ThemeToggle } from './components/ThemeToggle'
+import { VerseOfTheDay } from './components/VerseOfTheDay'
 import { ViewFallback } from './components/ViewFallback'
 
 const MediaShowcase = lazy(() =>
@@ -366,7 +369,10 @@ export default function App() {
     <div className="app-shell relative min-h-screen">
       <SkipLink />
 
-      <div className="site-header__hero safe-top">
+      <div className="site-header__hero safe-top relative">
+        <div className="absolute right-4 top-4 z-10 sm:right-6">
+          <ThemeToggle />
+        </div>
         <div className="mx-auto flex max-w-5xl flex-col items-center gap-5 px-4 py-8 text-center sm:gap-6 sm:px-6 sm:py-10">
           <div className="animate-fade-in-up">
             <div className="mx-auto mb-4 flex h-10 w-10 items-center justify-center rounded-full border border-gold/30 bg-gold/5">
@@ -410,6 +416,8 @@ export default function App() {
             <AppNav mode={mode} onModeChange={handleModeChange} compact />
           </div>
 
+          <ThemeToggle className="shrink-0" tabIndex={headerCompact ? 0 : -1} />
+
           {isSubjects && (
             <>
               <button
@@ -449,7 +457,7 @@ export default function App() {
         id="main-content"
         tabIndex={-1}
         key={mode}
-        className="relative z-10 mx-auto max-w-6xl px-4 py-10 outline-none sm:px-6"
+        className="animate-fade-in relative z-10 mx-auto max-w-6xl px-4 pt-10 pb-28 outline-none sm:px-6 md:pb-10"
       >
         <Suspense fallback={<ViewFallback />}>
         {isSubjects ? (
@@ -473,6 +481,8 @@ export default function App() {
               />
             </div>
           ) : (
+            <>
+            <VerseOfTheDay onExplore={exploreSubject} />
             <SubjectGrid
               activeQuery={activeQuery}
               onSelect={(topicName) => {
@@ -485,6 +495,7 @@ export default function App() {
               onOpenSong={openSong}
               favoritesVersion={favoritesVersion}
             />
+            </>
           )
         ) : isStories ? (
           <MediaShowcase
@@ -527,6 +538,7 @@ export default function App() {
 
       <ScrollToTop visible={showFab} onClick={() => scrollToTop({ smooth: true })} />
       <ReadingSettingsPanel />
+      <BottomNav mode={mode} onModeChange={handleModeChange} />
     </div>
   )
 }

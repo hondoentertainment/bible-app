@@ -1,5 +1,6 @@
-import { useEffect, useId, useRef, useState } from 'react'
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { getRecentSearches, removeRecentSearch } from '../hooks/useRecentSearches'
+import { FEATURED_TOPICS, searchTopics } from '../data/topics'
 
 interface SearchBarProps {
   value: string
@@ -40,7 +41,14 @@ export function SearchBar({
     if (focused) setLocalRecent(recentSearches.length ? recentSearches : getRecentSearches())
   }, [focused, recentSearches])
 
-  const showRecent = focused && !value.trim() && localRecent.length > 0 && onRecentSelect
+  const trimmed = value.trim()
+  const suggestions = useMemo(
+    () => (trimmed.length >= 2 ? searchTopics(trimmed).slice(0, 6) : []),
+    [trimmed],
+  )
+  const showSuggestions = focused && trimmed.length >= 2 && suggestions.length > 0 && !!onRecentSelect
+  const showRecent = focused && !trimmed && localRecent.length > 0 && !!onRecentSelect
+  const showPopular = focused && !trimmed && localRecent.length === 0 && !!onRecentSelect
 
   if (compact) {
     return (
@@ -140,6 +148,30 @@ export function SearchBar({
         </div>
       </form>
 
+      {showSuggestions && (
+        <div className="absolute inset-x-0 top-full z-20 mt-2 rounded-xl border border-parchment-dark bg-white p-2 shadow-lg">
+          <p className="px-2 py-1 text-xs font-semibold tracking-wide text-ink-muted uppercase">Subjects</p>
+          <ul className="flex flex-col gap-0.5" role="listbox" aria-label="Subject suggestions">
+            {suggestions.map((topic) => (
+              <li key={topic.id} role="option" aria-selected={false}>
+                <button
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => onRecentSelect!(topic.name)}
+                  className="touch-manipulation flex min-h-[44px] w-full items-center gap-2 rounded-lg px-3 text-left text-sm text-navy transition hover:bg-parchment active:scale-[0.99]"
+                >
+                  <svg className="h-4 w-4 shrink-0 text-gold/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z" />
+                  </svg>
+                  <span className="font-medium">{topic.name}</span>
+                  <span className="truncate text-xs text-ink-muted">{topic.description}</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {showRecent && (
         <div className="absolute inset-x-0 top-full z-20 mt-2 rounded-xl border border-parchment-dark bg-white p-3 shadow-lg">
           <p className="mb-2 text-xs font-semibold tracking-wide text-ink-muted uppercase">Recent searches</p>
@@ -149,7 +181,7 @@ export function SearchBar({
                 <button
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => onRecentSelect(term)}
+                  onClick={() => onRecentSelect!(term)}
                   className="touch-manipulation flex min-h-[44px] flex-1 items-center rounded-lg px-3 text-left text-sm text-navy transition hover:bg-parchment active:scale-[0.99]"
                 >
                   {term}
@@ -168,6 +200,25 @@ export function SearchBar({
               </li>
             ))}
           </ul>
+        </div>
+      )}
+
+      {showPopular && (
+        <div className="absolute inset-x-0 top-full z-20 mt-2 rounded-xl border border-parchment-dark bg-white p-3 shadow-lg">
+          <p className="mb-2 text-xs font-semibold tracking-wide text-ink-muted uppercase">Popular subjects</p>
+          <div className="flex flex-wrap gap-2">
+            {FEATURED_TOPICS.map((topic) => (
+              <button
+                key={topic.id}
+                type="button"
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => onRecentSelect!(topic.name)}
+                className="touch-manipulation rounded-full border border-parchment-dark bg-parchment/40 px-3.5 py-1.5 text-sm text-navy transition hover:border-gold hover:text-gold active:scale-95"
+              >
+                {topic.name}
+              </button>
+            ))}
+          </div>
         </div>
       )}
 

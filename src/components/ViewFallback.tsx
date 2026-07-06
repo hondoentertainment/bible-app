@@ -1,16 +1,21 @@
 export function ViewFallback() {
   return (
     <div
-      className="mx-auto flex min-h-[40vh] w-full max-w-3xl flex-col items-center justify-center gap-4 text-ink-muted"
+      className="mx-auto w-full max-w-3xl"
       role="status"
       aria-live="polite"
       aria-label="Loading view"
     >
-      <span
-        className="h-8 w-8 animate-spin rounded-full border-2 border-parchment-dark border-t-gold"
-        aria-hidden
-      />
-      <p className="text-sm">Loading…</p>
+      <div className="flex flex-col items-center gap-3 text-center">
+        <div className="skeleton h-8 w-56" />
+        <div className="skeleton h-4 w-72" />
+      </div>
+      <div className="mt-8 space-y-4">
+        <div className="skeleton h-14 w-full rounded-2xl" />
+        <div className="skeleton h-40 w-full rounded-2xl" />
+        <div className="skeleton h-40 w-full rounded-2xl" />
+      </div>
+      <span className="sr-only">Loading…</span>
     </div>
   )
 }
