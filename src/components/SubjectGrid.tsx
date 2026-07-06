@@ -59,7 +59,9 @@ function TopicCard({
     >
       <div className="mb-3 flex items-start justify-between gap-3">
         <TopicIcon topicId={topic.id} />
-        <span className="shrink-0 text-xs font-medium text-ink-muted">{passageLabel}</span>
+        <span className="shrink-0 rounded-full bg-parchment px-2 py-0.5 text-[0.65rem] font-semibold text-ink-muted">
+          {passageLabel}
+        </span>
       </div>
 
       <h3
@@ -69,11 +71,11 @@ function TopicCard({
       >
         {topic.name}
       </h3>
-      <p className="mt-2 line-clamp-2 flex-1 text-sm leading-relaxed text-ink-muted">
+      <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-ink-muted">
         {topic.description}
       </p>
       <span
-        className={`mt-4 text-[0.65rem] font-semibold tracking-[0.18em] uppercase ${
+        className={`mt-auto pt-4 text-[0.65rem] font-semibold tracking-[0.18em] uppercase ${
           isActive ? 'text-gold' : 'text-ink-muted/70 group-hover:text-gold'
         }`}
       >
@@ -187,8 +189,15 @@ export function SubjectGrid({
         </div>
 
         {category !== 'all' && (
-          <p className="mb-5 text-sm text-ink-muted">
+          <p className="mb-3 text-sm text-ink-muted">
             {TOPIC_CATEGORIES.find((c) => c.id === category)?.description}
+          </p>
+        )}
+
+        {filteredTopics.length > 0 && (
+          <p className="mb-5 text-xs font-medium tracking-wide text-ink-muted/80 uppercase" aria-live="polite">
+            Showing {visibleTopics.length} of {filteredTopics.length}
+            {filter.trim() ? ` matching “${filter.trim()}”` : ' subjects'}
           </p>
         )}
 
@@ -213,7 +222,8 @@ export function SubjectGrid({
                   onClick={() => setVisibleCount((n) => n + PAGE_SIZE)}
                   className="touch-manipulation rounded-full border border-parchment-dark bg-white px-8 py-3 text-sm font-semibold text-navy shadow-sm transition hover:border-gold hover:text-gold active:scale-[0.98]"
                 >
-                  Load more subjects
+                  Load {Math.min(PAGE_SIZE, filteredTopics.length - visibleCount)} more
+                  <span className="text-ink-muted"> · {filteredTopics.length - visibleCount} left</span>
                 </button>
               </div>
             )}

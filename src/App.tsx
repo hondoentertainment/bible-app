@@ -6,7 +6,6 @@ import { SearchBar } from './components/SearchBar'
 import { SkipLink } from './components/SkipLink'
 import { SubjectGrid } from './components/SubjectGrid'
 import { ThemeToggle } from './components/ThemeToggle'
-import { VerseOfTheDay } from './components/VerseOfTheDay'
 import { ViewFallback } from './components/ViewFallback'
 
 const MediaShowcase = lazy(() =>
@@ -481,8 +480,6 @@ export default function App() {
               />
             </div>
           ) : (
-            <>
-            <VerseOfTheDay onExplore={exploreSubject} />
             <SubjectGrid
               activeQuery={activeQuery}
               onSelect={(topicName) => {
@@ -495,7 +492,6 @@ export default function App() {
               onOpenSong={openSong}
               favoritesVersion={favoritesVersion}
             />
-            </>
           )
         ) : isStories ? (
           <MediaShowcase
