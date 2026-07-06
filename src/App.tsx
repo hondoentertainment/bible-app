@@ -1,12 +1,20 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { AppNav } from './components/AppNav'
-import { MediaShowcase } from './components/MediaShowcase'
-import { QuoteCompareView } from './components/QuoteCompareView'
 import { ScrollToTop } from './components/ScrollToTop'
 import { SearchBar } from './components/SearchBar'
 import { SkipLink } from './components/SkipLink'
-import { SpotifyLyricsCompare } from './components/SpotifyLyricsCompare'
 import { SubjectGrid } from './components/SubjectGrid'
+import { ViewFallback } from './components/ViewFallback'
+
+const MediaShowcase = lazy(() =>
+  import('./components/MediaShowcase').then((m) => ({ default: m.MediaShowcase })),
+)
+const QuoteCompareView = lazy(() =>
+  import('./components/QuoteCompareView').then((m) => ({ default: m.QuoteCompareView })),
+)
+const SpotifyLyricsCompare = lazy(() =>
+  import('./components/SpotifyLyricsCompare').then((m) => ({ default: m.SpotifyLyricsCompare })),
+)
 import { VerseResults } from './components/VerseResults'
 import { ReadingSettingsPanel } from './components/ReadingSettingsPanel'
 import { initReadingSettings } from './hooks/useReadingSettings'
@@ -14,6 +22,7 @@ import { maybeShowDailyNotification } from './hooks/useDailyNotification'
 import { addRecentSearch, getRecentSearches } from './hooks/useRecentSearches'
 import type { SavedComparison } from './hooks/useFavorites'
 import { searchBySubject } from './services/bibleApi'
+import { trackEvent } from './utils/analytics'
 import { scrollToTop } from './utils/scroll'
 import { readAppUrlState, writeAppUrlState } from './utils/urlState'
 import type { SearchResult } from './types'
@@ -123,6 +132,11 @@ export default function App() {
       const searchResult = await searchBySubject(trimmed)
       setResult(searchResult)
       setRecentSearches(addRecentSearch(trimmed))
+      trackEvent('search', {
+        query: trimmed.slice(0, 60),
+        results: searchResult.verses.length,
+        source: searchResult.source,
+      })
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Search failed'
       setError(message)
@@ -133,6 +147,7 @@ export default function App() {
   }, [])
 
   function handleModeChange(next: AppMode) {
+    trackEvent('mode_change', { mode: next })
     setMode(next)
     setQuery('')
     setActiveQuery('')
@@ -320,6 +335,21 @@ export default function App() {
 
   const compactTitle = isSubjects ? 'Subjects' : isStories ? 'Stories' : isQuote ? 'Quote' : 'Lyrics'
 
+  useEffect(() => {
+    const base = activeQuery ? `${activeQuery} — ${pageTitle}` : pageTitle
+    const fullTitle = `${base} | Scripture Search`
+    document.title = fullTitle
+
+    const setMeta = (selector: string, content: string) => {
+      document.querySelector(selector)?.setAttribute('content', content)
+    }
+    setMeta('meta[name="description"]', pageDescription)
+    setMeta('meta[property="og:title"]', fullTitle)
+    setMeta('meta[property="og:description"]', pageDescription)
+    setMeta('meta[name="twitter:title"]', fullTitle)
+    setMeta('meta[name="twitter:description"]', pageDescription)
+  }, [pageTitle, pageDescription, activeQuery])
+
   const searchBarProps = {
     value: query,
     onChange: setQuery,
@@ -421,6 +451,7 @@ export default function App() {
         key={mode}
         className="relative z-10 mx-auto max-w-6xl px-4 py-10 outline-none sm:px-6"
       >
+        <Suspense fallback={<ViewFallback />}>
         {isSubjects ? (
           activeQuery ? (
             <div>
@@ -484,6 +515,7 @@ export default function App() {
             }}
           />
         )}
+        </Suspense>
       </main>
 
       <footer className="relative z-10 border-t border-parchment-dark/70 py-8 text-center safe-bottom">
