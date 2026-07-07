@@ -38,7 +38,7 @@ export function VerseOfDay({ onExploreTheme }: VerseOfDayProps) {
 
   return (
     <section
-      className="mb-10 overflow-hidden rounded-2xl border border-gold/30 bg-gradient-to-br from-gold/[0.08] via-white to-navy/[0.04] shadow-sm"
+      className="mb-10 overflow-hidden rounded-2xl border border-gold/30 bg-gradient-to-br from-gold/[0.08] via-[var(--surface)] to-navy/[0.04] shadow-sm"
       aria-label="Verse of the day"
     >
       <div className="border-b border-gold/20 bg-gold/[0.06] px-5 py-3 text-center sm:text-left">

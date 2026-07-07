@@ -8,6 +8,7 @@ import {
 } from '../data/topics'
 import { TopicIcon } from './TopicIcon'
 import { VerseOfDay } from './VerseOfDay'
+import { ReadingHistoryStrip } from './ReadingHistoryStrip'
 import { FavoritesPanel } from './FavoritesPanel'
 import type { SavedComparison } from '../hooks/useFavorites'
 import { RecommendationsPanel } from './RecommendationsPanel'
@@ -121,6 +122,8 @@ export function SubjectGrid({
   return (
     <section className="w-full animate-fade-in-up" aria-label="Browse subjects">
       <VerseOfDay onExploreTheme={onExploreTheme} />
+
+      <ReadingHistoryStrip onSelect={onSelect} />
 
       <FavoritesPanel key={favoritesVersion} onOpenComparison={onOpenComparison} />
 

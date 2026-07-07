@@ -1,8 +1,10 @@
+import { useEffect } from 'react'
 import type { Verse } from '../types'
 import { VerseActions } from './VerseActions'
 import { PassageExpander } from './PassageExpander'
 import { CrossReferences } from './CrossReferences'
 import { VerseAudioButton } from './VerseAudioButton'
+import { recordVerseView } from '../hooks/useReadingHistory'
 
 interface VerseCardProps {
   verse: Verse
@@ -10,6 +12,11 @@ interface VerseCardProps {
 }
 
 export function VerseCard({ verse, onFavoriteChange }: VerseCardProps) {
+  useEffect(() => {
+    recordVerseView(verse)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [verse.id])
+
   return (
     <article className="group relative overflow-hidden rounded-2xl border border-parchment-dark bg-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-gold/40 hover:shadow-lg">
       <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-gold/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />

@@ -20,6 +20,11 @@ html {
   scroll-padding-top: 4.5rem;
 }
 
+/* Semantic surface token (card/input background) — flips in the dark theme. */
+:root {
+  --surface: #ffffff;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -302,9 +307,20 @@ html[data-font-scale='0.9'] { font-size: 14.4px; }
 html[data-font-scale='1.1'] { font-size: 17.6px; }
 html[data-font-scale='1.2'] { font-size: 19.2px; }
 
-/* ── Dark theme ── */
+/* ── Dark theme ──────────────────────────────────────────────
+   Most surfaces flip automatically by redefining the theme color
+   variables that Tailwind utilities reference. We only override
+   `navy` and literal `white` explicitly, because `navy` doubles as
+   a button/background color that must stay dark while its text usage
+   (headings) must invert. New components using ink / parchment /
+   border utilities are covered without extra rules. */
 html[data-theme='dark'] {
   color-scheme: dark;
+  --color-parchment: #252f3d;      /* soft raised surfaces */
+  --color-parchment-dark: #2a3544; /* borders / dividers */
+  --color-ink: #d8d4cc;            /* body text */
+  --color-ink-muted: #9aa3ae;      /* secondary text */
+  --surface: #1e2836;              /* card / input surfaces (was white) */
 }
 
 html[data-theme='dark'] body {
@@ -318,42 +334,22 @@ html[data-theme='dark'] .app-shell {
     radial-gradient(ellipse at top, #1a2230 0%, #121820 45%, #0d1118 100%);
 }
 
-html[data-theme='dark'] .site-header__hero,
-html[data-theme='dark'] article,
-html[data-theme='dark'] .rounded-xl,
-html[data-theme='dark'] .rounded-2xl,
-html[data-theme='dark'] input,
-html[data-theme='dark'] textarea {
-  --tw-bg-opacity: 1;
-}
-
-html[data-theme='dark'] .bg-white {
-  background-color: #1e2836 !important;
-}
-
+/* Headings: navy text must invert (navy background utilities stay dark). */
 html[data-theme='dark'] .text-navy {
-  color: #e8e4dc !important;
+  color: #e8e4dc;
 }
 
-html[data-theme='dark'] .text-ink {
-  color: #d8d4cc !important;
-}
-
-html[data-theme='dark'] .text-ink-muted {
-  color: #9aa3ae !important;
-}
-
-html[data-theme='dark'] .border-parchment-dark {
-  border-color: #2a3544 !important;
-}
-
-html[data-theme='dark'] .bg-parchment,
-html[data-theme='dark'] .bg-parchment\/30,
-html[data-theme='dark'] .bg-parchment\/40 {
-  background-color: #252f3d !important;
+/* White is a literal color, so it cannot flip via a variable. */
+html[data-theme='dark'] .bg-white {
+  background-color: var(--surface) !important;
 }
 
 html[data-theme='dark'] .bottom-nav {
   background-color: rgba(23, 31, 43, 0.95) !important;
-  border-color: #2a3544 !important;
+}
+
+/* Headers use a literal translucent white; give them a dark equivalent. */
+html[data-theme='dark'] .site-header__hero,
+html[data-theme='dark'] .site-header--fixed {
+  background: color-mix(in srgb, #171f2b 88%, transparent);
 }
