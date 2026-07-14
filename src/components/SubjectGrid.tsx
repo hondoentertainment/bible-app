@@ -10,6 +10,7 @@ import { TopicIcon } from './TopicIcon'
 import { VerseOfDay } from './VerseOfDay'
 import { ReadingHistoryStrip } from './ReadingHistoryStrip'
 import { FavoritesPanel } from './FavoritesPanel'
+import { CollectionsPanel } from './CollectionsPanel'
 import type { SavedComparison } from '../hooks/useFavorites'
 import { RecommendationsPanel } from './RecommendationsPanel'
 import { ReadingPlanSection } from './ReadingPlanSection'
@@ -126,6 +127,8 @@ export function SubjectGrid({
       <ReadingHistoryStrip onSelect={onSelect} />
 
       <FavoritesPanel key={favoritesVersion} onOpenComparison={onOpenComparison} />
+
+      <CollectionsPanel />
 
       <RecommendationsPanel
         onExploreSubject={onExploreTheme}

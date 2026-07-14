@@ -1,4 +1,9 @@
 import { TOPICS } from '../data/topics'
+import {
+  getFallbackVerseById,
+  getFallbackVerseForDay,
+  type FallbackVerse,
+} from '../data/fallbackVerses'
 
 export interface VerseOfDaySelection {
   verseId: string
@@ -30,4 +35,14 @@ export function getVerseOfDay(date: Date = new Date()): VerseOfDaySelection {
     topicName: topic.name,
     dateKey: dateKeyFor(date),
   }
+}
+
+/**
+ * Resolves a bundled fallback verse to display when the live API is
+ * unavailable. Prefers bundled text for the selected verse; otherwise picks a
+ * deterministic curated verse for the day.
+ */
+export function getFallbackVerseOfDay(date: Date = new Date()): FallbackVerse {
+  const selection = getVerseOfDay(date)
+  return getFallbackVerseById(selection.verseId) ?? getFallbackVerseForDay(dayIndex(date))
 }

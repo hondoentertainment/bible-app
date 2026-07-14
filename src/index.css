@@ -339,6 +339,12 @@ html[data-theme='dark'] .text-navy {
   color: #e8e4dc;
 }
 
+/* Brighten gold *text* for WCAG AA contrast on dark surfaces (~4.4→6.6:1).
+   `bg-gold` chips keep the deeper tone so white-on-gold stays legible. */
+html[data-theme='dark'] .text-gold {
+  color: #d4a843;
+}
+
 /* White is a literal color, so it cannot flip via a variable. */
 html[data-theme='dark'] .bg-white {
   background-color: var(--surface) !important;

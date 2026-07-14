@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { fetchPassage } from '../services/bibleApi'
-import { getVerseOfDay } from '../utils/verseOfDay'
+import { getFallbackVerseOfDay, getVerseOfDay } from '../utils/verseOfDay'
 import type { Verse } from '../types'
 import { VerseActions } from './VerseActions'
 import { PassageExpander } from './PassageExpander'
@@ -13,19 +13,23 @@ export function VerseOfDay({ onExploreTheme }: VerseOfDayProps) {
   const selection = getVerseOfDay()
   const [verse, setVerse] = useState<Verse | null>(null)
   const [loading, setLoading] = useState(true)
-  const [unavailable, setUnavailable] = useState(false)
+  const [offline, setOffline] = useState(false)
 
   useEffect(() => {
     let cancelled = false
     setLoading(true)
-    setUnavailable(false)
+    setOffline(false)
 
     fetchPassage(selection.verseId)
       .then((v) => {
         if (!cancelled) setVerse(v)
       })
       .catch(() => {
-        if (!cancelled) setUnavailable(true)
+        if (cancelled) return
+        // Never dead-end: fall back to a bundled verse so the hero always
+        // shows real Scripture even when the API is unreachable.
+        setVerse(getFallbackVerseOfDay())
+        setOffline(true)
       })
       .finally(() => {
         if (!cancelled) setLoading(false)
@@ -64,23 +68,17 @@ export function VerseOfDay({ onExploreTheme }: VerseOfDayProps) {
           </div>
         )}
 
-        {!loading && unavailable && (
-          <p className="text-sm text-ink-muted">
-            Today&apos;s verse ({selection.verseId.replace(/\./g, ' ')}) could not be loaded.{' '}
-            <button
-              type="button"
-              onClick={() => onExploreTheme(selection.topicName)}
-              className="font-semibold text-navy underline hover:text-gold"
-            >
-              Explore {selection.topicName} instead
-            </button>
-          </p>
-        )}
-
         {!loading && verse && (
           <>
             <div className="mb-4 flex items-start justify-between gap-4">
-              <h3 className="font-display text-2xl font-semibold text-navy">{verse.reference}</h3>
+              <div>
+                <h3 className="font-display text-2xl font-semibold text-navy">{verse.reference}</h3>
+                {offline && (
+                  <span className="mt-1 inline-block rounded-full bg-parchment px-2 py-0.5 text-[10px] font-semibold uppercase text-ink-muted">
+                    Offline · saved copy
+                  </span>
+                )}
+              </div>
               <VerseActions verse={verse} />
             </div>
             <blockquote className="font-display text-lg leading-relaxed text-ink sm:text-xl">

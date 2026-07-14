@@ -1,6 +1,7 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { AppNav } from './components/AppNav'
 import { BottomNav } from './components/BottomNav'
+import { OfflineBanner } from './components/OfflineBanner'
 import { ScrollToTop } from './components/ScrollToTop'
 import { SearchBar } from './components/SearchBar'
 import { SkipLink } from './components/SkipLink'
@@ -534,6 +535,7 @@ export default function App() {
 
       <ScrollToTop visible={showFab} onClick={() => scrollToTop({ smooth: true })} />
       <ReadingSettingsPanel />
+      <OfflineBanner />
       <BottomNav mode={mode} onModeChange={handleModeChange} />
     </div>
   )

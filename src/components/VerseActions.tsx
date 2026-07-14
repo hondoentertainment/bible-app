@@ -3,6 +3,8 @@ import type { Verse } from '../types'
 import { isVerseFavorite, toggleFavoriteVerse } from '../hooks/useFavorites'
 import { hapticLight } from '../utils/haptics'
 import { copyVerseText, shareVerseText } from '../utils/verseShare'
+import { shareOrDownloadVerseImage } from '../utils/verseImage'
+import { AddToCollectionMenu } from './AddToCollectionMenu'
 import { useToast } from '../hooks/useToast'
 
 interface VerseActionsProps {
@@ -16,6 +18,7 @@ export function VerseActions({ verse, compact = false, onFavoriteChange }: Verse
   const [copied, setCopied] = useState(false)
   const [shared, setShared] = useState(false)
   const [saved, setSaved] = useState(() => isVerseFavorite(verse.id))
+  const [imaging, setImaging] = useState(false)
 
   async function handleCopy() {
     await copyVerseText(verse)
@@ -34,6 +37,21 @@ export function VerseActions({ verse, compact = false, onFavoriteChange }: Verse
       window.setTimeout(() => setShared(false), 2000)
     } catch {
       // User dismissed the native share sheet
+    }
+  }
+
+  async function handleImage() {
+    if (imaging) return
+    setImaging(true)
+    try {
+      const result = await shareOrDownloadVerseImage(verse)
+      hapticLight()
+      showToast(result === 'shared' ? `${verse.reference} image shared` : `${verse.reference} image saved`)
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') return
+      showToast('Could not create image')
+    } finally {
+      setImaging(false)
     }
   }
 
@@ -111,7 +129,39 @@ export function VerseActions({ verse, compact = false, onFavoriteChange }: Verse
           </>
         )}
       </button>
+
+      <button
+        type="button"
+        onClick={handleImage}
+        disabled={imaging}
+        className={`${btnClass} border-parchment-dark text-ink-muted hover:border-gold hover:text-gold disabled:opacity-60`}
+        aria-label={`Create a shareable image of ${verse.reference}`}
+      >
+        {imaging ? (
+          <>
+            <span className="spinner h-3.5 w-3.5" aria-hidden />
+            {compact ? null : 'Image…'}
+          </>
+        ) : (
+          <>
+            <ImageIcon />
+            {compact ? null : 'Image'}
+          </>
+        )}
+      </button>
+
+      <AddToCollectionMenu verse={verse} compact={compact} />
     </div>
+  )
+}
+
+function ImageIcon() {
+  return (
+    <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <circle cx="8.5" cy="8.5" r="1.5" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M21 15l-5-5L5 21" />
+    </svg>
   )
 }
 
