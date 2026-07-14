@@ -53,7 +53,7 @@ function TopicCard({
       type="button"
       onClick={() => onSelect(topic.name)}
       aria-pressed={isActive}
-      className={`subject-card group flex h-full flex-col rounded-2xl border bg-white p-5 text-left shadow-sm transition-all duration-300 sm:p-6 ${
+      className={`subject-card group flex h-full w-full flex-col rounded-xl border bg-white p-5 text-left shadow-sm transition-all duration-300 sm:p-6 ${
         isActive
           ? 'border-gold ring-2 ring-gold/25 shadow-md'
           : 'border-parchment-dark/60 hover:-translate-y-0.5 hover:border-gold/40 hover:shadow-md'
@@ -67,17 +67,17 @@ function TopicCard({
       </div>
 
       <h3
-        className={`line-clamp-2 min-h-[2.5em] font-display text-xl font-semibold leading-tight text-navy ${
+        className={`line-clamp-2 font-display text-xl font-semibold leading-tight text-navy ${
           isActive ? 'text-gold' : 'group-hover:text-gold'
         }`}
       >
         {topic.name}
       </h3>
-      <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-ink-muted">
+      <p className="mt-2 line-clamp-2 flex-1 text-sm leading-relaxed text-ink-muted">
         {topic.description}
       </p>
       <span
-        className={`mt-auto pt-4 text-[0.65rem] font-semibold tracking-[0.18em] uppercase ${
+        className={`mt-4 text-[0.65rem] font-semibold tracking-[0.18em] uppercase ${
           isActive ? 'text-gold' : 'text-ink-muted/70 group-hover:text-gold'
         }`}
       >
@@ -209,9 +209,9 @@ export function SubjectGrid({
 
         {visibleTopics.length > 0 ? (
           <>
-            <ul className="stagger-children grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5">
+            <ul className="stagger-children grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {visibleTopics.map((topic) => (
-                <li key={topic.id} className="flex">
+                <li key={topic.id} className="flex h-full">
                   <TopicCard
                     topic={topic}
                     isActive={isTopicActive(topic, activeQuery)}

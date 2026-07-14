@@ -18,9 +18,9 @@ export function RecommendationsPanel({
     <section className="mb-10 w-full" aria-label="Recommended for you">
       <h2 className="mb-1 font-display text-xl font-semibold text-navy">Because you explored…</h2>
       <p className="mb-4 text-sm text-ink-muted">Picks from your recent searches and favorites</p>
-      <ul className="grid gap-2 sm:grid-cols-2">
+      <ul className="grid gap-3 sm:grid-cols-2">
         {recs.map((rec) => (
-          <li key={`${rec.kind}-${rec.label}`}>
+          <li key={`${rec.kind}-${rec.label}`} className="flex h-full">
             <RecButton rec={rec} onExploreSubject={onExploreSubject} onOpenStory={onOpenStory} onOpenSong={onOpenSong} />
           </li>
         ))}
@@ -50,11 +50,11 @@ function RecButton({
     <button
       type="button"
       onClick={handleClick}
-      className="flex h-full w-full flex-col rounded-xl border border-parchment-dark bg-white p-4 text-left transition hover:border-gold hover:shadow-sm active:scale-[0.99]"
+      className="flex h-full min-h-[6.5rem] w-full flex-col rounded-xl border border-parchment-dark bg-white p-4 text-left transition hover:border-gold hover:shadow-sm active:scale-[0.99]"
     >
       <span className="text-xs font-semibold uppercase text-gold">{rec.kind}</span>
-      <span className="mt-1 font-semibold text-navy">{rec.label}</span>
-      <span className="mt-1 line-clamp-2 text-sm text-ink-muted">{rec.detail}</span>
+      <span className="mt-1 line-clamp-1 font-semibold text-navy">{rec.label}</span>
+      <span className="mt-1 line-clamp-2 flex-1 text-sm text-ink-muted">{rec.detail}</span>
     </button>
   )
 }

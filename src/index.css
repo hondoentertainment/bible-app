@@ -298,8 +298,11 @@ kbd {
   flex-shrink: 0;
 }
 
+/* Equal-height subject cards: min height keeps the grid tidy without clipping
+   at larger font scales (fixed height caused cramped/uneven boxes). */
 .browse-subjects .subject-card {
-  height: 15rem;
+  min-height: 15rem;
+  overflow: hidden;
 }
 
 /* ── Reading settings: font scale ── */

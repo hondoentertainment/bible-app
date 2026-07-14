@@ -1,5 +1,9 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
-import { getRecentSearches, removeRecentSearch } from '../hooks/useRecentSearches'
+import {
+  clearRecentSearches,
+  getRecentSearches,
+  removeRecentSearch,
+} from '../hooks/useRecentSearches'
 import { FEATURED_TOPICS, searchTopics } from '../data/topics'
 
 interface SearchBarProps {
@@ -12,6 +16,8 @@ interface SearchBarProps {
   inputId?: string
   recentSearches?: string[]
   onRecentSelect?: (query: string) => void
+  /** Called whenever recent searches change (remove / clear) so parent state stays in sync. */
+  onRecentChange?: (searches: string[]) => void
 }
 
 export function SearchBar({
@@ -24,12 +30,15 @@ export function SearchBar({
   inputId: inputIdProp,
   recentSearches = [],
   onRecentSelect,
+  onRecentChange,
 }: SearchBarProps) {
   const generatedId = useId()
   const inputId = inputIdProp ?? generatedId
   const inputRef = useRef<HTMLInputElement>(null)
   const [focused, setFocused] = useState(false)
-  const [localRecent, setLocalRecent] = useState<string[]>([])
+  const [localRecent, setLocalRecent] = useState<string[]>(() =>
+    recentSearches.length ? recentSearches : getRecentSearches(),
+  )
 
   useEffect(() => {
     if (autoFocus && !compact) {
@@ -37,9 +46,24 @@ export function SearchBar({
     }
   }, [autoFocus, compact])
 
+  // Keep in sync with parent + storage (always prefer the freshest storage read).
   useEffect(() => {
-    if (focused) setLocalRecent(recentSearches.length ? recentSearches : getRecentSearches())
-  }, [focused, recentSearches])
+    setLocalRecent(recentSearches.length ? recentSearches : getRecentSearches())
+  }, [recentSearches])
+
+  function syncRecent(next: string[]) {
+    setLocalRecent(next)
+    onRecentChange?.(next)
+  }
+
+  function handleRemove(term: string) {
+    syncRecent(removeRecentSearch(term))
+  }
+
+  function handleClear() {
+    clearRecentSearches()
+    syncRecent([])
+  }
 
   const trimmed = value.trim()
   const suggestions = useMemo(
@@ -47,8 +71,10 @@ export function SearchBar({
     [trimmed],
   )
   const showSuggestions = focused && trimmed.length >= 2 && suggestions.length > 0 && !!onRecentSelect
-  const showRecent = focused && !trimmed && localRecent.length > 0 && !!onRecentSelect
-  const showPopular = focused && !trimmed && localRecent.length === 0 && !!onRecentSelect
+  const showPopular =
+    focused && !trimmed && localRecent.length === 0 && !!onRecentSelect
+  // Recent chips sit below the bar (always visible) — same pattern as Stories/Lyrics.
+  const showRecentChips = !compact && !trimmed && localRecent.length > 0 && !!onRecentSelect
 
   if (compact) {
     return (
@@ -158,44 +184,13 @@ export function SearchBar({
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => onRecentSelect!(topic.name)}
-                  className="touch-manipulation flex min-h-[44px] w-full items-center gap-2 rounded-lg px-3 text-left text-sm text-navy transition hover:bg-parchment active:scale-[0.99]"
+                  className="touch-manipulation flex min-h-[44px] w-full min-w-0 items-center gap-2 rounded-lg px-3 text-left text-sm text-navy transition hover:bg-parchment active:scale-[0.99]"
                 >
                   <svg className="h-4 w-4 shrink-0 text-gold/70" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M11 18a7 7 0 100-14 7 7 0 000 14z" />
                   </svg>
-                  <span className="font-medium">{topic.name}</span>
-                  <span className="truncate text-xs text-ink-muted">{topic.description}</span>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {showRecent && (
-        <div className="absolute inset-x-0 top-full z-20 mt-2 rounded-xl border border-parchment-dark bg-white p-3 shadow-lg">
-          <p className="mb-2 text-xs font-semibold tracking-wide text-ink-muted uppercase">Recent searches</p>
-          <ul className="flex flex-col gap-1">
-            {localRecent.map((term) => (
-              <li key={term} className="flex items-center gap-1">
-                <button
-                  type="button"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => onRecentSelect!(term)}
-                  className="touch-manipulation flex min-h-[44px] flex-1 items-center rounded-lg px-3 text-left text-sm text-navy transition hover:bg-parchment active:scale-[0.99]"
-                >
-                  {term}
-                </button>
-                <button
-                  type="button"
-                  onMouseDown={(e) => e.preventDefault()}
-                  onClick={() => setLocalRecent(removeRecentSearch(term))}
-                  className="touch-manipulation flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-ink-muted transition hover:bg-parchment hover:text-navy"
-                  aria-label={`Remove ${term} from recent searches`}
-                >
-                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
-                    <path strokeLinecap="round" d="M18 6L6 18M6 6l12 12" />
-                  </svg>
+                  <span className="shrink-0 font-medium">{topic.name}</span>
+                  <span className="min-w-0 truncate text-xs text-ink-muted">{topic.description}</span>
                 </button>
               </li>
             ))}
@@ -222,9 +217,50 @@ export function SearchBar({
         </div>
       )}
 
-      <p className="mt-2 text-center text-xs text-ink-muted/70">
-        Press <kbd className="rounded border border-parchment-dark bg-white px-1.5 py-0.5 font-sans text-[10px]">/</kbd> to focus · Try &ldquo;John 3:16&rdquo; or a subject
-      </p>
+      {showRecentChips && (
+        <div className="mt-3" aria-label="Recent searches">
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <p className="text-xs font-semibold tracking-wide text-ink-muted uppercase">
+              Recent searches
+            </p>
+            <button
+              type="button"
+              onClick={handleClear}
+              className="touch-manipulation rounded-lg px-2 py-0.5 text-xs font-medium text-ink-muted transition hover:text-navy"
+            >
+              Clear
+            </button>
+          </div>
+          <div className="flex flex-wrap justify-center gap-2 sm:justify-start">
+            {localRecent.map((term) => (
+              <div key={term} className="flex max-w-full items-center gap-0.5">
+                <button
+                  type="button"
+                  onClick={() => onRecentSelect!(term)}
+                  className="touch-manipulation max-w-[14rem] truncate rounded-l-full border border-r-0 border-parchment-dark bg-white px-3.5 py-1.5 text-sm text-navy transition hover:border-gold/50 hover:text-gold active:scale-95"
+                  title={term}
+                >
+                  {term}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleRemove(term)}
+                  className="touch-manipulation rounded-r-full border border-parchment-dark bg-white px-2.5 py-1.5 text-ink-muted transition hover:text-navy active:scale-95"
+                  aria-label={`Remove ${term} from recent searches`}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {!showRecentChips && (
+        <p className="mt-2 text-center text-xs text-ink-muted/70">
+          Press <kbd className="rounded border border-parchment-dark bg-white px-1.5 py-0.5 font-sans text-[10px]">/</kbd> to focus · Try &ldquo;John 3:16&rdquo; or a subject
+        </p>
+      )}
     </div>
   )
 }

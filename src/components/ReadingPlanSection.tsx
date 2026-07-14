@@ -30,14 +30,14 @@ export function ReadingPlanSection({ onExploreSubject }: ReadingPlanSectionProps
         {READING_PLANS.map((plan) => {
           const progress = getPlanProgress(plan.id)
           return (
-            <li key={plan.id}>
+            <li key={plan.id} className="flex h-full">
               <button
                 type="button"
                 onClick={() => setActivePlan(plan)}
-                className="flex h-full w-full flex-col rounded-xl border border-parchment-dark bg-white p-4 text-left transition hover:border-gold active:scale-[0.99]"
+                className="flex h-full min-h-[7.5rem] w-full flex-col rounded-xl border border-parchment-dark bg-white p-4 text-left transition hover:border-gold active:scale-[0.99]"
               >
-                <span className="font-semibold text-navy">{plan.title}</span>
-                <span className="mt-1 flex-1 text-sm text-ink-muted">{plan.description}</span>
+                <span className="line-clamp-1 font-semibold text-navy">{plan.title}</span>
+                <span className="mt-1 line-clamp-2 flex-1 text-sm text-ink-muted">{plan.description}</span>
                 <span className="mt-3 text-xs text-gold">
                   {progress > 0 ? `Day ${progress} of 7 · Continue →` : 'Start plan →'}
                 </span>

@@ -363,6 +363,7 @@ export default function App() {
       setQuery(term)
       runSearch(term)
     },
+    onRecentChange: setRecentSearches,
   }
 
   return (
