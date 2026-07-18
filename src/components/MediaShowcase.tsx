@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react'
 import {
-  MEDIA_COMPARISONS,
   MEDIA_TYPE_LABELS,
   STORIES_COMPARE_STEPS,
   getComparisonsByType,
@@ -25,12 +24,30 @@ interface MediaShowcaseProps {
   onOpenSong?: (artist: string, track: string) => void
 }
 
-const TYPE_FILTERS: Array<{ id: MediaType | 'all'; label: string }> = [
-  { id: 'all', label: 'All' },
-  { id: 'book', label: 'Books' },
-  { id: 'song', label: 'Songs' },
-  { id: 'movie', label: 'Movies' },
+type StorySection = 'book' | 'movie' | 'tv'
+
+const STORY_SECTIONS: Array<{ id: StorySection; label: string; description: string }> = [
+  {
+    id: 'book',
+    label: 'Books',
+    description: 'Novels, classics, and speeches compared with Scripture',
+  },
+  {
+    id: 'movie',
+    label: 'Movies',
+    description: 'Films and famous lines matched to biblical themes',
+  },
+  {
+    id: 'tv',
+    label: 'TV',
+    description: 'TV series themes compared with NIV passages',
+  },
 ]
+
+function sectionFromStoryType(type: MediaType): StorySection {
+  if (type === 'movie' || type === 'tv' || type === 'book') return type
+  return 'book'
+}
 
 export function MediaShowcase({
   onSelect,
@@ -40,16 +57,16 @@ export function MediaShowcase({
   onOpenStory,
   onOpenSong,
 }: MediaShowcaseProps) {
-  const [filter, setFilter] = useState<MediaType | 'all'>('all')
+  const initialComparison = initialStoryId ? getMediaComparison(initialStoryId) ?? null : null
+  const [section, setSection] = useState<StorySection>(() =>
+    initialComparison ? sectionFromStoryType(initialComparison.type) : 'book',
+  )
   const [search, setSearch] = useState('')
-  const [selected, setSelected] = useState<MediaComparison | null>(() => {
-    if (initialStoryId) return getMediaComparison(initialStoryId) ?? null
-    return null
-  })
+  const [selected, setSelected] = useState<MediaComparison | null>(() => initialComparison)
   const [recentIds, setRecentIds] = useState<string[]>(() => getRecentStories())
 
   const items = useMemo(() => {
-    const base = getComparisonsByType(filter)
+    const base = getComparisonsByType(section)
     const q = search.trim().toLowerCase()
     if (!q) return base
     return base.filter(
@@ -59,15 +76,19 @@ export function MediaShowcase({
         item.summary.toLowerCase().includes(q) ||
         item.parallels.some((p) => p.theme.toLowerCase().includes(q)),
     )
-  }, [filter, search])
+  }, [section, search])
 
-  const featuredStories = getFeaturedStories()
+  const featuredStories = getFeaturedStories(section)
   const recentStories = recentIds
     .map((id) => getMediaComparison(id))
     .filter((item): item is MediaComparison => item !== undefined)
+    .filter((item) => item.type === section)
+
+  const activeSection = STORY_SECTIONS.find((s) => s.id === section)!
 
   function handleSelect(comparison: MediaComparison) {
     setSelected(comparison)
+    setSection(sectionFromStoryType(comparison.type))
     setRecentIds(addRecentStory(comparison.id))
     onSelect?.(comparison)
     onStoryUrlChange?.(comparison.id)
@@ -76,6 +97,11 @@ export function MediaShowcase({
   function handleBack() {
     setSelected(null)
     onStoryUrlChange?.(null)
+  }
+
+  function handleSectionChange(next: StorySection) {
+    setSection(next)
+    setSearch('')
   }
 
   if (selected) {
@@ -98,7 +124,7 @@ export function MediaShowcase({
           Stories &amp; Scripture
         </h2>
         <p className="mx-auto mt-2 max-w-xl text-ink-muted">
-          Famous lines from books, songs, and films — or search Goodreads &amp; Letterboxd to compare any title with Scripture.
+          Compare books, movies, and TV with Scripture — search a title or open a curated parallel.
         </p>
       </div>
 
@@ -117,33 +143,77 @@ export function MediaShowcase({
         ))}
       </ol>
 
-      {(filter === 'all' || filter === 'book') && (
-        <ExternalMediaSearch type="book" onExploreTheme={onExploreTheme} onSelectCurated={handleSelect} />
-      )}
-      {(filter === 'all' || filter === 'movie') && (
-        <ExternalMediaSearch type="movie" onExploreTheme={onExploreTheme} onSelectCurated={handleSelect} />
-      )}
-
-      <div className="mb-6">
-        <p className="mb-2 text-center text-xs font-semibold tracking-wide text-ink-muted uppercase">
-          Curated stories — tap to open
-        </p>
-        <div className="flex flex-wrap justify-center gap-2">
-          {featuredStories.map((item) => (
+      <div
+        className="mb-6 grid grid-cols-1 gap-2 sm:grid-cols-3"
+        role="tablist"
+        aria-label="Story sections"
+      >
+        {STORY_SECTIONS.map(({ id, label, description }) => {
+          const count = getComparisonsByType(id).length
+          const active = section === id
+          return (
             <button
-              key={item.id}
+              key={id}
               type="button"
-              onClick={() => handleSelect(item)}
-              className="touch-manipulation rounded-full border border-parchment-dark bg-white px-3 py-2 text-sm transition hover:border-gold hover:shadow-sm active:scale-95"
+              role="tab"
+              aria-selected={active}
+              onClick={() => handleSectionChange(id)}
+              className={`touch-manipulation rounded-2xl border px-4 py-4 text-left transition active:scale-[0.99] ${
+                active
+                  ? 'border-gold bg-gold/10 shadow-sm'
+                  : 'border-parchment-dark bg-white hover:border-gold/40'
+              }`}
             >
-              <span className="font-medium text-navy">{item.title}</span>
-              <span className="ml-1.5 text-xs text-ink-muted">
-                · {MEDIA_TYPE_LABELS[item.type]}
-              </span>
+              <div className="flex items-center justify-between gap-2">
+                <span className={`font-display text-lg font-semibold ${active ? 'text-navy' : 'text-navy/80'}`}>
+                  {label}
+                </span>
+                {count > 0 && (
+                  <span className={`text-xs ${active ? 'text-gold' : 'text-ink-muted'}`}>
+                    {count} curated
+                  </span>
+                )}
+              </div>
+              <p className="mt-1 text-xs leading-snug text-ink-muted">{description}</p>
             </button>
-          ))}
-        </div>
+          )
+        })}
       </div>
+
+      <div className="mb-2">
+        <h3 className="font-display text-xl font-semibold text-navy">{activeSection.label}</h3>
+        <p className="text-sm text-ink-muted">{activeSection.description}</p>
+      </div>
+
+      <ExternalMediaSearch
+        key={section}
+        type={section}
+        onExploreTheme={onExploreTheme}
+        onSelectCurated={handleSelect}
+      />
+
+      {featuredStories.length > 0 && (
+        <div className="mb-6">
+          <p className="mb-2 text-center text-xs font-semibold tracking-wide text-ink-muted uppercase">
+            Featured {activeSection.label.toLowerCase()} — tap to open
+          </p>
+          <div className="flex flex-wrap justify-center gap-2">
+            {featuredStories.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => handleSelect(item)}
+                className="touch-manipulation rounded-full border border-parchment-dark bg-white px-3 py-2 text-sm transition hover:border-gold hover:shadow-sm active:scale-95"
+              >
+                <span className="font-medium text-navy">{item.title}</span>
+                <span className="ml-1.5 text-xs text-ink-muted">
+                  · {MEDIA_TYPE_LABELS[item.type]}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {recentStories.length > 0 && (
         <div className="mb-6">
@@ -175,39 +245,17 @@ export function MediaShowcase({
       )}
 
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div
-          className="flex flex-wrap justify-center gap-2 sm:justify-start"
-          role="tablist"
-          aria-label="Media type"
-        >
-          {TYPE_FILTERS.map(({ id, label }) => (
-            <button
-              key={id}
-              type="button"
-              role="tab"
-              aria-selected={filter === id}
-              onClick={() => setFilter(id)}
-              className={`touch-manipulation rounded-full border px-4 py-1.5 text-sm font-medium transition active:scale-95 ${
-                filter === id
-                  ? 'border-gold bg-gold text-white'
-                  : 'border-parchment-dark bg-white text-ink-muted hover:border-gold/40 hover:text-navy'
-              }`}
-            >
-              {label}
-              <span className={`ml-1.5 text-xs ${filter === id ? 'text-white/80' : 'opacity-60'}`}>
-                {id === 'all' ? MEDIA_COMPARISONS.length : getComparisonsByType(id).length}
-              </span>
-            </button>
-          ))}
-        </div>
+        <p className="text-center text-xs font-semibold tracking-wide text-ink-muted uppercase sm:text-left">
+          Curated {activeSection.label.toLowerCase()}
+        </p>
 
         <label className="relative w-full sm:w-56">
-          <span className="sr-only">Filter stories</span>
+          <span className="sr-only">Filter {activeSection.label.toLowerCase()}</span>
           <input
             type="search"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Filter stories…"
+            placeholder={`Filter ${activeSection.label.toLowerCase()}…`}
             className="w-full rounded-lg border border-parchment-dark bg-white py-2.5 pr-3 pl-9 text-base text-ink placeholder:text-ink-muted/60 focus:border-gold focus:ring-2 focus:ring-gold/20 focus:outline-none"
           />
           <svg
@@ -231,9 +279,13 @@ export function MediaShowcase({
             </li>
           ))}
         </ul>
-      ) : (
+      ) : search.trim() ? (
         <p className="rounded-xl border border-dashed border-parchment-dark bg-white/50 py-16 text-center text-ink-muted">
-          No stories match &ldquo;{search}&rdquo;. Try a different word or category.
+          No {activeSection.label.toLowerCase()} match &ldquo;{search}&rdquo;. Try a different word.
+        </p>
+      ) : (
+        <p className="rounded-xl border border-dashed border-parchment-dark bg-white/50 py-12 text-center text-ink-muted">
+          No curated {activeSection.label.toLowerCase()} yet — search above to compare any title with Scripture.
         </p>
       )}
     </section>

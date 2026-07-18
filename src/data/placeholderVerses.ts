@@ -1,4 +1,4 @@
-export type PlaceholderVerseKind = 'book' | 'movie' | 'song'
+export type PlaceholderVerseKind = 'book' | 'movie' | 'song' | 'tv'
 
 export interface PlaceholderVerse {
   reference: string
@@ -13,6 +13,11 @@ export const PLACEHOLDER_VERSES: Record<PlaceholderVerseKind, PlaceholderVerse> 
     text: 'Your word is a lamp for my feet, a light on my path.',
   },
   movie: {
+    reference: 'Psalm 78:4',
+    shortRef: 'Ps 78:4',
+    text: 'We will tell the next generation the praiseworthy deeds of the Lord.',
+  },
+  tv: {
     reference: 'Psalm 78:4',
     shortRef: 'Ps 78:4',
     text: 'We will tell the next generation the praiseworthy deeds of the Lord.',

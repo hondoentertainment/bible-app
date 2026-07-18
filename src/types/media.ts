@@ -1,4 +1,4 @@
-export type MediaType = 'book' | 'song' | 'movie'
+export type MediaType = 'book' | 'song' | 'movie' | 'tv'
 
 export interface MediaLine {
   text: string

@@ -19,7 +19,7 @@ Set in **Vercel → Project → Settings → Environment Variables → Productio
 | `BIBLE_API_KEY` | Required for NIV/ESV verse text |
 | `SPOTIFY_CLIENT_ID` | Optional — enables Spotify search in Lyrics mode |
 | `SPOTIFY_CLIENT_SECRET` | Optional |
-| `TMDB_API_KEY` | Optional — enables movie search in Stories mode |
+| `TMDB_API_KEY` | Optional — enables movie and TV search in Stories mode |
 
 After adding variables, redeploy production.
 

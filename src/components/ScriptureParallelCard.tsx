@@ -23,6 +23,11 @@ const TYPE_STYLES: Record<MediaType, { bg: string; label: string; icon: string }
     label: 'text-indigo-900',
     icon: 'bg-indigo-900/10 text-indigo-900',
   },
+  tv: {
+    bg: 'from-sky-800/[0.06] to-white',
+    label: 'text-sky-900',
+    icon: 'bg-sky-800/10 text-sky-800',
+  },
   song: {
     bg: 'from-[#1DB954]/[0.06] to-white',
     label: 'text-[#1a7a3a]',
@@ -148,6 +153,13 @@ function MediaTypeIcon({ type }: { type: MediaType }) {
     return (
       <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
         <path strokeLinecap="round" strokeLinejoin="round" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+      </svg>
+    )
+  }
+  if (type === 'tv') {
+    return (
+      <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
       </svg>
     )
   }

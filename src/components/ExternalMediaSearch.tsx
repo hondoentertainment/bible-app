@@ -8,16 +8,20 @@ import {
 import {
   compareBookToScripture,
   compareMovieToScripture,
+  compareTvToScripture,
   searchBooks,
   searchMovies,
+  searchTv,
 } from '../services/externalMediaCompare'
 import { searchCuratedComparisons } from '../data/media-comparisons'
 import type { MediaComparison } from '../types/media'
 import type {
   BookSearchResult,
   ExternalMediaComparisonResult,
+  ExternalMediaType,
   MovieSearchResult,
   RecentExternalMedia,
+  TvSearchResult,
 } from '../types/externalMedia'
 import { DynamicMediaComparisonView } from './DynamicMediaComparisonView'
 import { ApiStatusBanner } from './ApiStatusBanner'
@@ -27,24 +31,51 @@ import { ScripturePlaceholder } from './ScripturePlaceholder'
 const COMPARE_STAGES = {
   book: ['Fetching summary…', 'Analyzing themes…', 'Matching NIV passages…'],
   movie: ['Loading synopsis…', 'Analyzing themes…', 'Matching NIV passages…'],
+  tv: ['Loading synopsis…', 'Analyzing themes…', 'Matching NIV passages…'],
+} as const
+
+const BRAND = {
+  book: {
+    name: 'Goodreads',
+    color: '#553b08',
+    placeholder: 'Partial title or author — e.g. Les Mis or Hugo',
+    noun: 'books',
+    poweredBy: 'Powered by Open Library · links to Goodreads',
+  },
+  movie: {
+    name: 'Letterboxd',
+    color: '#00c030',
+    placeholder: 'Partial film title — e.g. Shawshank',
+    noun: 'films',
+    poweredBy: 'Powered by TMDB · links to Letterboxd',
+  },
+  tv: {
+    name: 'TMDB',
+    color: '#01b4e4',
+    placeholder: 'Partial show title — e.g. The Chosen',
+    noun: 'TV shows',
+    poweredBy: 'Powered by TMDB',
+  },
 } as const
 
 const MIN_PARTIAL_CHARS = 2
 
 interface ExternalMediaSearchProps {
-  type: 'book' | 'movie'
+  type: ExternalMediaType
   onExploreTheme?: (topicName: string) => void
   onSelectCurated?: (comparison: MediaComparison) => void
 }
 
 export function ExternalMediaSearch({ type, onExploreTheme, onSelectCurated }: ExternalMediaSearchProps) {
-  const isBook = type === 'book'
+  const brand = BRAND[type]
+  const needsTmdb = type === 'movie' || type === 'tv'
   const [query, setQuery] = useState('')
   const [searching, setSearching] = useState(false)
   const [searchError, setSearchError] = useState<string | null>(null)
   const [books, setBooks] = useState<BookSearchResult[]>([])
   const [movies, setMovies] = useState<MovieSearchResult[]>([])
-  const [moviesReady, setMoviesReady] = useState<boolean | null>(isBook ? null : null)
+  const [shows, setShows] = useState<TvSearchResult[]>([])
+  const [tmdbReady, setTmdbReady] = useState<boolean | null>(needsTmdb ? null : null)
   const [comparing, setComparing] = useState(false)
   const [compareStage, setCompareStage] = useState(0)
   const [comparingTitle, setComparingTitle] = useState<string | null>(null)
@@ -54,17 +85,18 @@ export function ExternalMediaSearch({ type, onExploreTheme, onSelectCurated }: E
   )
   const debouncedQuery = useDebouncedValue(query, 400)
   const curatedMatches = useMemo(
-    () => searchCuratedComparisons(debouncedQuery, isBook ? 'book' : 'movie'),
-    [debouncedQuery, isBook],
+    () => searchCuratedComparisons(debouncedQuery, type),
+    [debouncedQuery, type],
   )
 
   useEffect(() => {
-    if (isBook) return
-    fetch('/api/movies/status')
+    if (!needsTmdb) return
+    const statusPath = type === 'tv' ? '/api/tv/status' : '/api/movies/status'
+    fetch(statusPath)
       .then((r) => r.json())
-      .then((d: { configured: boolean }) => setMoviesReady(d.configured))
-      .catch(() => setMoviesReady(false))
-  }, [isBook])
+      .then((d: { configured: boolean }) => setTmdbReady(d.configured))
+      .catch(() => setTmdbReady(false))
+  }, [needsTmdb, type])
 
   useEffect(() => {
     if (!comparing) {
@@ -80,56 +112,68 @@ export function ExternalMediaSearch({ type, onExploreTheme, onSelectCurated }: E
     }
   }, [comparing])
 
+  const clearResults = () => {
+    setBooks([])
+    setMovies([])
+    setShows([])
+  }
+
   const runSearch = useCallback(
     async (searchQuery: string) => {
       const q = searchQuery.trim()
       if (q.length < MIN_PARTIAL_CHARS) {
-        setBooks([])
-        setMovies([])
+        clearResults()
         setSearchError(null)
         return
       }
 
       setSearching(true)
       setSearchError(null)
-      setBooks([])
-      setMovies([])
+      clearResults()
       setResult(null)
 
       try {
-        if (isBook) {
+        if (type === 'book') {
           const found = await searchBooks(q)
           setBooks(found)
           if (found.length === 0) setSearchError('No books found. Try a partial title or author name.')
-        } else {
-          if (moviesReady === false) {
+        } else if (type === 'movie') {
+          if (tmdbReady === false) {
             setSearchError('Movie search requires TMDB_API_KEY on the server. Contact the site admin.')
             return
           }
           const found = await searchMovies(q)
           setMovies(found)
           if (found.length === 0) setSearchError('No films found. Try a partial title.')
+        } else {
+          if (tmdbReady === false) {
+            setSearchError('TV search requires TMDB_API_KEY on the server. Contact the site admin.')
+            return
+          }
+          const found = await searchTv(q)
+          setShows(found)
+          if (found.length === 0) setSearchError('No TV shows found. Try a partial title.')
         }
       } catch (err) {
-        if (!isBook && err instanceof Error && err.message === 'TMDB_NOT_CONFIGURED') {
-          setMoviesReady(false)
-          setSearchError('Movie search is not configured on the server.')
+        if (needsTmdb && err instanceof Error && err.message === 'TMDB_NOT_CONFIGURED') {
+          setTmdbReady(false)
+          setSearchError(`${type === 'tv' ? 'TV' : 'Movie'} search is not configured on the server.`)
         } else {
-          setSearchError(isBook ? 'Book search failed. Try again.' : 'Movie search failed. Try again.')
+          const failLabel = type === 'book' ? 'Book' : type === 'movie' ? 'Movie' : 'TV'
+          setSearchError(`${failLabel} search failed. Try again.`)
         }
       } finally {
         setSearching(false)
       }
     },
-    [isBook, moviesReady],
+    [type, tmdbReady, needsTmdb],
   )
 
   useEffect(() => {
     if (debouncedQuery.trim().length >= MIN_PARTIAL_CHARS) {
       runSearch(debouncedQuery)
     } else {
-      setBooks([])
-      setMovies([])
+      clearResults()
       setSearchError(null)
     }
   }, [debouncedQuery, runSearch])
@@ -172,6 +216,14 @@ export function ExternalMediaSearch({ type, onExploreTheme, onSelectCurated }: E
     )
   }
 
+  function handleTvSelect(show: TvSearchResult) {
+    runComparison(
+      show.title,
+      () => compareTvToScripture(show),
+      { type: 'tv', id: show.id, title: show.title, creator: show.year ?? '' },
+    )
+  }
+
   if (result) {
     return (
       <DynamicMediaComparisonView
@@ -182,9 +234,7 @@ export function ExternalMediaSearch({ type, onExploreTheme, onSelectCurated }: E
     )
   }
 
-  const brand = isBook
-    ? { name: 'Goodreads', color: '#553b08', placeholder: 'Partial title or author — e.g. Les Mis or Hugo' }
-    : { name: 'Letterboxd', color: '#00c030', placeholder: 'Partial film title — e.g. Shawshank' }
+  const tmdbBlocked = needsTmdb && tmdbReady === false
 
   return (
     <div className="mb-8 rounded-2xl border border-parchment-dark bg-white p-5 shadow-sm sm:p-6">
@@ -193,24 +243,20 @@ export function ExternalMediaSearch({ type, onExploreTheme, onSelectCurated }: E
           className="flex h-9 w-9 items-center justify-center rounded-full"
           style={{ backgroundColor: `${brand.color}18`, color: brand.color }}
         >
-          <ScripturePlaceholder kind={isBook ? 'book' : 'movie'} size="xs" />
+          <ScripturePlaceholder kind={type} size="xs" />
         </span>
         <div>
           <h3 className="font-display text-lg font-semibold text-navy">
-            Search {isBook ? 'books' : 'films'} via {brand.name}
+            Search {brand.noun} via {brand.name}
           </h3>
-          <p className="text-xs text-ink-muted">
-            {isBook
-              ? 'Powered by Open Library · links to Goodreads'
-              : 'Powered by TMDB · links to Letterboxd'}
-          </p>
+          <p className="text-xs text-ink-muted">{brand.poweredBy}</p>
         </div>
       </div>
 
-      {!isBook && moviesReady === false && (
+      {tmdbBlocked && (
         <ApiStatusBanner
-          title="Movie search not configured"
-          detail="Add TMDB_API_KEY to server environment variables to enable Letterboxd-style film search."
+          title={`${type === 'tv' ? 'TV' : 'Movie'} search not configured`}
+          detail="Add TMDB_API_KEY to server environment variables to enable this search."
           stillWorks="Curated story comparisons below, book search via Goodreads/Open Library, and all Subjects/Lyrics modes."
         />
       )}
@@ -223,7 +269,7 @@ export function ExternalMediaSearch({ type, onExploreTheme, onSelectCurated }: E
         }}
       >
         <label htmlFor={`${type}-search`} className="sr-only">
-          Search {isBook ? 'books' : 'films'}
+          Search {brand.noun}
         </label>
         <div className="flex gap-2">
           <input
@@ -232,12 +278,12 @@ export function ExternalMediaSearch({ type, onExploreTheme, onSelectCurated }: E
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={brand.placeholder}
-            disabled={!isBook && moviesReady === false}
+            disabled={tmdbBlocked}
             className="min-w-0 flex-1 rounded-xl border border-parchment-dark bg-white px-4 py-3 text-base focus:border-gold focus:outline-none focus:ring-2 focus:ring-gold/20 disabled:opacity-50"
           />
           <button
             type="submit"
-            disabled={searching || comparing || query.trim().length < MIN_PARTIAL_CHARS || (!isBook && moviesReady === false)}
+            disabled={searching || comparing || query.trim().length < MIN_PARTIAL_CHARS || tmdbBlocked}
             className="touch-manipulation min-h-[48px] shrink-0 rounded-xl px-5 text-sm font-semibold text-white transition hover:shadow-md disabled:opacity-50 active:scale-95"
             style={{ backgroundColor: brand.color }}
           >
@@ -313,8 +359,15 @@ export function ExternalMediaSearch({ type, onExploreTheme, onSelectCurated }: E
         <ul className="flex flex-col gap-2">
           {movies.map((movie) => (
             <li key={movie.id}>
-              <MovieResultRow
-                movie={movie}
+              <PosterResultRow
+                title={movie.title}
+                year={movie.year}
+                overview={movie.overview}
+                posterUrl={movie.posterUrl}
+                externalUrl={movie.letterboxdUrl}
+                externalLabel="Letterboxd"
+                externalColor="#00c030"
+                placeholderKind="movie"
                 onSelect={() => handleMovieSelect(movie)}
                 disabled={comparing}
                 isComparing={comparingTitle === movie.title}
@@ -324,10 +377,32 @@ export function ExternalMediaSearch({ type, onExploreTheme, onSelectCurated }: E
         </ul>
       )}
 
+      {!searching && shows.length > 0 && (
+        <ul className="flex flex-col gap-2">
+          {shows.map((show) => (
+            <li key={show.id}>
+              <PosterResultRow
+                title={show.title}
+                year={show.year}
+                overview={show.overview}
+                posterUrl={show.posterUrl}
+                externalUrl={show.tmdbUrl}
+                externalLabel="TMDB"
+                externalColor="#01b4e4"
+                placeholderKind="tv"
+                onSelect={() => handleTvSelect(show)}
+                disabled={comparing}
+                isComparing={comparingTitle === show.title}
+              />
+            </li>
+          ))}
+        </ul>
+      )}
+
       {recent.length > 0 && (
         <div className="mt-4 border-t border-parchment-dark pt-4">
           <p className="mb-2 text-xs font-semibold tracking-wide text-ink-muted uppercase">
-            Recent {isBook ? 'books' : 'films'} — tap to re-compare
+            Recent {brand.noun} — tap to re-compare
           </p>
           <div className="flex flex-wrap gap-2">
             {recent.map((item) => (
@@ -336,7 +411,7 @@ export function ExternalMediaSearch({ type, onExploreTheme, onSelectCurated }: E
                   type="button"
                   disabled={comparing}
                   onClick={() => {
-                    if (isBook) {
+                    if (type === 'book') {
                       handleBookSelect({
                         id: item.id,
                         title: item.title,
@@ -345,7 +420,7 @@ export function ExternalMediaSearch({ type, onExploreTheme, onSelectCurated }: E
                         coverUrl: null,
                         goodreadsUrl: `https://www.goodreads.com/search?q=${encodeURIComponent(item.title)}`,
                       })
-                    } else {
+                    } else if (type === 'movie') {
                       handleMovieSelect({
                         id: item.id,
                         title: item.title,
@@ -353,6 +428,15 @@ export function ExternalMediaSearch({ type, onExploreTheme, onSelectCurated }: E
                         overview: '',
                         posterUrl: null,
                         letterboxdUrl: `https://letterboxd.com/search/${encodeURIComponent(item.title)}/`,
+                      })
+                    } else {
+                      handleTvSelect({
+                        id: item.id,
+                        title: item.title,
+                        year: item.creator || null,
+                        overview: '',
+                        posterUrl: null,
+                        tmdbUrl: `https://www.themoviedb.org/tv/${item.id}`,
                       })
                     }
                   }}
@@ -443,40 +527,58 @@ function BookResultRow({
   )
 }
 
-function MovieResultRow({
-  movie,
+function PosterResultRow({
+  title,
+  year,
+  overview,
+  posterUrl,
+  externalUrl,
+  externalLabel,
+  externalColor,
+  placeholderKind,
   onSelect,
   disabled,
   isComparing,
 }: {
-  movie: MovieSearchResult
+  title: string
+  year: string | null
+  overview: string
+  posterUrl: string | null
+  externalUrl: string
+  externalLabel: string
+  externalColor: string
+  placeholderKind: 'movie' | 'tv'
   onSelect: () => void
   disabled: boolean
   isComparing?: boolean
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-parchment-dark bg-white p-2 transition hover:border-[#00c030]/30 hover:shadow-sm">
-      {movie.posterUrl ? (
-        <img src={movie.posterUrl} alt="" className="h-14 w-10 shrink-0 rounded object-cover" />
+    <div
+      className="flex items-center gap-3 rounded-xl border border-parchment-dark bg-white p-2 transition hover:shadow-sm"
+      style={{ ['--ext-hover' as string]: `${externalColor}30` }}
+    >
+      {posterUrl ? (
+        <img src={posterUrl} alt="" className="h-14 w-10 shrink-0 rounded object-cover" />
       ) : (
-        <ScripturePlaceholder kind="movie" size="sm" className="h-14 w-10" />
+        <ScripturePlaceholder kind={placeholderKind} size="sm" className="h-14 w-10" />
       )}
       <div className="min-w-0 flex-1">
-        <p className="truncate font-semibold text-navy">{movie.title}</p>
+        <p className="truncate font-semibold text-navy">{title}</p>
         <p className="line-clamp-2 text-sm text-ink-muted">
-          {movie.year && `${movie.year} · `}
-          {movie.overview.slice(0, 100)}
-          {movie.overview.length > 100 ? '…' : ''}
+          {year && `${year} · `}
+          {overview.slice(0, 100)}
+          {overview.length > 100 ? '…' : ''}
         </p>
       </div>
       <div className="flex shrink-0 items-center gap-1.5 pr-1">
         <a
-          href={movie.letterboxdUrl}
+          href={externalUrl}
           target="_blank"
           rel="noreferrer"
-          className="hidden rounded-lg px-2 py-1.5 text-xs font-semibold text-[#00c030] hover:bg-[#00c030]/10 sm:inline"
+          className="hidden rounded-lg px-2 py-1.5 text-xs font-semibold hover:opacity-80 sm:inline"
+          style={{ color: externalColor }}
         >
-          Letterboxd
+          {externalLabel}
         </a>
         <button
           type="button"

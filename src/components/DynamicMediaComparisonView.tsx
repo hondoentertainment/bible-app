@@ -57,16 +57,26 @@ export function DynamicMediaComparisonView({
     }
   }
 
-  const typeLabel = result.type === 'book' ? 'Book' : 'Movie'
+  const typeLabel = result.type === 'book' ? 'Book' : result.type === 'tv' ? 'TV' : 'Movie'
   const accentClass =
     result.type === 'book'
       ? 'border-[#553b08]/40 bg-[#553b08]/10 text-[#553b08]'
-      : 'border-[#00c030]/40 bg-[#00c030]/10 text-[#007a1e]'
+      : result.type === 'tv'
+        ? 'border-[#01b4e4]/40 bg-[#01b4e4]/10 text-[#017a9c]'
+        : 'border-[#00c030]/40 bg-[#00c030]/10 text-[#007a1e]'
+
+  const backNoun = result.type === 'book' ? 'book' : result.type === 'tv' ? 'show' : 'film'
+  const emptySynopsis =
+    result.type === 'book'
+      ? 'No plot summary was available from Open Library. Try a well-known edition or browse curated stories below.'
+      : result.type === 'tv'
+        ? 'No synopsis was available for this show. Try another title or browse curated stories below.'
+        : 'No synopsis was available for this film. Try another title or browse curated stories below.'
 
   return (
     <div className="w-full animate-fade-in-up">
       <ComparisonToolbar
-        backLabel={`Search another ${result.type}`}
+        backLabel={`Search another ${backNoun}`}
         onBack={onBack}
         onCopy={result.parallels.length > 0 ? handleCopyAll : undefined}
         onShare={result.parallels.length > 0 ? handleShareAll : undefined}
@@ -83,7 +93,7 @@ export function DynamicMediaComparisonView({
             />
           ) : (
             <ScripturePlaceholder
-              kind={result.type === 'book' ? 'book' : 'movie'}
+              kind={result.type}
               size="lg"
               className="mx-auto h-36 w-24 sm:mx-0"
             />
@@ -132,9 +142,7 @@ export function DynamicMediaComparisonView({
 
       {result.descriptionUnavailable && (
         <div className="mb-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
-          {result.type === 'book'
-            ? 'No plot summary was available from Open Library. Try a well-known edition or browse curated stories below.'
-            : 'No synopsis was available for this film. Try another title or browse curated stories below.'}
+          {emptySynopsis}
         </div>
       )}
 
@@ -148,7 +156,7 @@ export function DynamicMediaComparisonView({
         themes={themes}
         activeTheme={activeTheme}
         onThemeChange={setActiveTheme}
-        label={`Themes in this ${result.type}`}
+        label={`Themes in this ${result.type === 'tv' ? 'show' : result.type}`}
         onExploreTheme={onExploreTheme}
       />
 

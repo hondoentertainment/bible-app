@@ -411,6 +411,7 @@ export const MEDIA_TYPE_LABELS: Record<MediaType, string> = {
   book: 'Book',
   song: 'Song',
   movie: 'Movie',
+  tv: 'TV',
 }
 
 export const FEATURED_STORY_IDS = [
@@ -423,20 +424,21 @@ export const FEATURED_STORY_IDS = [
 ] as const
 
 export const STORIES_COMPARE_STEPS = [
-  { step: 1, label: 'Search', detail: 'Find any book on Goodreads or film on Letterboxd' },
-  { step: 2, label: 'Compare', detail: 'Synopsis and summary themes matched to NIV passages' },
+  { step: 1, label: 'Choose a section', detail: 'Browse Books, Movies, or TV' },
+  { step: 2, label: 'Search or pick', detail: 'Find a title or open a curated story' },
   { step: 3, label: 'Reflect', detail: 'Jump between themes, share, or explore subjects deeper' },
 ] as const
 
-export function getFeaturedStories(): MediaComparison[] {
-  return FEATURED_STORY_IDS.map((id) => getMediaComparison(id)).filter(
+export function getFeaturedStories(type?: MediaType): MediaComparison[] {
+  const featured = FEATURED_STORY_IDS.map((id) => getMediaComparison(id)).filter(
     (item): item is MediaComparison => item !== undefined,
   )
+  return type ? featured.filter((item) => item.type === type) : featured
 }
 
 export function searchCuratedComparisons(
   query: string,
-  type?: 'book' | 'movie' | 'song',
+  type?: MediaType,
 ): MediaComparison[] {
   const trimmed = query.trim()
   if (trimmed.length < 2) return []

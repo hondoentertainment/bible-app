@@ -7,6 +7,7 @@ import type {
   ExternalMediaComparisonResult,
   MovieSearchResult,
   QuoteComparisonResult,
+  TvSearchResult,
 } from '../types/externalMedia'
 import { DEFAULT_EXTERNAL_COMPARE_OPTIONS } from '../types/externalMedia'
 import type { TopicMatch } from '../types'
@@ -48,7 +49,7 @@ function buildTopicMatches(topics: Topic[]): TopicMatch[] {
 async function compareTextToScripture(
   text: string,
   title: string,
-  kind: 'book' | 'movie' | 'song' | 'generic',
+  kind: 'book' | 'movie' | 'tv' | 'song' | 'generic',
   options: ExternalMediaCompareOptions,
 ): Promise<{
   parallels: LoadedParallel[]
@@ -200,7 +201,30 @@ export async function fetchMovieDetails(id: string): Promise<MovieSearchResult> 
   return data.movie
 }
 
-function buildMovieCompareText(movie: MovieSearchResult): string {
+export async function searchTv(query: string): Promise<TvSearchResult[]> {
+  const response = await fetch(`/api/tv/search?q=${encodeURIComponent(query)}`)
+
+  if (response.status === 503) {
+    const data = (await response.json()) as { code?: string }
+    if (data.code === 'TMDB_NOT_CONFIGURED') {
+      throw new Error('TMDB_NOT_CONFIGURED')
+    }
+  }
+
+  if (!response.ok) throw new Error('TV search failed')
+  const data = (await response.json()) as { shows: TvSearchResult[] }
+  return data.shows
+}
+
+export async function fetchTvDetails(id: string): Promise<TvSearchResult> {
+  const response = await fetch(`/api/tv/details?id=${encodeURIComponent(id)}`)
+  if (response.status === 404) throw new Error('TV_NOT_FOUND')
+  if (!response.ok) throw new Error('TV details lookup failed')
+  const data = (await response.json()) as { show: TvSearchResult }
+  return data.show
+}
+
+function buildMovieCompareText(movie: MovieSearchResult | TvSearchResult): string {
   const parts = [movie.tagline, movie.overview].filter((p) => p && p.trim())
   return parts.join('\n\n')
 }
@@ -298,6 +322,58 @@ export async function compareMovieToScripture(
     coverUrl: resolved.posterUrl,
     externalUrl: resolved.letterboxdUrl,
     externalLabel: 'Letterboxd',
+    parallels,
+    matchedTopics,
+    apiUnavailable,
+  }
+}
+
+export async function compareTvToScripture(
+  show: TvSearchResult,
+  options: ExternalMediaCompareOptions = {},
+): Promise<ExternalMediaComparisonResult> {
+  let resolved = show
+  try {
+    resolved = await fetchTvDetails(show.id)
+  } catch {
+    // use search result if details fail
+  }
+
+  const creator = resolved.year ? `First aired ${resolved.year}` : ''
+  const compareText = buildMovieCompareText(resolved)
+
+  if (!compareText.trim()) {
+    return {
+      type: 'tv',
+      title: resolved.title,
+      creator,
+      year: resolved.year,
+      summary: `Compare themes in ${resolved.title} with Scripture.`,
+      coverUrl: resolved.posterUrl,
+      externalUrl: resolved.tmdbUrl,
+      externalLabel: 'TMDB',
+      parallels: [],
+      matchedTopics: [],
+      descriptionUnavailable: true,
+    }
+  }
+
+  const { parallels, matchedTopics, apiUnavailable } = await compareTextToScripture(
+    compareText,
+    resolved.title,
+    'tv',
+    options,
+  )
+
+  return {
+    type: 'tv',
+    title: resolved.title,
+    creator,
+    year: resolved.year,
+    summary: compareText.slice(0, 280),
+    coverUrl: resolved.posterUrl,
+    externalUrl: resolved.tmdbUrl,
+    externalLabel: 'TMDB',
     parallels,
     matchedTopics,
     apiUnavailable,

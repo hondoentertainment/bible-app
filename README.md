@@ -16,8 +16,9 @@ Search the **NIV**, compare culture with Scripture, and build daily habits — s
 - **Cross-references**, **full-chapter context**, **listen** (text-to-speech)
 
 ### Stories & Scripture
-- Curated book, song, and film comparisons with NIV parallels
-- Search **Goodreads** (Open Library) and **Letterboxd** (TMDB) for any title
+- Browse **Books**, **Movies**, and **TV** sections
+- Curated book and film comparisons with NIV parallels
+- Search **Goodreads** (Open Library), **Letterboxd** (TMDB films), and **TMDB** TV shows
 - **Discussion prompts**, **theme trails**, **share as image**
 
 ### Spotify Lyrics

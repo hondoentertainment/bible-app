@@ -20,6 +20,16 @@ export interface MovieSearchResult {
   tagline?: string | null
 }
 
+export interface TvSearchResult {
+  id: string
+  title: string
+  year: string | null
+  overview: string
+  posterUrl: string | null
+  tmdbUrl: string
+  tagline?: string | null
+}
+
 export interface ExternalMediaCompareOptions {
   maxParallels?: number
   versesPerParallel?: number
@@ -40,15 +50,17 @@ export interface QuoteComparisonResult {
   apiUnavailable?: boolean
 }
 
+export type ExternalMediaType = 'book' | 'movie' | 'tv'
+
 export interface ExternalMediaComparisonResult {
-  type: 'book' | 'movie'
+  type: ExternalMediaType
   title: string
   creator: string
   year: string | null
   summary: string
   coverUrl: string | null
   externalUrl: string
-  externalLabel: 'Goodreads' | 'Letterboxd'
+  externalLabel: 'Goodreads' | 'Letterboxd' | 'TMDB'
   parallels: LoadedParallel[]
   matchedTopics: TopicMatch[]
   apiUnavailable?: boolean
@@ -56,7 +68,7 @@ export interface ExternalMediaComparisonResult {
 }
 
 export interface RecentExternalMedia {
-  type: 'book' | 'movie'
+  type: ExternalMediaType
   id: string
   title: string
   creator: string

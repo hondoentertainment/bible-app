@@ -101,3 +101,91 @@ export async function getMovieDetails(id: string): Promise<MovieSearchResult | n
 
   return mapMovie(data)
 }
+
+export interface TvSearchResult {
+  id: string
+  title: string
+  year: string | null
+  overview: string
+  posterUrl: string | null
+  tmdbUrl: string
+  tagline?: string | null
+}
+
+export async function searchTv(query: string, limit = 10): Promise<TvSearchResult[]> {
+  const apiKey = process.env.TMDB_API_KEY
+  if (!apiKey) throw new Error('TMDB_NOT_CONFIGURED')
+
+  const params = new URLSearchParams({
+    api_key: apiKey,
+    query,
+    include_adult: 'false',
+    language: 'en-US',
+  })
+
+  const response = await fetch(`https://api.themoviedb.org/3/search/tv?${params}`)
+  if (!response.ok) throw new Error('TMDB TV search failed')
+
+  const data = (await response.json()) as {
+    results?: Array<{
+      id: number
+      name: string
+      first_air_date?: string
+      overview?: string
+      poster_path?: string | null
+    }>
+  }
+
+  const shows = (data.results ?? []).map((show) => mapTv(show))
+
+  const ranked = rankByPartialMatch(shows, query.trim(), (s) => s.title)
+  const minScore = query.trim().length >= 3 ? 15 : 0
+
+  return ranked
+    .filter((show) => scorePartialMatch(show.title, query.trim()) >= minScore)
+    .slice(0, limit)
+}
+
+function mapTv(
+  show: {
+    id: number
+    name: string
+    first_air_date?: string
+    overview?: string
+    poster_path?: string | null
+    tagline?: string
+  },
+): TvSearchResult {
+  return {
+    id: String(show.id),
+    title: show.name,
+    year: show.first_air_date?.slice(0, 4) ?? null,
+    overview: show.overview ?? '',
+    posterUrl: show.poster_path
+      ? `https://image.tmdb.org/t/p/w342${show.poster_path}`
+      : null,
+    tmdbUrl: `https://www.themoviedb.org/tv/${show.id}`,
+    tagline: show.tagline?.trim() || null,
+  }
+}
+
+export async function getTvDetails(id: string): Promise<TvSearchResult | null> {
+  const apiKey = process.env.TMDB_API_KEY
+  if (!apiKey) throw new Error('TMDB_NOT_CONFIGURED')
+
+  const params = new URLSearchParams({ api_key: apiKey, language: 'en-US' })
+  const response = await fetch(`https://api.themoviedb.org/3/tv/${id}?${params}`)
+  if (response.status === 404) return null
+  if (!response.ok) throw new Error('TMDB TV details failed')
+
+  const data = (await response.json()) as {
+    id: number
+    name: string
+    first_air_date?: string
+    overview?: string
+    poster_path?: string | null
+    tagline?: string
+  }
+
+  return mapTv(data)
+}

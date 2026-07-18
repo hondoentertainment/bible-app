@@ -1,7 +1,7 @@
 /** Extract the best lines/sentences from source text for theme matching. */
 export function extractCompareLines(
   text: string,
-  kind: 'book' | 'movie' | 'song' | 'generic',
+  kind: 'book' | 'movie' | 'tv' | 'song' | 'generic',
 ): string[] {
   const trimmed = text.trim()
   if (!trimmed) return []
@@ -12,7 +12,7 @@ export function extractCompareLines(
 
   const sentences = splitSentences(trimmed)
 
-  if (kind === 'movie') {
+  if (kind === 'movie' || kind === 'tv') {
     const taglines = sentences.filter((s) => s.length >= 12 && s.length <= 120)
     const rest = sentences.filter((s) => s.length > 120)
     return [...taglines, ...rest]
