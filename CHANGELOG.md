@@ -2,6 +2,22 @@
 
 All notable changes to Scripture Search are documented here.
 
+## [1.4.0] — 2026-07-18
+
+### Added
+- First-visit onboarding tip (Subjects → Stories → Lyrics)
+- Post-comparison share prompt across Stories, Lyrics, and Quote
+- PWA install prompt (`beforeinstallprompt`)
+- More curated books/movies/TV (Mere Christianity, Hiding Place, Ben-Hur, Soul, Good Place, Anne with an E)
+- Expanded featured songs and seasonal reading-plan ordering
+- Analytics: `share`, `comparison_open`, onboarding, PWA install events
+- `VITE_SITE_ORIGIN` / site config for custom-domain readiness
+- Dev-server TV API routes; Vite `manualChunks` for React vendor
+
+### Fixed
+- CI install resilience (`npm ci || npm install`, Node 22)
+- Docs note that production needs `TMDB_API_KEY` for Movies/TV search
+
 ## [1.3.0] — 2026-07-18
 
 ### Added

@@ -15,11 +15,11 @@ export interface ThemeTrailItem {
 
 const THEME_STORY_BOOST: Record<string, string[]> = {
   hope: ['shawshank', 'its-a-wonderful-life', 'ted-lasso', 'lotr-fellowship'],
-  faith: ['star-wars', 'the-bible-miniseries', 'narnia'],
-  love: ['ted-lasso', 'les-miserables', 'where-is-the-love'],
-  'mercy & forgiveness': ['les-miserables', 'the-chosen'],
-  forgiveness: ['les-miserables', 'the-chosen'],
-  redemption: ['shawshank', 'star-wars', 'les-miserables'],
+  faith: ['star-wars', 'the-bible-miniseries', 'narnia', 'mere-christianity'],
+  love: ['ted-lasso', 'les-miserables', 'where-is-the-love', 'anne-with-an-e'],
+  'mercy & forgiveness': ['les-miserables', 'the-chosen', 'hiding-place', 'ben-hur'],
+  forgiveness: ['les-miserables', 'the-chosen', 'hiding-place'],
+  redemption: ['shawshank', 'star-wars', 'les-miserables', 'ben-hur'],
   sacrifice: ['hacksaw-ridge', 'the-bible-miniseries', 'les-miserables'],
   friendship: ['lotr-fellowship', 'its-a-wonderful-life', 'ted-lasso'],
   obedience: ['chariots', 'hacksaw-ridge'],
@@ -28,6 +28,14 @@ const THEME_STORY_BOOST: Record<string, string[]> = {
   justice: ['i-have-a-dream', 'where-is-the-love'],
   freedom: ['prince-of-egypt', 'shawshank'],
   salvation: ['pilgrims-progress', 'the-bible-miniseries'],
+  jesus: ['mere-christianity', 'the-chosen', 'ben-hur', 'the-bible-miniseries'],
+  grace: ['the-good-place', 'les-miserables', 'amazing-grace'],
+  identity: ['anne-with-an-e', 'soul-pixar'],
+  courage: ['hiding-place', 'hacksaw-ridge'],
+  truth: ['mere-christianity', 'screwtape'],
+  kindness: ['anne-with-an-e', 'ted-lasso'],
+  joy: ['soul-pixar', 'its-a-wonderful-life'],
+  'purpose & calling': ['soul-pixar', 'chariots', 'prince-of-egypt'],
 }
 
 function pushStory(trail: ThemeTrailItem[], story: MediaComparison, themeName: string) {

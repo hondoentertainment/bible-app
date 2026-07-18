@@ -109,7 +109,46 @@ export const READING_PLANS: ReadingPlan[] = [
     'Endurance and hope through The Shawshank Redemption.',
     'hope',
   ),
+  buildStoryPlan(
+    'hiding-place',
+    '7 Days of Costly Forgiveness',
+    'Mercy and courage through The Hiding Place.',
+    'forgiveness',
+  ),
+  buildStoryPlan(
+    'mere-christianity',
+    '7 Days of Clear Faith',
+    'Truth and Christ through Mere Christianity.',
+    'jesus',
+  ),
+  buildStoryPlan(
+    'its-a-wonderful-life',
+    '7 Days of Wonderful Life',
+    'Hope and friendship through It\'s a Wonderful Life.',
+    'hope',
+  ),
+  buildPlan('jesus', '7 Days with Jesus', 'Walk with Christ through Gospel-centered passages.'),
+  buildPlan('thanksgiving', '7 Days of Thanksgiving', 'Cultivate gratitude from Scripture each day.'),
 ].filter((p): p is ReadingPlan => p !== undefined)
+
+/** Prefer seasonal plans first in the UI. */
+export function getOrderedReadingPlans(date: Date = new Date()): ReadingPlan[] {
+  const month = date.getMonth()
+  const seasonalIds =
+    month === 11 || month === 0
+      ? ['7-day-story-its-a-wonderful-life', '7-day-jesus', '7-day-thanksgiving']
+      : month >= 1 && month <= 3
+        ? ['7-day-story-the-chosen', '7-day-story-hiding-place', '7-day-forgiveness', '7-day-jesus']
+        : month === 10
+          ? ['7-day-thanksgiving', '7-day-love', '7-day-hope']
+          : []
+
+  const preferred = seasonalIds
+    .map((id) => READING_PLANS.find((p) => p.id === id))
+    .filter((p): p is ReadingPlan => p !== undefined)
+  const rest = READING_PLANS.filter((p) => !preferred.some((x) => x.id === p.id))
+  return [...preferred, ...rest]
+}
 
 export function getReadingPlan(id: string): ReadingPlan | undefined {
   return READING_PLANS.find((p) => p.id === id)

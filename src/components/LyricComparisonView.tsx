@@ -3,6 +3,8 @@ import type { CompareOptions, LyricsComparisonResult } from '../types/lyrics'
 import { DEFAULT_COMPARE_OPTIONS } from '../types/lyrics'
 import { hapticLight } from '../utils/haptics'
 import { copyComparison, shareComparison } from '../utils/lyricsShare'
+import { SharePrompt } from './SharePrompt'
+import { trackEvent } from '../utils/analytics'
 import { useToast } from '../hooks/useToast'
 import { scrollToTop } from '../utils/scroll'
 import { copyShareUrl } from '../utils/shareUrl'
@@ -70,6 +72,7 @@ export function LyricComparisonView({
   async function handleShareAll() {
     try {
       const outcome = await shareComparison(result)
+      trackEvent('share', { context: 'lyrics', title: track.name.slice(0, 80), outcome })
       hapticLight()
       showToast(outcome === 'shared' ? 'Comparison shared' : 'Comparison copied to clipboard')
     } catch {
@@ -278,6 +281,10 @@ export function LyricComparisonView({
           )}
         </div>
       ) : null}
+
+      {parallels.length > 0 && (
+        <SharePrompt title={track.name} onShare={handleShareAll} context="lyrics" />
+      )}
     </div>
   )
 }

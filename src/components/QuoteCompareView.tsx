@@ -19,6 +19,8 @@ import {
 } from '../hooks/useFavorites'
 import { copyShareUrl } from '../utils/shareUrl'
 import type { AppUrlState } from '../utils/urlState'
+import { SharePrompt } from './SharePrompt'
+import { trackEvent } from '../utils/analytics'
 
 interface QuoteCompareViewProps {
   onExploreTheme?: (topicName: string) => void
@@ -253,6 +255,39 @@ function QuoteResultView({
     showToast('Comparison copied to clipboard')
   }
 
+  async function handleShareAll() {
+    if (!result) return
+    const text = [
+      `"${result.quoteText}"`,
+      result.title !== 'Your quote' ? `— ${result.title}` : '',
+      '',
+      ...result.parallels.flatMap((p, i) => [
+        `Parallel ${i + 1}: ${p.theme}`,
+        p.connection,
+        ...p.verses.map((v) => `${v.reference}: ${v.text}`),
+        '',
+      ]),
+    ]
+      .filter(Boolean)
+      .join('\n')
+    const shareTitle = `${result.title} — Quote & Scripture`
+    try {
+      if (typeof navigator.share === 'function') {
+        await navigator.share({ title: shareTitle, text })
+        trackEvent('share', { context: 'quote', title: result.title.slice(0, 80), outcome: 'shared' })
+        hapticLight()
+        showToast('Comparison shared')
+        return
+      }
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') return
+    }
+    await navigator.clipboard.writeText(text)
+    trackEvent('share', { context: 'quote', title: result.title.slice(0, 80), outcome: 'copied' })
+    hapticLight()
+    showToast('Comparison copied to clipboard')
+  }
+
   return (
     <div className="w-full animate-fade-in-up">
       <ComparisonToolbar
@@ -260,6 +295,7 @@ function QuoteResultView({
         onBack={onBack}
         onRecompare={onRecompare}
         onCopy={handleCopyAll}
+        onShare={result.parallels.length > 0 ? handleShareAll : undefined}
         onCopyLink={onCopyLink}
         onFavorite={onFavorite}
         isFavorite={isFavorite}
@@ -321,6 +357,8 @@ function QuoteResultView({
               />
             ))}
           </div>
+
+          <SharePrompt title={result.title} onShare={handleShareAll} context="quote" />
         </>
       )}
     </div>

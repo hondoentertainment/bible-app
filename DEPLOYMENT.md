@@ -19,7 +19,10 @@ Set in **Vercel → Project → Settings → Environment Variables → Productio
 | `BIBLE_API_KEY` | Required for NIV/ESV verse text |
 | `SPOTIFY_CLIENT_ID` | Optional — enables Spotify search in Lyrics mode |
 | `SPOTIFY_CLIENT_SECRET` | Optional |
-| `TMDB_API_KEY` | Optional — enables movie and TV search in Stories mode |
+| `TMDB_API_KEY` | **Recommended** — enables movie and TV search in Stories mode |
+| `VITE_SITE_ORIGIN` | Optional — canonical URL if using a custom domain (no trailing slash) |
+
+**Current gap:** Production currently has `BIBLE_API_KEY` only. Add `TMDB_API_KEY` (and Spotify keys if you want Lyrics search) then redeploy.
 
 After adding variables, redeploy production.
 
@@ -43,8 +46,10 @@ foreach ($name in $vars) {
 2. Add your domain (e.g. `scripture.example.com`)
 3. Configure DNS as shown (usually `CNAME` to `cname.vercel-dns.com`)
 4. Vercel provisions SSL automatically
+5. Set `VITE_SITE_ORIGIN=https://your.domain.com` (Production) and redeploy
+6. Update `index.html` og/twitter URLs and `public/sitemap.xml` locs to the new host
 
-No code changes required; the existing `vercel.json` SPA rewrites apply to all domains.
+The existing `vercel.json` SPA rewrites apply to all domains.
 
 ## Production smoke checklist
 

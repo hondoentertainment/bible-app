@@ -6,7 +6,13 @@ import type { IncomingMessage, ServerResponse } from 'node:http'
 import { fetchLyrics } from './api/lib/lrcLib.ts'
 import { isSpotifyConfigured, searchSpotifyTracks } from './api/lib/spotify.ts'
 import { searchBooks, fetchBookDetails } from './api/lib/openLibrary.ts'
-import { isTmdbConfigured, searchMovies, getMovieDetails } from './api/lib/tmdb.ts'
+import {
+  isTmdbConfigured,
+  searchMovies,
+  getMovieDetails,
+  searchTv,
+  getTvDetails,
+} from './api/lib/tmdb.ts'
 
 function jsonResponse(res: ServerResponse, status: number, body: unknown) {
   res.statusCode = status
@@ -158,6 +164,45 @@ function devApiPlugin(env: Record<string, string>) {
           jsonResponse(res, 502, { error: 'Movie details lookup failed' })
         }
       })
+
+      server.middlewares.use('/api/tv/status', async (_req, res) => {
+        jsonResponse(res, 200, { configured: isTmdbConfigured() })
+      })
+
+      server.middlewares.use('/api/tv/search', async (req, res) => {
+        if (!isTmdbConfigured()) {
+          return jsonResponse(res, 503, { error: 'TMDB API not configured', code: 'TMDB_NOT_CONFIGURED' })
+        }
+
+        const q = await readQueryParam(req.url ?? '', 'q')
+        if (!q) return jsonResponse(res, 400, { error: 'Query parameter q is required' })
+
+        try {
+          const shows = await searchTv(q)
+          jsonResponse(res, 200, { shows, configured: true })
+        } catch {
+          jsonResponse(res, 502, { error: 'TV search failed' })
+        }
+      })
+
+      server.middlewares.use('/api/tv/details', async (req, res) => {
+        if (!isTmdbConfigured()) {
+          return jsonResponse(res, 503, { error: 'TMDB API not configured', code: 'TMDB_NOT_CONFIGURED' })
+        }
+
+        const id = await readQueryParam(req.url ?? '', 'id')
+        if (!id) return jsonResponse(res, 400, { error: 'Query parameter id is required' })
+
+        try {
+          const show = await getTvDetails(id)
+          if (!show) {
+            return jsonResponse(res, 404, { error: 'TV show not found', code: 'TV_NOT_FOUND' })
+          }
+          jsonResponse(res, 200, { show })
+        } catch {
+          jsonResponse(res, 502, { error: 'TV details lookup failed' })
+        }
+      })
     },
   }
 }
@@ -165,6 +210,20 @@ function devApiPlugin(env: Record<string, string>) {
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   return {
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
+              return 'react-vendor'
+            }
+            if (id.includes('node_modules/@vercel/analytics')) {
+              return 'analytics'
+            }
+          },
+        },
+      },
+    },
     plugins: [
       react(),
       tailwindcss(),

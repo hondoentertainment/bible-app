@@ -9,6 +9,8 @@ import { ComparisonThemeFilter } from './ComparisonThemeFilter'
 import { ComparisonToolbar } from './ComparisonToolbar'
 import { ScriptureParallelCard } from './ScriptureParallelCard'
 import { ScripturePlaceholder } from './ScripturePlaceholder'
+import { SharePrompt } from './SharePrompt'
+import { trackEvent } from '../utils/analytics'
 
 interface DynamicMediaComparisonViewProps {
   result: ExternalMediaComparisonResult
@@ -50,6 +52,7 @@ export function DynamicMediaComparisonView({
   async function handleShareAll() {
     try {
       const outcome = await shareExternalComparison(result)
+      trackEvent('share', { context: `external_${result.type}`, title: result.title.slice(0, 80), outcome })
       hapticLight()
       showToast(outcome === 'shared' ? 'Comparison shared' : 'Comparison copied to clipboard')
     } catch {
@@ -182,6 +185,10 @@ export function DynamicMediaComparisonView({
           </p>
         </div>
       ) : null}
+
+      {result.parallels.length > 0 && (
+        <SharePrompt title={result.title} onShare={handleShareAll} context={`external_${result.type}`} />
+      )}
     </div>
   )
 }

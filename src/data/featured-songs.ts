@@ -11,6 +11,12 @@ export const FEATURED_SONGS: FeaturedSong[] = [
   { artist: 'Hillsong UNITED', title: 'Oceans (Where Feet May Fail)', theme: 'Faith' },
   { artist: 'Carrie Underwood', title: 'Jesus, Take the Wheel', theme: 'Trust' },
   { artist: 'John Newton', title: 'Amazing Grace', theme: 'Grace' },
+  { artist: 'Matt Redman', title: '10,000 Reasons (Bless the Lord)', theme: 'Worship' },
+  { artist: 'Hillsong Worship', title: 'What a Beautiful Name', theme: 'Jesus' },
+  { artist: 'Cory Asbury', title: 'Reckless Love', theme: 'Love' },
+  { artist: 'Chris Tomlin', title: 'Good Good Father', theme: 'Identity' },
+  { artist: 'Traditional', title: 'How Great Thou Art', theme: 'Praise' },
+  { artist: 'Elevation Worship', title: 'Do It Again', theme: 'Faith' },
 ]
 
 export const LYRICS_COMPARE_STEPS = [

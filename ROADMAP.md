@@ -3,7 +3,7 @@
 **Product:** Scripture Search (Bible App)  
 **Live:** https://bible-app-bice-ten.vercel.app  
 **Last updated:** July 2026  
-**Shipped through:** v1.3.0 (see [CHANGELOG.md](./CHANGELOG.md))
+**Shipped through:** v1.4.0 (see [CHANGELOG.md](./CHANGELOG.md))
 
 ---
 
@@ -66,12 +66,25 @@ Help people meet Scripture in the culture they already consume — subjects, boo
 | Versioning & changelog | ✅ 1.3.0 |
 | Richer sitemap / SEO | ✅ |
 
+### Also shipped in v1.4 (post-roadmap growth)
+
+| Item | Status |
+|------|--------|
+| Onboarding tip | ✅ |
+| Share funnel prompt | ✅ |
+| PWA install prompt | ✅ |
+| Content expansion + seasonal plans | ✅ |
+| Analytics for activation/share/install | ✅ |
+| Perf chunks + a11y focus trap (prior) | ✅ |
+| Domain-ready `VITE_SITE_ORIGIN` | ✅ config/docs |
+
 ### Remaining (needs you)
 
 | Item | Notes |
 |------|--------|
-| Custom domain | Configure in Vercel Domains + DNS ([DEPLOYMENT.md](./DEPLOYMENT.md)) |
-| Confirm prod API keys | Especially `TMDB_API_KEY` for Movies/TV search |
+| Custom domain | Vercel Domains + DNS + `VITE_SITE_ORIGIN` + sitemap/og URLs |
+| Add `TMDB_API_KEY` (and optional Spotify) on Vercel Production | Only `BIBLE_API_KEY` is set today |
+| v2 bets | Accounts/sync, community, native — decide from usage data |
 
 ---
 

@@ -656,6 +656,200 @@ export const MEDIA_COMPARISONS: MediaComparison[] = [
     ],
     cautions: ['Secular workplace comedy with adult themes; extract the moral wheat carefully.'],
   },
+  {
+    id: 'mere-christianity',
+    title: 'Mere Christianity',
+    type: 'book',
+    creator: 'C.S. Lewis (1952)',
+    summary:
+      'Lewis rebuilds Christian belief from shared moral intuition to the claims of Christ — clear, reasoned, and pastoral.',
+    parallels: [
+      {
+        id: 'mere-moral',
+        theme: 'Truth',
+        mediaLine: {
+          text: 'The Moral Law tells us the tune we have to play: our instincts are merely the keys.',
+          attribution: 'Book I',
+        },
+        verseIds: ['ROM.2.14-15', 'PSA.19.7-8', 'JHN.14.6'],
+        connection:
+          'Lewis\'s moral law echoes Paul\'s law written on the heart — conscience pointing beyond itself to a Lawgiver and to Truth in Christ.',
+      },
+      {
+        id: 'mere-lord',
+        theme: 'Jesus',
+        mediaLine: {
+          text: 'A man who was merely a man and said the sort of things Jesus said would not be a great moral teacher.',
+          attribution: 'Book II — the trilemma',
+        },
+        verseIds: ['JHN.8.58', 'MAT.16.15-16', 'COL.1.15-17'],
+        connection:
+          'Lewis presses the unique claims of Jesus — Scripture presents him as Lord, not merely a wise teacher among others.',
+      },
+    ],
+  },
+  {
+    id: 'hiding-place',
+    title: 'The Hiding Place',
+    type: 'book',
+    creator: 'Corrie ten Boom (1971)',
+    summary:
+      'A Dutch family hides Jews during the Holocaust and learns costly forgiveness in the darkness of Ravensbrück.',
+    parallels: [
+      {
+        id: 'hiding-forgive',
+        theme: 'Forgiveness',
+        mediaLine: {
+          text: 'Forgiveness is an act of the will, and the will can function regardless of the temperature of the heart.',
+          attribution: 'Corrie ten Boom',
+        },
+        verseIds: ['EPH.4.32', 'MAT.6.14-15', 'COL.3.13'],
+        connection:
+          'Corrie\'s hard-won forgiveness mirrors the gospel call to forgive as we have been forgiven — obedience when feelings lag behind.',
+      },
+      {
+        id: 'hiding-light',
+        theme: 'Courage',
+        mediaLine: {
+          text: 'There is no pit so deep that God\'s love is not deeper still.',
+          attribution: 'Betsie ten Boom',
+        },
+        verseIds: ['ROM.8.38-39', 'PSA.139.7-12', '2CO.4.8-9'],
+        connection:
+          'Hope in the darkest place rests on love that will not let go — the same assurance Paul proclaims in Romans 8.',
+      },
+    ],
+  },
+  {
+    id: 'ben-hur',
+    title: 'Ben-Hur',
+    type: 'movie',
+    creator: 'William Wyler (1959)',
+    summary:
+      'Judah Ben-Hur\'s quest for revenge intersects the life of Christ — culminating in mercy that remakes a bitter heart.',
+    parallels: [
+      {
+        id: 'benhur-revenge',
+        theme: 'Mercy & Forgiveness',
+        mediaLine: {
+          text: 'I will not forgive them. I will not!',
+          attribution: 'Judah, early in his bitterness',
+        },
+        verseIds: ['ROM.12.19-21', 'MAT.5.44', 'EPH.4.31-32'],
+        connection:
+          'Judah\'s rage shows the dead end of revenge — Scripture redirects justice to God and calls enemies to be met with mercy.',
+      },
+      {
+        id: 'benhur-christ',
+        theme: 'Jesus',
+        mediaLine: {
+          text: 'He gave me water… and I never saw his face.',
+          attribution: 'Judah remembering Christ\'s kindness on the road',
+        },
+        verseIds: ['MAT.25.35-40', 'JHN.4.13-14', 'ISA.53.3-5'],
+        connection:
+          'Anonymous grace from the suffering Christ overturns Judah\'s story — love given without recognition, as the gospel often arrives.',
+      },
+    ],
+  },
+  {
+    id: 'soul-pixar',
+    title: 'Soul',
+    type: 'movie',
+    creator: 'Pixar / Pete Docter (2020)',
+    summary:
+      'A jazz pianist hunts for his "spark" and learns that meaning is found in ordinary gifts, not only in a grand destiny.',
+    parallels: [
+      {
+        id: 'soul-purpose',
+        theme: 'Purpose & Calling',
+        mediaLine: {
+          text: 'Your spark isn\'t your purpose. That last box fills in when you\'re ready to come live.',
+          attribution: 'Moonwind / film theme',
+        },
+        verseIds: ['EPH.2.10', 'ECC.3.12-13', '1CO.10.31'],
+        connection:
+          'Purpose is not only a singular career peak — Scripture roots calling in walking with God and receiving ordinary life as gift.',
+      },
+      {
+        id: 'soul-life',
+        theme: 'Joy',
+        mediaLine: {
+          text: 'I\'m just afraid that if I died today, my life would have amounted to nothing.',
+          attribution: 'Joe Gardner',
+        },
+        verseIds: ['PSA.16.11', 'JHN.10.10', 'PHP.4.4'],
+        connection:
+          'Fear of a wasted life meets the biblical invitation to abundant life and joy in God\'s presence — not status alone.',
+      },
+    ],
+    cautions: ['Secular afterlife imagery; extract themes of gift and purpose carefully.'],
+  },
+  {
+    id: 'the-good-place',
+    title: 'The Good Place',
+    type: 'tv',
+    creator: 'NBC / Michael Schur (2016–2020)',
+    summary:
+      'A moral-philosophy comedy about what makes a good person — ethics, growth, and the longing for a true good place.',
+    parallels: [
+      {
+        id: 'tgp-ethics',
+        theme: 'Holiness',
+        mediaLine: {
+          text: 'What do we owe to each other?',
+          attribution: 'Central question of the series (via T.M. Scanlon)',
+        },
+        verseIds: ['MIC.6.8', 'ROM.13.8-10', 'GAL.5.14'],
+        connection:
+          'The show\'s ethical hunger echoes the law summed up in love of neighbor — doing justice, loving mercy, walking humbly.',
+      },
+      {
+        id: 'tgp-grace',
+        theme: 'Grace',
+        mediaLine: {
+          text: 'People improve when they get external love and support. How can we hold it against them when they don\'t?',
+          attribution: 'Chidi / series arc',
+        },
+        verseIds: ['EPH.2.8-9', 'TIT.3.4-5', 'ROM.5.8'],
+        connection:
+          'Moral improvement alone cannot save — Scripture names grace as God\'s initiative toward the undeserving, deeper than self-help ethics.',
+      },
+    ],
+    cautions: ['Secular afterlife rules; use as a doorway to gospel grace, not as theology.'],
+  },
+  {
+    id: 'anne-with-an-e',
+    title: 'Anne with an E',
+    type: 'tv',
+    creator: 'Netflix / Moira Walley-Beckett (2017–2019)',
+    summary:
+      'An imaginative orphan finds belonging in Avonlea — themes of identity, kindness, and healing from rejection.',
+    parallels: [
+      {
+        id: 'anne-belong',
+        theme: 'Identity',
+        mediaLine: {
+          text: 'I know I chatter on far too much… but if you only knew how many things I want to say and don\'t.',
+          attribution: 'Anne Shirley',
+        },
+        verseIds: ['PSA.139.13-14', 'EPH.1.5', '1JN.3.1'],
+        connection:
+          'Anne\'s ache to be truly seen meets Scripture\'s claim that we are known and adopted — identity gifted, not earned by fitting in.',
+      },
+      {
+        id: 'anne-kindness',
+        theme: 'Kindness',
+        mediaLine: {
+          text: 'Kindred spirits are not so scarce as I used to think.',
+          attribution: 'Anne Shirley',
+        },
+        verseIds: ['EPH.4.32', 'COL.3.12', 'PRO.17.17'],
+        connection:
+          'Friendship and kindness remake lonely people — the fruit of compassion the New Testament urges the church to put on.',
+      },
+    ],
+  },
 ]
 
 export function getMediaComparison(id: string): MediaComparison | undefined {
@@ -679,15 +873,17 @@ export const FEATURED_STORY_IDS = [
   'shawshank',
   'les-miserables',
   'narnia',
-  'star-wars',
   'the-chosen',
   'prince-of-egypt',
+  'mere-christianity',
+  'hiding-place',
+  'ben-hur',
 ] as const
 
 export const SEARCH_EXAMPLES: Record<'book' | 'movie' | 'tv', string[]> = {
-  book: ['Screwtape', 'Pilgrim', 'Narnia'],
-  movie: ['Shawshank', 'Prince of Egypt', 'Wonderful Life'],
-  tv: ['The Chosen', 'Ted Lasso', 'The Bible'],
+  book: ['Screwtape', 'Hiding Place', 'Mere Christianity'],
+  movie: ['Shawshank', 'Ben-Hur', 'Soul'],
+  tv: ['The Chosen', 'Good Place', 'Anne with an E'],
 }
 
 export const STORIES_COMPARE_STEPS = [
@@ -700,11 +896,11 @@ export function getSeasonalFeaturedStoryIds(date: Date = new Date()): string[] {
   const month = date.getMonth() // 0–11
   // Advent / Christmas
   if (month === 11 || month === 0) {
-    return ['its-a-wonderful-life', 'narnia', 'the-chosen', 'prince-of-egypt', 'les-miserables']
+    return ['its-a-wonderful-life', 'narnia', 'the-chosen', 'prince-of-egypt', 'anne-with-an-e']
   }
   // Lent / Easter window (approx Feb–Apr)
   if (month >= 1 && month <= 3) {
-    return ['the-chosen', 'the-bible-miniseries', 'pilgrims-progress', 'hacksaw-ridge', 'shawshank']
+    return ['the-chosen', 'the-bible-miniseries', 'ben-hur', 'hiding-place', 'pilgrims-progress']
   }
   return [...FEATURED_STORY_IDS]
 }

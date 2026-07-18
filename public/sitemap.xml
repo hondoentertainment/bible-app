@@ -31,22 +31,27 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://bible-app-bice-ten.vercel.app/?mode=stories&amp;story=narnia</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://bible-app-bice-ten.vercel.app/?mode=stories&amp;story=the-chosen</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://bible-app-bice-ten.vercel.app/?mode=stories&amp;story=star-wars</loc>
+    <loc>https://bible-app-bice-ten.vercel.app/?mode=stories&amp;story=mere-christianity</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://bible-app-bice-ten.vercel.app/?mode=stories&amp;story=prince-of-egypt</loc>
+    <loc>https://bible-app-bice-ten.vercel.app/?mode=stories&amp;story=hiding-place</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://bible-app-bice-ten.vercel.app/?mode=stories&amp;story=ben-hur</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://bible-app-bice-ten.vercel.app/?mode=stories&amp;story=the-good-place</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -62,6 +67,11 @@
   </url>
   <url>
     <loc>https://bible-app-bice-ten.vercel.app/?q=forgiveness</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://bible-app-bice-ten.vercel.app/?q=jesus</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>

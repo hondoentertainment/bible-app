@@ -39,8 +39,8 @@ describe('featured stories', () => {
   })
 
   it('has curated content in each Stories section', () => {
-    expect(getComparisonsByType('book').length).toBeGreaterThanOrEqual(5)
-    expect(getComparisonsByType('movie').length).toBeGreaterThanOrEqual(5)
-    expect(getComparisonsByType('tv').length).toBeGreaterThanOrEqual(3)
+    expect(getComparisonsByType('book').length).toBeGreaterThanOrEqual(8)
+    expect(getComparisonsByType('movie').length).toBeGreaterThanOrEqual(7)
+    expect(getComparisonsByType('tv').length).toBeGreaterThanOrEqual(5)
   })
 })

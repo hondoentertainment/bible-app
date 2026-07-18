@@ -19,6 +19,8 @@ import { ComparisonJumpNav } from './ComparisonJumpNav'
 import { ComparisonThemeFilter } from './ComparisonThemeFilter'
 import { ComparisonToolbar } from './ComparisonToolbar'
 import { ScriptureParallelCard } from './ScriptureParallelCard'
+import { SharePrompt } from './SharePrompt'
+import { trackEvent } from '../utils/analytics'
 import { ThemeTrail } from './ThemeTrail'
 
 interface MediaComparisonViewProps {
@@ -105,6 +107,7 @@ export function MediaComparisonView({
     if (!loaded) return
     try {
       const outcome = await shareMediaComparison(loaded)
+      trackEvent('share', { context: 'story', title: comparison.title.slice(0, 80), outcome })
       hapticLight()
       showToast(outcome === 'shared' ? 'Comparison shared' : 'Comparison copied to clipboard')
     } catch {
@@ -265,6 +268,8 @@ export function MediaComparisonView({
               onOpenSong={onOpenSong}
             />
           )}
+
+          <SharePrompt title={comparison.title} onShare={handleShareAll} context="story" />
         </>
       )}
     </div>

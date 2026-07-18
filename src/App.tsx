@@ -8,6 +8,8 @@ import { SkipLink } from './components/SkipLink'
 import { SubjectGrid } from './components/SubjectGrid'
 import { ThemeToggle } from './components/ThemeToggle'
 import { ViewFallback } from './components/ViewFallback'
+import { OnboardingTip } from './components/OnboardingTip'
+import { InstallPrompt } from './components/InstallPrompt'
 
 const MediaShowcase = lazy(() =>
   import('./components/MediaShowcase').then((m) => ({ default: m.MediaShowcase })),
@@ -173,6 +175,7 @@ export default function App() {
   }
 
   function openStory(id: string) {
+    trackEvent('comparison_open', { context: 'story', id })
     setMode('stories')
     setStoryId(id)
     writeAppUrlState({ mode: 'stories', q: '', storyId: id, artist: '', track: '', quoteTitle: '', quoteText: '' })
@@ -461,6 +464,9 @@ export default function App() {
         className="animate-fade-in relative z-10 mx-auto max-w-6xl px-4 pt-10 pb-28 outline-none sm:px-6 md:pb-10"
       >
         <Suspense fallback={<ViewFallback />}>
+        {isSubjects && !activeQuery && (
+          <OnboardingTip onNavigate={handleModeChange} />
+        )}
         {isSubjects ? (
           activeQuery ? (
             <div>
@@ -552,6 +558,7 @@ export default function App() {
 
       <ScrollToTop visible={showFab} onClick={() => scrollToTop({ smooth: true })} />
       <ReadingSettingsPanel />
+      <InstallPrompt />
       <OfflineBanner />
       <BottomNav mode={mode} onModeChange={handleModeChange} />
     </div>

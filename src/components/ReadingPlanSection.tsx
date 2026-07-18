@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { READING_PLANS, getPlanProgress, setPlanProgress, type ReadingPlan } from '../data/readingPlans'
+import { getOrderedReadingPlans, getPlanProgress, setPlanProgress, type ReadingPlan } from '../data/readingPlans'
 import { getTopicById } from '../data/topics'
 import { fetchPassage } from '../services/bibleApi'
 import type { Verse } from '../types'
@@ -27,7 +27,7 @@ export function ReadingPlanSection({ onExploreSubject }: ReadingPlanSectionProps
       <h2 className="mb-1 font-display text-xl font-semibold text-navy">7-day reading plans</h2>
       <p className="mb-4 text-sm text-ink-muted">One verse and reflection prompt per day</p>
       <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {READING_PLANS.map((plan) => {
+        {getOrderedReadingPlans().map((plan) => {
           const progress = getPlanProgress(plan.id)
           return (
             <li key={plan.id} className="flex h-full">
