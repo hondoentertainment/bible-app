@@ -171,7 +171,7 @@ export default defineConfig(({ mode }) => {
       devApiPlugin(env),
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['favicon.svg', 'pwa-icon.svg'],
+        includeAssets: ['favicon.svg', 'pwa-icon.svg', 'pwa-icon-maskable.svg', 'og-image.png'],
         manifest: {
           name: 'Scripture Search — NIV Bible App',
           short_name: 'Scripture',
@@ -188,7 +188,7 @@ export default defineConfig(({ mode }) => {
               purpose: 'any',
             },
             {
-              src: '/pwa-icon.svg',
+              src: '/pwa-icon-maskable.svg',
               sizes: '512x512',
               type: 'image/svg+xml',
               purpose: 'maskable',

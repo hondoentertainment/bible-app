@@ -1,4 +1,4 @@
-import { APP_TABS } from './AppNav'
+import { APP_TABS } from '../navigation/appTabs'
 import type { AppMode } from '../types/media'
 
 interface BottomNavProps {

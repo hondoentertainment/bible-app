@@ -1,7 +1,5 @@
 import { isSpotifyConfigured, searchSpotifyTracks } from '../lib/spotify.js'
 
-declare const process: { env: Record<string, string | undefined> }
-
 interface VercelRequest {
   method?: string
   query: Record<string, string | string[] | undefined>

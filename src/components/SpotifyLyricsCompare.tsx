@@ -64,12 +64,6 @@ export function SpotifyLyricsCompare({
   const didInitLyrics = useState(() => ({ done: false }))[0]
 
   useEffect(() => {
-    if (didInitLyrics.done || !initialArtist.trim() || !initialTrack.trim()) return
-    didInitLyrics.done = true
-    compareManualSong(initialArtist, initialTrack)
-  }, [initialArtist, initialTrack, didInitLyrics])
-
-  useEffect(() => {
     fetch('/api/spotify/status')
       .then((r) => r.json())
       .then((d: { configured: boolean }) => {
@@ -187,7 +181,7 @@ export function SpotifyLyricsCompare({
     setManualArtist(artist)
     setManualTrack(title)
 
-    runComparison(manualTrackResult, async () => {
+    void runComparison(manualTrackResult, async () => {
       try {
         const lyrics = await fetchTrackLyrics(artist, title)
         return compareLyricsToScripture({ name: title, artist }, lyrics, compareOptions)
@@ -205,6 +199,14 @@ export function SpotifyLyricsCompare({
       }
     })
   }
+
+  useEffect(() => {
+    if (didInitLyrics.done || !initialArtist.trim() || !initialTrack.trim()) return
+    didInitLyrics.done = true
+    compareManualSong(initialArtist, initialTrack)
+    // Deep-link bootstrap once per artist/track; omit compareManualSong to avoid re-fetch loops.
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialArtist, initialTrack, didInitLyrics])
 
   function handleManualCompare() {
     const artist = manualArtist.trim()

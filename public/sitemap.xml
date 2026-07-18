@@ -8,7 +8,7 @@
   <url>
     <loc>https://bible-app-bice-ten.vercel.app/?mode=stories</loc>
     <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://bible-app-bice-ten.vercel.app/?mode=lyrics</loc>
@@ -19,5 +19,50 @@
     <loc>https://bible-app-bice-ten.vercel.app/?mode=quote</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://bible-app-bice-ten.vercel.app/?mode=stories&amp;story=shawshank</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://bible-app-bice-ten.vercel.app/?mode=stories&amp;story=les-miserables</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://bible-app-bice-ten.vercel.app/?mode=stories&amp;story=narnia</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://bible-app-bice-ten.vercel.app/?mode=stories&amp;story=the-chosen</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://bible-app-bice-ten.vercel.app/?mode=stories&amp;story=star-wars</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://bible-app-bice-ten.vercel.app/?mode=stories&amp;story=prince-of-egypt</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://bible-app-bice-ten.vercel.app/?q=love</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://bible-app-bice-ten.vercel.app/?q=hope</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://bible-app-bice-ten.vercel.app/?q=forgiveness</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>
 </urlset>

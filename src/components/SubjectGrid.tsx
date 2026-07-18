@@ -14,6 +14,7 @@ import { CollectionsPanel } from './CollectionsPanel'
 import type { SavedComparison } from '../hooks/useFavorites'
 import { RecommendationsPanel } from './RecommendationsPanel'
 import { ReadingPlanSection } from './ReadingPlanSection'
+import { getSeasonalLabel, getSeasonalTopics } from '../utils/seasonalFeatured'
 
 interface SubjectGridProps {
   onSelect: (topicName: string) => void
@@ -120,9 +121,32 @@ export function SubjectGrid({
     setVisibleCount(PAGE_SIZE)
   }, [category, filter])
 
+  const seasonalLabel = getSeasonalLabel()
+  const seasonalTopics = getSeasonalTopics()
+
   return (
     <section className="w-full animate-fade-in-up" aria-label="Browse subjects">
       <VerseOfDay onExploreTheme={onExploreTheme} />
+
+      {seasonalTopics.length > 0 && (
+        <div className="mb-6">
+          <p className="mb-2 text-center text-xs font-semibold tracking-wide text-ink-muted uppercase sm:text-left">
+            {seasonalLabel}
+          </p>
+          <div className="flex flex-wrap justify-center gap-2 sm:justify-start">
+            {seasonalTopics.map((topic) => (
+              <button
+                key={topic.id}
+                type="button"
+                onClick={() => onSelect(topic.name)}
+                className="touch-manipulation rounded-full border border-gold/40 bg-gold/5 px-3 py-2 text-sm font-medium text-navy transition hover:border-gold hover:shadow-sm active:scale-95"
+              >
+                {topic.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <ReadingHistoryStrip onSelect={onSelect} />
 

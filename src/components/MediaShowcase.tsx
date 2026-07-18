@@ -284,9 +284,13 @@ export function MediaShowcase({
           No {activeSection.label.toLowerCase()} match &ldquo;{search}&rdquo;. Try a different word.
         </p>
       ) : (
-        <p className="rounded-xl border border-dashed border-parchment-dark bg-white/50 py-12 text-center text-ink-muted">
-          No curated {activeSection.label.toLowerCase()} yet — search above to compare any title with Scripture.
-        </p>
+        <div className="rounded-xl border border-dashed border-parchment-dark bg-white/50 px-6 py-12 text-center text-ink-muted">
+          <p>No curated {activeSection.label.toLowerCase()} yet — search above to compare any title with Scripture.</p>
+          <p className="mt-2 text-sm">
+            Tip: use the Try chips in the search box (e.g.{' '}
+            {section === 'tv' ? 'The Chosen' : section === 'movie' ? 'Shawshank' : 'Screwtape'}).
+          </p>
+        </div>
       )}
     </section>
   )

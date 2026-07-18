@@ -25,13 +25,35 @@ export function ReadingSettingsPanel() {
   useEffect(() => {
     if (!open) return
 
-    // Move focus into the panel when it opens.
-    panelRef.current?.querySelector<HTMLElement>('button, input, [tabindex]')?.focus()
+    const panel = panelRef.current
+    const focusable = () =>
+      panel
+        ? Array.from(
+            panel.querySelectorAll<HTMLElement>(
+              'button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])',
+            ),
+          )
+        : []
+
+    focusable()[0]?.focus()
 
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === 'Escape') {
         setOpen(false)
         toggleRef.current?.focus()
+        return
+      }
+      if (e.key !== 'Tab' || !panel) return
+      const nodes = focusable()
+      if (nodes.length === 0) return
+      const first = nodes[0]
+      const last = nodes[nodes.length - 1]
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault()
+        last.focus()
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault()
+        first.focus()
       }
     }
 

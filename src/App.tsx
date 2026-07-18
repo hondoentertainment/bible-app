@@ -528,10 +528,26 @@ export default function App() {
       </main>
 
       <footer className="relative z-10 border-t border-parchment-dark/70 py-8 text-center safe-bottom">
-        <p className="mx-auto max-w-lg px-4 text-xs leading-relaxed text-ink-muted">
-          Scripture quotations from the Holy Bible, New International Version&reg;. Copyright &copy; Biblica, Inc.
-          Used by permission via API.Bible.
-        </p>
+        <div className="mx-auto flex max-w-lg flex-col gap-3 px-4 text-xs leading-relaxed text-ink-muted">
+          <p>
+            Scripture quotations marked NIV are from the Holy Bible, New International Version&reg;.
+            NIV&reg; Copyright &copy; 1973, 1978, 1984, 2011 by Biblica, Inc.&reg; Used by permission.
+            All rights reserved worldwide. Text provided via{' '}
+            <a
+              href="https://scripture.api.bible"
+              target="_blank"
+              rel="noreferrer"
+              className="font-medium text-navy underline decoration-gold/40 underline-offset-2 hover:decoration-gold"
+            >
+              API.Bible
+            </a>
+            . Optional ESV text is likewise accessed under API.Bible terms when enabled in reading settings.
+          </p>
+          <p>
+            This app stores favorites, collections, and settings on your device only. Anonymous usage
+            analytics may be collected via Vercel Analytics to improve the product — no account is required.
+          </p>
+        </div>
       </footer>
 
       <ScrollToTop visible={showFab} onClick={() => scrollToTop({ smooth: true })} />

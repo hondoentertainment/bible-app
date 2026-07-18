@@ -14,8 +14,12 @@ export function CrossReferences({ verseId, compact = false }: CrossReferencesPro
   const [verses, setVerses] = useState<Verse[]>([])
 
   useEffect(() => {
-    if (refs.length === 0) return
-    fetchPassages(refs).then(setVerses).catch(() => setVerses([]))
+    const nextRefs = getCrossReferences(verseId)
+    if (nextRefs.length === 0) {
+      setVerses([])
+      return
+    }
+    fetchPassages(nextRefs).then(setVerses).catch(() => setVerses([]))
   }, [verseId])
 
   if (refs.length === 0) return null

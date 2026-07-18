@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" fill="none">
+  <rect width="1200" height="630" fill="#1a2744"/>
+  <rect x="0" y="0" width="1200" height="630" fill="url(#g)" opacity="0.35"/>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#b8860b" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#1a2744" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(120 180)">
+    <path stroke="#d4a843" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" d="M40 20v200M40 20c30-20 70-30 120-30s90 10 120 30M40 220c30 20 70 30 120 30s90-10 120-30"/>
+    <path stroke="#b8860b" stroke-width="8" stroke-linecap="round" d="M160 0v240"/>
+  </g>
+  <text x="420" y="280" fill="#f7f2e8" font-family="Georgia, 'Times New Roman', serif" font-size="64" font-weight="700">Scripture Search</text>
+  <text x="420" y="350" fill="#d4a843" font-family="Georgia, 'Times New Roman', serif" font-size="32">NIV subjects · stories · lyrics · quotes</text>
+  <text x="420" y="420" fill="#c5bba8" font-family="system-ui, sans-serif" font-size="24">bible-app-bice-ten.vercel.app</text>
+</svg>

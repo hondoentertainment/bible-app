@@ -46,6 +46,19 @@ foreach ($name in $vars) {
 
 No code changes required; the existing `vercel.json` SPA rewrites apply to all domains.
 
+## Production smoke checklist
+
+After each production deploy, verify:
+
+1. **Env** — Vercel Production has `BIBLE_API_KEY` and (for Movies/TV search) `TMDB_API_KEY`
+2. **Subjects** — search a topic (e.g. love); verse text loads
+3. **Stories** — Books / Movies / TV tabs; open curated *Shawshank*; try a TV search if TMDB is set
+4. **Lyrics** — mode loads; Spotify or manual compare works
+5. **Quote** — paste a short quote and compare
+6. **Deep links** — `/?mode=stories&story=shawshank` and `/?q=hope`
+7. **PWA** — install prompt or offline banner still sane on a second visit
+8. **Footer** — NIV attribution + privacy note visible
+
 ## PWA updates
 
 Production builds include a service worker (`vite-plugin-pwa`). Users get updates on next visit. Bible API responses are cached for offline favorites/passages (7-day TTL).

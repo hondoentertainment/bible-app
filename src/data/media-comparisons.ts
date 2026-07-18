@@ -396,6 +396,266 @@ export const MEDIA_COMPARISONS: MediaComparison[] = [
       },
     ],
   },
+  {
+    id: 'pilgrims-progress',
+    title: "The Pilgrim's Progress",
+    type: 'book',
+    creator: 'John Bunyan (1678)',
+    summary:
+      'Christian flees the City of Destruction, bearing a burden of sin, and journeys toward the Celestial City through trial and grace.',
+    parallels: [
+      {
+        id: 'pp-burden',
+        theme: 'Salvation',
+        mediaLine: {
+          text: 'He ran thus till he came at a place somewhat ascending, and upon that place stood a cross... his burden loosed from off his shoulders.',
+          attribution: 'Christian at the cross',
+        },
+        verseIds: ['MAT.11.28-30', 'PSA.55.22', '1PE.2.24'],
+        connection:
+          'Bunyan\'s burden falling at the cross pictures Christ bearing our sins — rest for the weary and freedom from what we cannot carry alone.',
+      },
+      {
+        id: 'pp-perseverance',
+        theme: 'Endurance',
+        mediaLine: {
+          text: 'The hill, though high, I covet to ascend; the difficulty will not me offend.',
+          attribution: 'Christian approaching Hill Difficulty',
+        },
+        verseIds: ['HEB.12.1-2', 'JAS.1.2-4', 'ROM.5.3-4'],
+        connection:
+          'The climb toward holiness is hard but purposeful — Scripture calls believers to run with endurance, looking to Jesus.',
+      },
+    ],
+  },
+  {
+    id: 'screwtape',
+    title: 'The Screwtape Letters',
+    type: 'book',
+    creator: 'C.S. Lewis (1942)',
+    summary:
+      'A senior demon coaches a junior tempter on distracting a human soul from God — satire that exposes spiritual warfare and grace.',
+    parallels: [
+      {
+        id: 'screwtape-warfare',
+        theme: 'Spiritual Warfare',
+        mediaLine: {
+          text: 'Indeed the safest road to Hell is the gradual one — the gentle slope, soft underfoot, without sudden turnings.',
+          attribution: 'Screwtape',
+        },
+        verseIds: ['1PE.5.8', 'EPH.6.11-12', '2CO.2.11'],
+        connection:
+          'Lewis dramatizes the enemy\'s subtlety — Scripture warns believers to stay alert, armored against schemes that feel ordinary.',
+      },
+      {
+        id: 'screwtape-love',
+        theme: 'Love',
+        mediaLine: {
+          text: 'He really does want to fill the universe with a lot of loathsome little replicas of Himself.',
+          attribution: 'Screwtape on God\'s love',
+        },
+        verseIds: ['1JN.4.7-10', 'JHN.3.16', 'ROM.5.8'],
+        connection:
+          'Even the demons must admit God\'s self-giving love — the gospel center Screwtape cannot comprehend or defeat.',
+      },
+    ],
+    cautions: ['Satirical demonic POV; read as allegory, not doctrine from demons.'],
+  },
+  {
+    id: 'prince-of-egypt',
+    title: 'The Prince of Egypt',
+    type: 'movie',
+    creator: 'DreamWorks (1998)',
+    summary:
+      'Moses discovers his identity, confronts Pharaoh, and leads Israel out of bondage — the Exodus told with cinematic awe.',
+    parallels: [
+      {
+        id: 'poe-deliverance',
+        theme: 'Freedom',
+        mediaLine: {
+          text: 'I have come down to rescue them from the hand of the Egyptians.',
+          attribution: 'God speaking from the burning bush (film paraphrase of Exodus)',
+        },
+        verseIds: ['EXO.3.7-8', 'EXO.14.13-14', 'JHN.8.36'],
+        connection:
+          'The film retells God\'s rescue of the oppressed — Scripture\'s pattern of deliverance fulfilled ultimately in Christ setting people free.',
+      },
+      {
+        id: 'poe-calling',
+        theme: 'Purpose & Calling',
+        mediaLine: {
+          text: 'Who am I to lead these people?',
+          attribution: 'Moses',
+        },
+        verseIds: ['EXO.3.11', 'EXO.4.10-12', '2CO.3.5'],
+        connection:
+          'Moses\' inadequacy meets God\'s sufficiency — calling rests on who sends, not on self-confidence.',
+      },
+    ],
+  },
+  {
+    id: 'its-a-wonderful-life',
+    title: "It's a Wonderful Life",
+    type: 'movie',
+    creator: 'Frank Capra (1946)',
+    summary:
+      'George Bailey despairs that his life meant nothing — until he sees how one faithful presence shapes a whole town.',
+    parallels: [
+      {
+        id: 'iawl-worth',
+        theme: 'Hope',
+        mediaLine: {
+          text: 'Strange, isn\'t it? Each man\'s life touches so many other lives.',
+          attribution: 'Clarence the angel',
+        },
+        verseIds: ['MAT.5.14-16', '1CO.12.26', 'HEB.6.10'],
+        connection:
+          'Hidden faithfulness still lights the world — God remembers labor done in love even when we cannot see its fruit.',
+      },
+      {
+        id: 'iawl-community',
+        theme: 'Friendship',
+        mediaLine: {
+          text: 'No man is a failure who has friends.',
+          attribution: 'Inscription in the book from Clarence',
+        },
+        verseIds: ['ECC.4.9-10', 'PRO.18.24', 'GAL.6.2'],
+        connection:
+          'Community bears burdens and restores hope — friendship as the film\'s answer echoes Scripture\'s call to carry one another.',
+      },
+    ],
+  },
+  {
+    id: 'hacksaw-ridge',
+    title: 'Hacksaw Ridge',
+    type: 'movie',
+    creator: 'Mel Gibson (2016)',
+    summary:
+      'Desmond Doss, a combat medic who refuses to carry a weapon, risks everything to save the wounded on Okinawa.',
+    parallels: [
+      {
+        id: 'hr-conviction',
+        theme: 'Obedience',
+        mediaLine: {
+          text: 'I can\'t hear God while I\'m looking at a gun.',
+          attribution: 'Desmond Doss',
+        },
+        verseIds: ['ACT.5.29', 'ROM.14.5', 'JAS.1.22'],
+        connection:
+          'Costly conscience before God over human pressure — Doss\'s stand mirrors biblical obedience when conviction and culture collide.',
+      },
+      {
+        id: 'hr-sacrifice',
+        theme: 'Sacrifice',
+        mediaLine: {
+          text: 'Please Lord, help me get one more.',
+          attribution: 'Doss praying while rescuing the wounded',
+        },
+        verseIds: ['JHN.15.13', 'MAT.25.40', 'PHP.2.3-4'],
+        connection:
+          'Love that lays down safety for others images Christ\'s greater sacrifice and the call to count others above ourselves.',
+      },
+    ],
+  },
+  {
+    id: 'the-chosen',
+    title: 'The Chosen',
+    type: 'tv',
+    creator: 'Dallas Jenkins (2019–)',
+    summary:
+      'A multi-season drama following Jesus and his disciples — mercy, calling, and ordinary lives interrupted by the Messiah.',
+    parallels: [
+      {
+        id: 'chosen-follow',
+        theme: 'Discipleship',
+        mediaLine: {
+          text: 'Get used to different.',
+          attribution: 'Jesus to Simon (paraphrased series theme)',
+        },
+        verseIds: ['MAT.4.19', 'LUK.9.23', '2CO.5.17'],
+        connection:
+          'Following Jesus upends expectations — discipleship means a new way of seeing people, purpose, and power.',
+      },
+      {
+        id: 'chosen-mercy',
+        theme: 'Mercy & Forgiveness',
+        mediaLine: {
+          text: 'I am the Law of Moses.',
+          attribution: 'Jesus to Mary Magdalene (season 1)',
+        },
+        verseIds: ['JHN.8.10-11', 'MIC.7.18-19', 'LUK.5.31-32'],
+        connection:
+          'Christ meets shame with restoration — the series dramatizes the gospel welcome Scripture describes for sinners who turn to him.',
+      },
+    ],
+    cautions: ['Dramatic interpolation around the Gospels; always weigh scenes against Scripture itself.'],
+  },
+  {
+    id: 'the-bible-miniseries',
+    title: 'The Bible',
+    type: 'tv',
+    creator: 'History Channel (2013)',
+    summary:
+      'A dramatized journey from Genesis to Revelation — creation, covenant, exile, and the life of Christ retold for screen.',
+    parallels: [
+      {
+        id: 'bible-tv-promise',
+        theme: 'Faith',
+        mediaLine: {
+          text: 'I will make you into a great nation… and all peoples on earth will be blessed through you.',
+          attribution: 'God\'s promise to Abraham (series dramatization)',
+        },
+        verseIds: ['GEN.12.2-3', 'GAL.3.8', 'HEB.11.8'],
+        connection:
+          'Abraham\'s call launches the story of blessing for the nations — fulfilled in Christ and retold across the series arcs.',
+      },
+      {
+        id: 'bible-tv-cross',
+        theme: 'Sacrifice',
+        mediaLine: {
+          text: 'It is finished.',
+          attribution: 'Jesus on the cross',
+        },
+        verseIds: ['JHN.19.30', 'ISA.53.5', '1CO.15.3-4'],
+        connection:
+          'The climax of Scripture\'s story is the finished work of the cross — atonement and resurrection hope.',
+      },
+    ],
+    cautions: ['Compressed timelines and dramatization; use as a doorway back into the biblical text.'],
+  },
+  {
+    id: 'ted-lasso',
+    title: 'Ted Lasso',
+    type: 'tv',
+    creator: 'Apple TV+ (2020–2023)',
+    summary:
+      'An optimistic American coach wins over a skeptical English football club through kindness, honesty, and second chances.',
+    parallels: [
+      {
+        id: 'lasso-kindness',
+        theme: 'Love',
+        mediaLine: {
+          text: 'Be curious, not judgmental.',
+          attribution: 'Ted Lasso (quoting a Walt Whitman anecdote)',
+        },
+        verseIds: ['JAS.1.19', '1CO.13.4-7', 'MIC.6.8'],
+        connection:
+          'Curiosity that refuses quick condemnation resembles patient love — slow to speak, eager to understand.',
+      },
+      {
+        id: 'lasso-believe',
+        theme: 'Hope',
+        mediaLine: {
+          text: 'I believe in believe.',
+          attribution: 'Ted\'s BELIEVE sign',
+        },
+        verseIds: ['ROM.15.13', 'HEB.11.1', '1TH.5.11'],
+        connection:
+          'The show\'s stubborn hope in people mirrors (imperfectly) biblical encouragement — building others up when despair feels easier.',
+      },
+    ],
+    cautions: ['Secular workplace comedy with adult themes; extract the moral wheat carefully.'],
+  },
 ]
 
 export function getMediaComparison(id: string): MediaComparison | undefined {
@@ -414,14 +674,21 @@ export const MEDIA_TYPE_LABELS: Record<MediaType, string> = {
   tv: 'TV',
 }
 
+/** Default featured Stories (books/movies/TV only — songs live in Lyrics). */
 export const FEATURED_STORY_IDS = [
   'shawshank',
   'les-miserables',
-  'hallelujah',
   'narnia',
-  'amazing-grace',
   'star-wars',
+  'the-chosen',
+  'prince-of-egypt',
 ] as const
+
+export const SEARCH_EXAMPLES: Record<'book' | 'movie' | 'tv', string[]> = {
+  book: ['Screwtape', 'Pilgrim', 'Narnia'],
+  movie: ['Shawshank', 'Prince of Egypt', 'Wonderful Life'],
+  tv: ['The Chosen', 'Ted Lasso', 'The Bible'],
+}
 
 export const STORIES_COMPARE_STEPS = [
   { step: 1, label: 'Choose a section', detail: 'Browse Books, Movies, or TV' },
@@ -429,10 +696,23 @@ export const STORIES_COMPARE_STEPS = [
   { step: 3, label: 'Reflect', detail: 'Jump between themes, share, or explore subjects deeper' },
 ] as const
 
-export function getFeaturedStories(type?: MediaType): MediaComparison[] {
-  const featured = FEATURED_STORY_IDS.map((id) => getMediaComparison(id)).filter(
-    (item): item is MediaComparison => item !== undefined,
-  )
+export function getSeasonalFeaturedStoryIds(date: Date = new Date()): string[] {
+  const month = date.getMonth() // 0–11
+  // Advent / Christmas
+  if (month === 11 || month === 0) {
+    return ['its-a-wonderful-life', 'narnia', 'the-chosen', 'prince-of-egypt', 'les-miserables']
+  }
+  // Lent / Easter window (approx Feb–Apr)
+  if (month >= 1 && month <= 3) {
+    return ['the-chosen', 'the-bible-miniseries', 'pilgrims-progress', 'hacksaw-ridge', 'shawshank']
+  }
+  return [...FEATURED_STORY_IDS]
+}
+
+export function getFeaturedStories(type?: MediaType, date?: Date): MediaComparison[] {
+  const featured = getSeasonalFeaturedStoryIds(date)
+    .map((id) => getMediaComparison(id))
+    .filter((item): item is MediaComparison => item !== undefined)
   return type ? featured.filter((item) => item.type === type) : featured
 }
 

@@ -13,7 +13,7 @@ import {
   searchMovies,
   searchTv,
 } from '../services/externalMediaCompare'
-import { searchCuratedComparisons } from '../data/media-comparisons'
+import { SEARCH_EXAMPLES, searchCuratedComparisons } from '../data/media-comparisons'
 import type { MediaComparison } from '../types/media'
 import type {
   BookSearchResult,
@@ -291,6 +291,22 @@ export function ExternalMediaSearch({ type, onExploreTheme, onSelectCurated }: E
           </button>
         </div>
       </form>
+
+      {!tmdbBlocked && query.trim().length === 0 && (
+        <div className="mb-4 flex flex-wrap gap-2">
+          <span className="self-center text-xs text-ink-muted">Try:</span>
+          {SEARCH_EXAMPLES[type].map((example) => (
+            <button
+              key={example}
+              type="button"
+              onClick={() => setQuery(example)}
+              className="touch-manipulation rounded-full border border-parchment-dark bg-parchment/40 px-3 py-1 text-xs font-medium text-navy transition hover:border-gold/50 active:scale-95"
+            >
+              {example}
+            </button>
+          ))}
+        </div>
+      )}
 
       {!searching && query.trim().length > 0 && query.trim().length < MIN_PARTIAL_CHARS && (
         <p className="mb-4 text-xs text-ink-muted">Type at least {MIN_PARTIAL_CHARS} characters to search.</p>

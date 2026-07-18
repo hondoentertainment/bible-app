@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <!-- Full-bleed background for Android maskable safe zone -->
+  <rect width="512" height="512" fill="#1a2744"/>
+  <!-- Icon content kept within ~60% center safe zone -->
+  <g transform="translate(96 96)">
+    <path stroke="#b8860b" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" d="M64 48v224M64 48c24-16 56-24 96-24s72 8 96 24M64 272c24 16 56 24 96 24s72-8 96-24"/>
+    <path stroke="#d4a843" stroke-width="10" stroke-linecap="round" d="M160 32v256"/>
+  </g>
+</svg>

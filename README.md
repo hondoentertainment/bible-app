@@ -2,12 +2,13 @@
 
 Search the **NIV**, compare culture with Scripture, and build daily habits — subjects, stories, songs, and quotes in one PWA.
 
-**Production:** https://bible-app-bice-ten.vercel.app
+**Production:** https://bible-app-bice-ten.vercel.app  
+**Roadmap:** [ROADMAP.md](./ROADMAP.md)
 
 ## Features
 
 ### Subjects
-- **48 curated topics** with keyword matching (love, faith, hope, grief, and more)
+- **98 curated topics** with keyword matching (love, faith, hope, grief, and more)
 - **Full-text NIV search** via [API.Bible](https://scripture.api.bible)
 - **Direct reference lookup** — e.g. `John 3:16`, `Romans 8:28`
 - **Filters** — Old/New Testament, curated vs. full-text results
@@ -48,11 +49,12 @@ npm run dev
 | `BIBLE_API_KEY` | Yes (for verse text) | [API.Bible signup](https://scripture.api.bible/signup) |
 | `SPOTIFY_CLIENT_ID` | No | Spotify track search |
 | `SPOTIFY_CLIENT_SECRET` | No | Spotify track search |
-| `TMDB_API_KEY` | No | Movie search & synopses |
+| `TMDB_API_KEY` | No | Movie & TV search / synopses |
 
-Books use **Open Library** (no key). Lyrics use **LRCLIB** (no key).
+Books use **Open Library** (no key). Lyrics use **LRCLIB** (no key) in **Lyrics** mode.
 
-See [DEPLOYMENT.md](./DEPLOYMENT.md) for Vercel production setup and custom domains.
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for Vercel production setup, smoke checklist, and custom domains.  
+See [CHANGELOG.md](./CHANGELOG.md) for release notes.
 
 ## Share URL examples
 
@@ -70,6 +72,7 @@ See [DEPLOYMENT.md](./DEPLOYMENT.md) for Vercel production setup and custom doma
 | `npm run dev` | Development server |
 | `npm run build` | Production build |
 | `npm run test` | Unit tests |
+| `npm run test:e2e` | Playwright smoke (builds + preview) |
 | `npm run preview` | Preview production build |
 
 ## License note
